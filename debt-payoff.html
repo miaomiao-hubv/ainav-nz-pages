@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Debt Payoff Calculator — Snowball vs Avalanche NZ | ainav.nz</title>
+<meta name="description" content="Compare debt snowball vs avalanche strategies for New Zealand. Plan your debt repayment with NZ interest rates and monthly payment options.">
+<meta name="keywords" content="debt payoff NZ, debt snowball, debt avalanche, credit card debt New Zealand, loan repayment calculator NZ, debt free plan">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ainav.nz/debt-payoff.html">
+<meta property="og:title" content="Debt Payoff Calculator — Snowball vs Avalanche NZ | ainav.nz">
+<meta property="og:description" content="Compare snowball vs avalanche debt payoff strategies tailored for New Zealand.">
+<meta property="og:url" content="https://ainav.nz/debt-payoff.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Debt Payoff Calculator — NZ | ainav.nz">
+<meta name="twitter:description" content="Snowball vs avalanche debt payoff for New Zealanders.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --green:#059669;--green-bg:rgba(52,211,153,.12);
+  --red:#DC2626;--red-bg:rgba(248,113,113,.10);
+  --blue:#2563EB;--blue-bg:rgba(37,99,235,.10);
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== CALCULATOR LAYOUT ===== */
+.calc-layout{display:flex;gap:16px;padding:16px 28px 24px;flex:1}
+.calc-panel{flex:1;min-width:0;max-width:600px}
+.regs-panel{width:260px;min-width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+
+/* ===== INPUT AREA ===== */
+.input-wrap{margin-top:0;display:flex;align-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:9px;padding:0 14px;height:44px;transition:all .15s;box-shadow:var(--shadow-sm);cursor:text}
+.input-wrap:focus-within{border-color:var(--brand);background:#fff;box-shadow:var(--shadow-md)}
+.input-wrap .input-prefix{font-size:16px;font-weight:700;color:var(--brand);margin-right:4px;flex-shrink:0}
+.input-wrap input{flex:1;border:none;background:transparent;outline:none;font-size:16px;font-weight:600;color:var(--text);font-family:inherit;min-width:0;text-align:right}
+.input-wrap input::placeholder{color:#CDD3DA;font-weight:400}
+.input-wrap .input-suffix{font-size:11px;color:var(--sub);flex-shrink:0;margin-left:6px;font-weight:500}
+.input-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+.input-group{margin-top:12px}
+.input-group:first-child{margin-top:0}
+.input-row{display:flex;gap:12px;margin-top:12px}
+.input-row .input-group{margin-top:0;flex:1;min-width:0}
+
+/* ===== SELECT DROPDOWN ===== */
+.select-wrap{display:flex;align-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:9px;padding:0 14px;height:44px;transition:all .15s;box-shadow:var(--shadow-sm)}
+.select-wrap:focus-within{border-color:var(--brand);background:#fff;box-shadow:var(--shadow-md)}
+.select-wrap select{flex:1;border:none;background:transparent;outline:none;font-size:14px;font-weight:600;color:var(--text);font-family:inherit;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235F6B7A' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:24px}
+
+/* ===== MODE TOGGLE ===== */
+.mode-wrap{display:flex;gap:8px;margin-top:10px}
+.mode-btn{flex:1;height:44px;padding:0 14px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:var(--shadow-sm)}
+.mode-btn:hover{background:#fff;border-color:#C0C8CE}
+.mode-btn.active{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 8px rgba(0,59,79,.25)}
+.mode-btn .mode-icon{font-size:16px}
+
+/* ===== BUTTONS ===== */
+.btn-action{height:44px;padding:0 20px;border-radius:9px;border:none;background:var(--brand);color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.btn-action:hover{background:var(--brand-light);box-shadow:0 4px 14px rgba(0,59,79,.25)}
+.btn-action:disabled{background:#B0BDC4;cursor:not-allowed;box-shadow:none}
+.btn-secondary{height:38px;padding:0 14px;border-radius:8px;border:1.5px solid var(--border);background:rgba(255,255,255,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:5px}
+.btn-secondary:hover{background:#fff;border-color:var(--brand-light);color:var(--brand)}
+.btn-danger{height:32px;width:32px;border-radius:7px;border:1.5px solid var(--red-bg);background:var(--red-bg);color:var(--red);font-size:14px;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.btn-danger:hover{background:var(--red);color:#fff}
+.controls-row{display:flex;gap:10px;margin-top:18px;align-items:center;flex-wrap:wrap}
+
+/* ===== DEBT ENTRY CARD ===== */
+.debt-entry{background:rgba(255,255,255,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--glass-border);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow-sm);margin-top:10px;position:relative}
+.debt-entry .debt-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.debt-entry .debt-label{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
+.debt-entry .debt-label .debt-emoji{font-size:15px}
+.debt-entry .debt-fields{display:flex;gap:10px;flex-wrap:wrap}
+.debt-entry .debt-fields .input-group{flex:1;min-width:120px;margin-top:8px}
+.debt-entry .debt-fields .input-group:first-child{margin-top:0}
+.debt-entry .input-wrap{height:40px}
+.debt-entry .input-wrap input{font-size:14px}
+
+/* ===== SUMMARY CARD ===== */
+.summary-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.summary-card{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow-sm)}
+.summary-card h4{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;margin-bottom:6px}
+.summary-card .sc-value{font-size:22px;font-weight:800;color:var(--text);letter-spacing:-.3px;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace}
+.summary-card .sc-sub{font-size:11px;color:var(--sub);margin-top:3px}
+.summary-card.snowball{border-left:3px solid var(--green)}
+.summary-card.avalanche{border-left:3px solid var(--blue)}
+.summary-card.snowball .sc-value{color:var(--green)}
+.summary-card.avalanche .sc-value{color:var(--blue)}
+
+/* ===== COMPARISON TABLE ===== */
+.compare-table-wrap{margin-top:16px}
+.compare-table{width:100%;border-collapse:collapse;font-size:12.5px;background:rgba(255,255,255,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.compare-table th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;background:rgba(0,59,79,.04);border-bottom:1px solid var(--border)}
+.compare-table td{padding:10px 14px;border-bottom:1px solid #F0F2F4;color:var(--sub);font-variant-numeric:tabular-nums}
+.compare-table tr:last-child td{border-bottom:none}
+.compare-table td.highlight{font-weight:700;color:var(--green)}
+.compare-table td .winner{font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-left:4px}
+.compare-table td .winner.snowball-w{background:var(--green-bg);color:var(--green)}
+.compare-table td .winner.avalanche-w{background:var(--blue-bg);color:var(--blue)}
+
+/* ===== TIMELINE BAR ===== */
+.timeline-section{margin-top:16px}
+.timeline-card{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow-sm)}
+.timeline-card h4{font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px}
+.tl-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
+.tl-row:last-child{margin-bottom:0}
+.tl-label{width:70px;font-weight:600;color:var(--sub);flex-shrink:0;text-align:right}
+.tl-bar-wrap{flex:1;height:22px;background:#EDF0F2;border-radius:6px;overflow:hidden;position:relative}
+.tl-bar{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:700;color:#fff;transition:width .5s ease}
+.tl-bar.snowball-bar{background:linear-gradient(90deg,#059669,#34D399)}
+.tl-bar.avalanche-bar{background:linear-gradient(90deg,#2563EB,#60A5FA)}
+.tl-months{width:60px;font-weight:600;color:var(--text);font-variant-numeric:tabular-nums;flex-shrink:0;font-size:11px}
+
+/* ===== DEBT PAYOFF ORDER ===== */
+.payoff-order{margin-top:16px}
+.payoff-order h4{font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px}
+.payoff-list{display:flex;gap:12px}
+.payoff-col{flex:1}
+.payoff-col h5{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.4px;margin-bottom:6px;display:flex;align-items:center;gap:4px}
+.payoff-step{display:flex;align-items:center;gap:6px;padding:6px 10px;margin-bottom:4px;border-radius:7px;font-size:12px;background:rgba(255,255,255,.5);border:1px solid var(--border)}
+.payoff-step .step-num{width:18px;height:18px;border-radius:50%;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.payoff-step.snowball-step .step-num{background:var(--green-bg);color:var(--green)}
+.payoff-step.avalanche-step .step-num{background:var(--blue-bg);color:var(--blue)}
+.payoff-step .step-name{font-weight:600;color:var(--text)}
+.payoff-step .step-detail{color:var(--muted);font-size:11px;margin-left:auto}
+
+/* ===== REGULATIONS PANEL ===== */
+.reg-card{background:rgba(255,255,255,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--glass-border);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow-sm)}
+.reg-card:hover{background:rgba(255,255,255,.75);box-shadow:var(--shadow-md)}
+.reg-card h3{font-size:12px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-.2px;display:flex;align-items:center;gap:5px}
+.reg-card h3 .rc-icon{font-size:13px}
+.reg-card p,.reg-card li{font-size:11.5px;color:var(--sub);line-height:1.55}
+.reg-card ul{padding-left:12px;margin-top:2px;list-style:none}
+.reg-card ul li::before{content:"—";margin-right:4px;color:var(--muted)}
+.reg-card .thresh-table{width:100%;font-size:11px;margin-top:4px;border-collapse:collapse}
+.reg-card .thresh-table th{text-align:left;padding:3px 5px;color:var(--muted);font-weight:600;font-size:10px;letter-spacing:.3px}
+.reg-card .thresh-table td{padding:3px 5px;color:var(--sub)}
+.reg-card .thresh-table tr:nth-child(even){background:rgba(0,59,79,.02)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .calc-layout{padding:14px 20px 20px}
+  .calc-panel{max-width:none}
+  .regs-panel{width:100%;min-width:0}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .calc-layout{padding:10px 14px 16px;gap:12px;flex-direction:column}
+  .input-wrap{height:40px}
+  .input-wrap input{font-size:14px}
+  .select-wrap{height:40px}
+  .debt-entry .debt-fields{flex-direction:column;gap:0}
+  .debt-entry .debt-fields .input-group{min-width:0}
+  .summary-cards{grid-template-columns:1fr}
+  .payoff-list{flex-direction:column;gap:8px}
+  .regs-panel{gap:6px}
+  .tl-label{width:50px;font-size:11px}
+}
+@media(max-width:420px){
+  .mode-btn{height:40px;font-size:11px;padding:0 10px}
+  .controls-row{gap:6px}
+  .debt-entry{padding:10px 12px}
+  .summary-card .sc-value{font-size:18px}
+  .input-wrap{height:40px}
+  .select-wrap{height:40px}
+  .input-row{flex-direction:column;gap:0}
+  .input-row .input-group{margin-top:12px}
+  .input-row .input-group:first-child{margin-top:0}
+}
+</style>
+</head>
+<body>
+
+<!-- Decorative background blobs -->
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">18</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">16</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">19</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">10</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">Debt Payoff Calculator</span>
+  </div>
+
+  <div class="calc-layout">
+
+    <!-- ===== LEFT: Calculator ===== -->
+    <div class="calc-panel">
+
+      <!-- Monthly Extra Payment -->
+      <div class="input-group">
+        <span class="input-label">Extra Monthly Payment (Above Minimums)</span>
+        <div class="input-wrap">
+          <span class="input-prefix">$</span>
+          <input type="text" id="extraPayment" placeholder="e.g. 500" inputmode="decimal" autocomplete="off" aria-label="Extra monthly payment" oninput="fmtInput(this)">
+          <span class="input-suffix">/mo</span>
+        </div>
+      </div>
+
+      <!-- Debt entries container -->
+      <div id="debtEntries"></div>
+
+      <!-- Add debt button -->
+      <div class="controls-row">
+        <button class="btn-secondary" onclick="addDebtEntry()">+ Add Debt</button>
+        <button class="btn-action" id="calcBtn" onclick="calculate()">⚡ Calculate Payoff</button>
+      </div>
+
+      <!-- Summary Cards -->
+      <div class="summary-cards" id="summaryCards">
+        <div class="summary-card snowball">
+          <h4>❄️ Snowball</h4>
+          <div class="sc-value" id="snowballTotal">$0</div>
+          <div class="sc-sub" id="snowballSub">Total interest paid</div>
+        </div>
+        <div class="summary-card avalanche">
+          <h4>🏔️ Avalanche</h4>
+          <div class="sc-value" id="avalancheTotal">$0</div>
+          <div class="sc-sub" id="avalancheSub">Total interest paid</div>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="compare-table-wrap" id="compareWrap">
+        <table class="compare-table">
+          <thead>
+            <tr><th>Metric</th><th>❄️ Snowball</th><th>🏔️ Avalanche</th></tr>
+          </thead>
+          <tbody id="compareBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Timeline Bar -->
+      <div class="timeline-section" id="timelineSection">
+        <div class="timeline-card">
+          <h4>📊 Time to Debt Free</h4>
+          <div id="timelineBars"></div>
+        </div>
+      </div>
+
+      <!-- Payoff Order -->
+      <div class="payoff-order" id="payoffOrder">
+        <h4>📋 Repayment Order</h4>
+        <div class="payoff-list" id="payoffList"></div>
+      </div>
+
+    </div>
+
+    <!-- ===== RIGHT: Info Panel ===== -->
+    <div class="regs-panel">
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">❄️</span>Snowball Method</h3>
+        <p>Pay off debts from <strong>smallest balance</strong> to largest. Quick wins keep you motivated.</p>
+        <ul>
+          <li>Best for motivation</li>
+          <li>Faster psychological progress</li>
+          <li>May cost more in interest</li>
+        </ul>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🏔️</span>Avalanche Method</h3>
+        <p>Pay off debts from <strong>highest interest rate</strong> to lowest. Saves the most money.</p>
+        <ul>
+          <li>Minimises total interest</li>
+          <li>Fastest overall payoff</li>
+          <li>Requires more discipline</li>
+        </ul>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🇳🇿</span>NZ Typical Debt Rates</h3>
+        <table class="thresh-table">
+          <tr><th>Debt Type</th><th>Typical Rate</th></tr>
+          <tr><td>Credit card</td><td>20.95–25.95%</td></tr>
+          <tr><td>Personal loan</td><td>8–18%</td></tr>
+          <tr><td>Hire purchase</td><td>12–28%</td></tr>
+          <tr><td>Car loan</td><td>7–14%</td></tr>
+          <tr><td>Student loan (NZ)</td><td>0% (in NZ)</td></tr>
+          <tr><td>Mortgage</td><td>5.5–7.5%</td></tr>
+          <tr><td>Overdraft</td><td>10–20%</td></tr>
+        </table>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">ℹ️</span>NZ Debt Help</h3>
+        <p>If you're struggling with debt, free help is available:</p>
+        <ul>
+          <li><strong>MoneyTalks</strong> — 0800 002 007</li>
+          <li><strong>CAB</strong> — Citizens Advice Bureau</li>
+          <li><strong>FinCap</strong> — financial mentors</li>
+          <li><strong>IRD</strong> — student loan &amp; child support</li>
+        </ul>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">📝</span>Important Notes</h3>
+        <p>NZ student loans are <strong>interest-free</strong> while living in NZ. Only include them if you're overseas or have an overseas-based repayment obligation.</p>
+        <p style="margin-top:4px">Minimum payments shown are calculated. Check your actual statement for exact minimums — credit card minimums may differ.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<script>
+// ===== SIDEBAR NAVIGATION =====
+(function(){
+  var fromCat = new URLSearchParams(window.location.search).get("from") || "finance";
+  document.getElementById("backLink").href = "index.html#" + fromCat;
+  var activeBtn = document.querySelector('.side-nav [data-cat="' + fromCat + '"]');
+  if(activeBtn) activeBtn.classList.add('active');
+  document.querySelectorAll('.side-nav .side-item').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var cat = this.dataset.cat;
+      if(cat) window.location.href = cat ? "index.html#" + cat : "index.html";
+    });
+  });
+})();
+
+// ===== DEBT TYPE PRESETS =====
+var DEBT_PRESETS = [
+  { name: "Credit Card",    emoji: "💳", rate: 21.50 },
+  { name: "Personal Loan",  emoji: "🏦", rate: 12.00 },
+  { name: "Hire Purchase",  emoji: "🛒", rate: 18.00 },
+  { name: "Car Loan",       emoji: "🚗", rate: 9.50  },
+  { name: "Overdraft",      emoji: "📉", rate: 15.00 },
+  { name: "Mortgage",       emoji: "🏠", rate: 6.50  },
+  { name: "Student Loan",   emoji: "🎓", rate: 0.00  },
+  { name: "Other",          emoji: "📋", rate: 10.00 }
+];
+
+var debtCounter = 0;
+
+function addDebtEntry(preset) {
+  debtCounter++;
+  var p = preset || DEBT_PRESETS[0];
+  var id = debtCounter;
+  var html = '<div class="debt-entry" id="debt-' + id + '">' +
+    '<div class="debt-header">' +
+      '<div class="debt-label"><span class="debt-emoji">' + p.emoji + '</span>' +
+        '<select class="debt-type-select" onchange="onTypeChange(this, ' + id + ')" style="border:none;background:transparent;font:inherit;font-weight:700;color:var(--text);cursor:pointer;padding:0 4px">' +
+          DEBT_PRESETS.map(function(dp) {
+            return '<option value="' + dp.name + '"' + (dp.name === p.name ? ' selected' : '') + '>' + dp.emoji + ' ' + dp.name + '</option>';
+          }).join('') +
+        '</select>' +
+      '</div>' +
+      '<button class="btn-danger" onclick="removeDebtEntry(' + id + ')" title="Remove">✕</button>' +
+    '</div>' +
+    '<div class="debt-fields">' +
+      '<div class="input-group">' +
+        '<span class="input-label">Balance</span>' +
+        '<div class="input-wrap">' +
+          '<span class="input-prefix">$</span>' +
+          '<input type="text" class="debt-balance" placeholder="e.g. 5,000" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)">' +
+        '</div>' +
+      '</div>' +
+      '<div class="input-group">' +
+        '<span class="input-label">Interest Rate</span>' +
+        '<div class="input-wrap">' +
+          '<input type="text" class="debt-rate" value="' + p.rate.toFixed(2) + '" inputmode="decimal" autocomplete="off">' +
+          '<span class="input-suffix">%/yr</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="input-group">' +
+        '<span class="input-label">Min. Payment</span>' +
+        '<div class="input-wrap">' +
+          '<span class="input-prefix">$</span>' +
+          '<input type="text" class="debt-min" placeholder="e.g. 120" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)">' +
+          '<span class="input-suffix">/mo</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+  var container = document.getElementById('debtEntries');
+  container.insertAdjacentHTML('beforeend', html);
+}
+
+function removeDebtEntry(id) {
+  var el = document.getElementById('debt-' + id);
+  if(el) el.remove();
+  // Show nothing if no debts
+  if(document.querySelectorAll('.debt-entry').length === 0) {
+    document.getElementById('snowballTotal').textContent = '$0';
+    document.getElementById('snowballSub').textContent = 'Total interest paid';
+    document.getElementById('avalancheTotal').textContent = '$0';
+    document.getElementById('avalancheSub').textContent = 'Total interest paid';
+    document.getElementById('compareBody').innerHTML = '';
+    document.getElementById('timelineBars').innerHTML = '';
+    document.getElementById('payoffList').innerHTML = '';
+  }
+}
+
+function onTypeChange(selectEl, id) {
+  var entry = document.getElementById('debt-' + id);
+  var rateInput = entry.querySelector('.debt-rate');
+  var emojiSpan = entry.querySelector('.debt-emoji');
+  var selected = DEBT_PRESETS.find(function(dp) { return dp.name === selectEl.value; });
+  if(selected) {
+    rateInput.value = selected.rate.toFixed(2);
+    emojiSpan.textContent = selected.emoji;
+  }
+}
+
+// ===== FORMAT HELPERS =====
+function parseNum(str) {
+  if(!str) return 0;
+  return parseFloat(str.replace(/[^0-9.\-]/g, '')) || 0;
+}
+
+function fmtInput(el) {
+  var v = el.value.replace(/[^0-9.]/g, '');
+  var parts = v.split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  el.value = parts.join('.');
+}
+
+function fmtMoney(n) {
+  return '$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function fmtMoneyRound(n) {
+  return '$' + Math.round(n).toLocaleString('en-NZ');
+}
+
+function fmtMonths(m) {
+  var y = Math.floor(m / 12);
+  var mo = m % 12;
+  if(y === 0) return mo + ' month' + (mo !== 1 ? 's' : '');
+  if(mo === 0) return y + ' year' + (y !== 1 ? 's' : '');
+  return y + 'y ' + mo + 'm';
+}
+
+// ===== PAYOFF SIMULATION =====
+function simulatePayoff(debts, extraPayment, strategy) {
+  // strategy: 'snowball' (smallest balance first) or 'avalanche' (highest rate first)
+  var working = debts.map(function(d) {
+    return { name: d.name, emoji: d.emoji, balance: d.balance, rate: d.rate, minPayment: d.minPayment, origBalance: d.balance };
+  });
+
+  // Sort order for extra payment application
+  if(strategy === 'snowball') {
+    working.sort(function(a, b) { return a.balance - b.balance; });
+  } else {
+    working.sort(function(a, b) { return b.rate - a.rate; });
+  }
+
+  var totalInterest = 0;
+  var months = 0;
+  var maxMonths = 1200; // 100 years safety
+  var payoffOrder = [];
+
+  while(months < maxMonths) {
+    var remaining = working.filter(function(d) { return d.balance > 0.01; });
+    if(remaining.length === 0) break;
+
+    months++;
+
+    // Apply minimum payments + interest
+    for(var i = 0; i < working.length; i++) {
+      var d = working[i];
+      if(d.balance <= 0) continue;
+
+      // Monthly interest
+      var monthlyInterest = d.balance * (d.rate / 100 / 12);
+      totalInterest += monthlyInterest;
+      d.balance += monthlyInterest;
+
+      // Minimum payment
+      var pay = Math.min(d.minPayment, d.balance);
+      d.balance -= pay;
+    }
+
+    // Apply extra payment to first debt in sorted order that still has balance
+    var extraLeft = extraPayment;
+    for(var j = 0; j < working.length && extraLeft > 0; j++) {
+      var dd = working[j];
+      if(dd.balance <= 0) continue;
+
+      var extraPay = Math.min(extraLeft, dd.balance);
+      dd.balance -= extraPay;
+      extraLeft -= extraPay;
+    }
+
+    // Record payoff events
+    for(var k = 0; k < working.length; k++) {
+      if(working[k].balance <= 0.01 && payoffOrder.indexOf(k) === -1) {
+        working[k].balance = 0;
+        payoffOrder.push(k);
+      }
+    }
+  }
+
+  var totalPaid = 0;
+  for(var m = 0; m < debts.length; m++) {
+    totalPaid += debts[m].balance; // original balance
+  }
+  totalPaid += totalInterest;
+
+  return {
+    months: months,
+    totalInterest: totalInterest,
+    totalPaid: totalPaid,
+    payoffOrder: payoffOrder.map(function(idx) {
+      return { name: working[idx].name, emoji: working[idx].emoji, origBalance: working[idx].origBalance, rate: working[idx].rate };
+    })
+  };
+}
+
+// ===== MAIN CALCULATE =====
+function calculate() {
+  var entries = document.querySelectorAll('.debt-entry');
+  var debts = [];
+  var valid = true;
+
+  entries.forEach(function(entry) {
+    var name = entry.querySelector('.debt-type-select').value;
+    var emoji = entry.querySelector('.debt-emoji').textContent;
+    var balance = parseNum(entry.querySelector('.debt-balance').value);
+    var rate = parseNum(entry.querySelector('.debt-rate').value);
+    var minPayment = parseNum(entry.querySelector('.debt-min').value);
+
+    if(balance <= 0) { valid = false; return; }
+    // Auto-estimate minimum payment if not provided: max(3% of balance, $25)
+    if(minPayment <= 0) {
+      minPayment = Math.max(balance * 0.03, 25);
+    }
+
+    debts.push({ name: name, emoji: emoji, balance: balance, rate: rate, minPayment: minPayment });
+  });
+
+  if(!valid || debts.length === 0) {
+    alert('Please add at least one debt with a balance greater than $0.');
+    return;
+  }
+
+  var extraPayment = parseNum(document.getElementById('extraPayment').value);
+  if(extraPayment < 0) extraPayment = 0;
+
+  var snowResult = simulatePayoff(debts, extraPayment, 'snowball');
+  var avalResult = simulatePayoff(debts, extraPayment, 'avalanche');
+
+  // Summary cards
+  document.getElementById('snowballTotal').textContent = fmtMoneyRound(snowResult.totalInterest);
+  document.getElementById('snowballSub').textContent = 'Interest over ' + fmtMonths(snowResult.months);
+  document.getElementById('avalancheTotal').textContent = fmtMoneyRound(avalResult.totalInterest);
+  document.getElementById('avalancheSub').textContent = 'Interest over ' + fmtMonths(avalResult.months);
+
+  // Comparison table
+  var savings = snowResult.totalInterest - avalResult.totalInterest;
+  var monthsDiff = snowResult.months - avalResult.months;
+  var compareBody = document.getElementById('compareBody');
+  compareBody.innerHTML =
+    '<tr><td>Time to debt free</td><td>' + fmtMonths(snowResult.months) + '</td><td' + (monthsDiff > 0 ? ' class="highlight"' : '') + '>' + fmtMonths(avalResult.months) + (monthsDiff > 0 ? ' <span class="winner avalanche-w">Faster</span>' : '') + '</td></tr>' +
+    '<tr><td>Total interest paid</td><td>' + fmtMoney(snowResult.totalInterest) + '</td><td' + (savings > 0 ? ' class="highlight"' : '') + '>' + fmtMoney(avalResult.totalInterest) + (savings > 0 ? ' <span class="winner avalanche-w">Saves ' + fmtMoneyRound(savings) + '</span>' : '') + '</td></tr>' +
+    '<tr><td>Total amount paid</td><td>' + fmtMoney(snowResult.totalPaid) + '</td><td>' + fmtMoney(avalResult.totalPaid) + '</td></tr>' +
+    '<tr><td>Debts cleared</td><td>' + snowResult.payoffOrder.length + '</td><td>' + avalResult.payoffOrder.length + '</td></tr>';
+
+  // Timeline
+  var maxM = Math.max(snowResult.months, avalResult.months, 1);
+  var tlBars = document.getElementById('timelineBars');
+  tlBars.innerHTML =
+    '<div class="tl-row"><span class="tl-label">Snowball</span><div class="tl-bar-wrap"><div class="tl-bar snowball-bar" style="width:' + (snowResult.months / maxM * 100) + '%"></div></div><span class="tl-months">' + fmtMonths(snowResult.months) + '</span></div>' +
+    '<div class="tl-row"><span class="tl-label">Avalanche</span><div class="tl-bar-wrap"><div class="tl-bar avalanche-bar" style="width:' + (avalResult.months / maxM * 100) + '%"></div></div><span class="tl-months">' + fmtMonths(avalResult.months) + '</span></div>';
+
+  // Payoff order
+  var payoffList = document.getElementById('payoffList');
+  var snowSteps = snowResult.payoffOrder.map(function(d, i) {
+    return '<div class="payoff-step snowball-step"><span class="step-num">' + (i + 1) + '</span><span class="step-name">' + d.emoji + ' ' + d.name + '</span><span class="step-detail">' + fmtMoneyRound(d.origBalance) + ' @ ' + d.rate.toFixed(1) + '%</span></div>';
+  }).join('');
+  var avalSteps = avalResult.payoffOrder.map(function(d, i) {
+    return '<div class="payoff-step avalanche-step"><span class="step-num">' + (i + 1) + '</span><span class="step-name">' + d.emoji + ' ' + d.name + '</span><span class="step-detail">' + fmtMoneyRound(d.origBalance) + ' @ ' + d.rate.toFixed(1) + '%</span></div>';
+  }).join('');
+  payoffList.innerHTML =
+    '<div class="payoff-col"><h5>❄️ Snowball</h5>' + snowSteps + '</div>' +
+    '<div class="payoff-col"><h5>🏔️ Avalanche</h5>' + avalSteps + '</div>';
+}
+
+// ===== INITIALISE: Add 3 default debt entries =====
+addDebtEntry(DEBT_PRESETS[0]); // Credit Card
+addDebtEntry(DEBT_PRESETS[1]); // Personal Loan
+addDebtEntry(DEBT_PRESETS[3]); // Car Loan
+</script>
+
+</body>
+</html>

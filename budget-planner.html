@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Budget Planner — 50/30/20 NZ Budget Calculator | ainav.nz</title>
+<meta name="description" content="Plan your New Zealand budget with 50/30/20 or 60/20/20 rule. Track expenses, set savings goals, and compare against NZ living costs.">
+<meta name="keywords" content="budget planner NZ, 50/30/20 rule, New Zealand budget calculator, NZ living costs, KiwiSaver contributions, NZ expense tracker">
+<meta property="og:title" content="Budget Planner — 50/30/20 NZ Budget Calculator | ainav.nz">
+<meta property="og:description" content="Plan your NZ budget with 50/30/20 or 60/20/20 rule. Track expenses and compare against NZ living costs.">
+<meta property="og:url" content="https://ainav.nz/budget-planner.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Budget Planner — NZ | ainav.nz">
+<meta name="twitter:description" content="NZ budget planner with 50/30/20 and 60/20/20 rules.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --green:#059669;--green-bg:rgba(52,211,153,.12);
+  --red:#DC2626;--red-bg:rgba(248,113,113,.10);
+  --blue:#2563EB;--blue-bg:rgba(37,99,235,.10);
+  --orange:#EA580C;--orange-bg:rgba(234,88,12,.10);
+  --purple:#7C3AED;--purple-bg:rgba(124,58,237,.10);
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== CALCULATOR LAYOUT (new) ===== */
+.calc-layout{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:16px 28px 24px;align-items:start}
+.calc-panel{flex:1;min-width:0;max-width:520px}
+.calc-panel-right{position:sticky;top:70px;min-width:0}
+.regs-strip{display:flex;gap:10px;padding:16px 28px 28px;flex-wrap:wrap}
+.regs-strip .reg-card{flex:1;min-width:200px}
+.calc-bottom{display:none}
+
+/* ===== INPUT AREA ===== */
+.input-wrap{margin-top:0;display:flex;align-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:9px;padding:0 14px;height:44px;transition:all .15s;box-shadow:var(--shadow-sm);cursor:text}
+.input-wrap:focus-within{border-color:var(--brand);background:#fff;box-shadow:var(--shadow-md)}
+.input-wrap .input-prefix{font-size:16px;font-weight:700;color:var(--brand);margin-right:4px;flex-shrink:0}
+.input-wrap .input-currency{font-size:11px;color:var(--sub);flex-shrink:0;margin-right:6px;font-weight:500}
+.input-wrap input{flex:1;border:none;background:transparent;outline:none;font-size:16px;font-weight:600;color:var(--text);font-family:inherit;min-width:0;text-align:right}
+.input-wrap input::placeholder{color:#CDD3DA;font-weight:400}
+.input-wrap .input-suffix{font-size:11px;color:var(--sub);flex-shrink:0;margin-left:6px;font-weight:500}
+.input-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+.input-group{margin-top:12px}
+.input-group:first-child{margin-top:0}
+.input-row{display:flex;gap:12px;margin-top:12px}
+.input-row .input-group{margin-top:0;flex:1;min-width:0}
+
+/* ===== COMPACT EXPENSE INPUT ===== */
+.expense-wrap{display:flex;align-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:6px;padding:0 8px;height:32px;transition:all .15s;box-shadow:var(--shadow-sm);cursor:text;max-width:160px}
+.expense-wrap:focus-within{border-color:var(--brand);background:#fff;box-shadow:var(--shadow-md)}
+.expense-wrap .input-prefix{font-size:13px;font-weight:700;color:var(--brand);margin-right:2px;flex-shrink:0}
+.expense-wrap .input-currency{font-size:9.5px;color:var(--sub);flex-shrink:0;margin-right:3px;font-weight:500}
+.expense-wrap input{flex:1;border:none;background:transparent;outline:none;font-size:13px;font-weight:600;color:var(--text);font-family:inherit;min-width:0;text-align:right;max-width:120px}
+.expense-wrap input::placeholder{color:#CDD3DA;font-weight:400}
+.expense-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+.expense-row .expense-label{font-size:12px;font-weight:500;color:var(--sub);width:160px;flex-shrink:0;line-height:1.3}
+.expense-row .expense-wrap{flex:1;min-width:0}
+
+/* ===== EXPENSE SECTION ===== */
+.expense-section{margin-top:14px;background:rgba(255,255,255,.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;padding:12px 14px;box-shadow:var(--shadow-sm)}
+.expense-section-header{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px}
+.expense-section-header .es-icon{font-size:15px}
+.expense-section-header .es-total{margin-left:auto;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace;color:var(--sub)}
+
+/* ===== TYPE BUTTONS ===== */
+.type-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.type-btn{height:40px;padding:0 10px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%}
+.type-btn:hover{background:#fff;border-color:var(--brand-light);color:var(--brand)}
+.type-btn.active{background:var(--brand-ghost);border-color:var(--brand);color:var(--brand)}
+
+/* ===== MODE TOGGLE ===== */
+.mode-wrap{display:flex;gap:8px;margin-top:10px}
+.mode-btn{flex:1;height:44px;padding:0 14px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:var(--shadow-sm)}
+.mode-btn:hover{background:#fff;border-color:#C0C8CE}
+.mode-btn.active{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 8px rgba(0,59,79,.25)}
+.mode-btn .mode-icon{font-size:16px}
+
+/* ===== KIWISAVER BUTTONS ===== */
+/* ===== RESULT HERO ===== */
+.result-hero{margin-top:16px;background:linear-gradient(135deg,rgba(0,59,79,.92),rgba(0,100,122,.92));border-radius:12px;padding:20px 22px;color:#fff;box-shadow:0 4px 16px rgba(0,59,79,.2)}
+.result-hero .rh-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.65);text-transform:uppercase;letter-spacing:.5px}
+.result-hero .rh-value{font-size:32px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace;margin-top:4px}
+.result-hero .rh-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
+.result-hero .rh-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
+.result-hero .rh-cell{background:rgba(255,255,255,.1);border-radius:8px;padding:10px 12px}
+.result-hero .rh-cell .rc-label{font-size:10px;font-weight:600;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.3px}
+.result-hero .rh-cell .rc-value{font-size:18px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace}
+.result-hero .rh-cell .rc-value.green{color:#5EEAD4}
+.result-hero .rh-cell .rc-value.red{color:#FCA5A5}
+
+/* ===== VISUAL BAR CHART ===== */
+.budget-bar-wrap{margin-top:16px;background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow-sm)}
+.budget-bar-wrap h4{font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px}
+.budget-bar{height:32px;border-radius:8px;overflow:hidden;display:flex}
+.budget-bar .bb-seg{display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;min-width:30px;transition:width .3s}
+.budget-bar .bb-housing{background:linear-gradient(90deg,#3B82F6,#60A5FA)}
+.budget-bar .bb-living{background:linear-gradient(90deg,#F59E0B,#FBBF24)}
+.budget-bar .bb-financial{background:linear-gradient(90deg,#8B5CF6,#A78BFA)}
+.budget-bar .bb-lifestyle{background:linear-gradient(90deg,#EC4899,#F472B6)}
+.budget-bar .bb-surplus{background:linear-gradient(90deg,#10B981,#34D399)}
+.budget-legend{display:flex;gap:12px;margin-top:8px;font-size:11px;color:var(--sub);flex-wrap:wrap}
+.budget-legend span{display:flex;align-items:center;gap:4px}
+.budget-legend .dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+.budget-legend .dot.housing{background:#3B82F6}
+.budget-legend .dot.living{background:#F59E0B}
+.budget-legend .dot.financial{background:#8B5CF6}
+.budget-legend .dot.lifestyle{background:#EC4899}
+.budget-legend .dot.surplus{background:#10B981}
+
+/* ===== BREAKDOWN TABLE ===== */
+.breakdown{margin-top:16px}
+.breakdown-card{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid #F0F2F4;font-size:12.5px;gap:6px}
+.breakdown-row:last-child{border-bottom:none}
+.breakdown-row .br-label{color:var(--sub);flex:1;min-width:0}
+.breakdown-row .br-value{font-weight:650;color:var(--text);font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace;white-space:nowrap}
+.breakdown-row.multi-col .br-label{flex:2}
+.breakdown-row.multi-col .br-value{flex:0 0 auto;min-width:70px;text-align:right}
+.breakdown-row .br-value.green{color:var(--green)}
+.breakdown-row .br-value.red{color:var(--red)}
+.breakdown-row .br-value.orange{color:var(--orange)}
+.breakdown-row.total-row{background:rgba(0,59,79,.04);border-top:2px solid var(--border)}
+.breakdown-row.total-row .br-label{font-weight:700;color:var(--text)}
+.breakdown-row.total-row .br-value{font-weight:700;font-size:13.5px}
+.breakdown-row.over-budget{background:rgba(248,113,113,.06)}
+.breakdown-row .br-extra{font-size:11px;color:var(--muted);margin-left:8px;font-weight:400;font-family:inherit}
+
+/* ===== PERIOD TOGGLE ===== */
+.period-toggle{display:flex;gap:6px;margin-top:12px;justify-content:flex-end}
+.period-btn{height:32px;padding:0 14px;border-radius:7px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s}
+.period-btn:hover{background:#fff;border-color:var(--brand-light);color:var(--brand)}
+.period-btn.active{background:var(--brand-ghost);border-color:var(--brand);color:var(--brand)}
+
+/* ===== REGULATIONS PANEL ===== */
+.reg-card{background:rgba(255,255,255,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--glass-border);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow-sm)}
+.reg-card:hover{background:rgba(255,255,255,.75);box-shadow:var(--shadow-md)}
+.reg-card h3{font-size:12px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-.2px;display:flex;align-items:center;gap:5px}
+.reg-card h3 .rc-icon{font-size:13px}
+.reg-card p,.reg-card li{font-size:11.5px;color:var(--sub);line-height:1.55}
+.reg-card ul{padding-left:12px;margin-top:2px;list-style:none}
+.reg-card ul li::before{content:"—";margin-right:4px;color:var(--muted)}
+.reg-card .thresh-table{width:100%;font-size:11px;margin-top:4px;border-collapse:collapse}
+.reg-card .thresh-table th{text-align:left;padding:3px 5px;color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.3px}
+.reg-card .thresh-table td{padding:3px 5px;color:var(--sub)}
+.reg-card .thresh-table tr:nth-child(even){background:rgba(0,59,79,.02)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .calc-layout{grid-template-columns:1fr;padding:14px 20px 20px}
+  .calc-panel{max-width:none}
+  .calc-panel-right{position:static;margin-top:16px}
+  .regs-strip{padding:14px 20px 20px}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .calc-layout{padding:10px 14px 16px;gap:12px}
+  .input-wrap{height:40px}
+  .input-wrap input{font-size:14px}
+  .type-wrap{grid-template-columns:repeat(2,1fr);gap:6px}
+  .type-btn{height:36px;font-size:11px;padding:0 6px}
+  .result-hero .rh-grid{grid-template-columns:1fr}
+  .result-hero .rh-value{font-size:26px}
+  .regs-strip{gap:6px}
+  .regs-strip .reg-card{min-width:calc(50% - 6px)}
+  .input-row{flex-direction:column;gap:0}
+  .input-row .input-group{margin-top:12px}
+  .input-row .input-group:first-child{margin-top:0}
+  .expense-row{flex-direction:column;gap:4px;align-items:stretch}
+  .expense-row .expense-label{width:auto}
+  .mode-wrap{flex-wrap:wrap}
+  .mode-btn{flex:1;min-width:calc(50% - 4px)}
+}
+@media(max-width:420px){
+  .mode-btn{height:40px;font-size:11px;padding:0 10px}
+  .result-hero .rh-value{font-size:22px}
+  .result-hero .rh-cell .rc-value{font-size:15px}
+  .input-wrap{height:40px}
+  .type-wrap{grid-template-columns:repeat(2,1fr);gap:5px}
+  .type-btn{height:32px;font-size:10.5px;padding:0 5px}
+  .rh-grid{grid-template-columns:1fr!important}
+  .expense-section{padding:10px 10px}
+  .mode-btn{min-width:calc(50% - 4px)}
+  .regs-strip .reg-card{min-width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- Decorative background blobs -->
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">85</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">21</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">18</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">9</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">Budget Planner</span>
+  </div>
+
+  <div class="calc-layout">
+
+    <!-- ===== LEFT: Inputs ===== -->
+    <div class="calc-panel">
+
+      <!-- Budget Method -->
+      <div class="input-group">
+        <span class="input-label">Budget Method</span>
+        <div class="type-wrap" id="methodWrap">
+          <button class="type-btn active" data-method="503020" onclick="setMethod(this)">📊 50/30/20</button>
+          <button class="type-btn" data-method="602020" onclick="setMethod(this)">🏠 60/20/20</button>
+          <button class="type-btn" data-method="custom" onclick="setMethod(this)">✏️ Custom</button>
+        </div>
+      </div>
+
+      <!-- Custom Percentages -->
+      <div id="customPctWrap" style="display:none;margin-top:12px">
+        <div class="input-row">
+          <div class="input-group">
+            <span class="input-label">Needs %</span>
+            <div class="input-wrap">
+              <input type="text" id="customNeeds" value="50" inputmode="decimal" autocomplete="off" aria-label="Needs Percentage">
+              <span class="input-suffix">%</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <span class="input-label">Wants %</span>
+            <div class="input-wrap">
+              <input type="text" id="customWants" value="30" inputmode="decimal" autocomplete="off" aria-label="Wants Percentage">
+              <span class="input-suffix">%</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <span class="input-label">Savings %</span>
+            <div class="input-wrap">
+              <input type="text" id="customSavings" value="20" inputmode="decimal" autocomplete="off" aria-label="Savings Percentage">
+              <span class="input-suffix">%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Net Income -->
+      <div class="input-group" style="margin-top:14px">
+        <span class="input-label">Net Income (After Tax)</span>
+        <div class="input-wrap">
+          <span class="input-currency">NZD</span>
+          <span class="input-prefix">$</span>
+          <input type="text" id="netIncome" placeholder="e.g. 4,500" inputmode="decimal" autocomplete="off" aria-label="Net Income" oninput="fmtInput(this)">
+        </div>
+      </div>
+
+      <!-- Income Frequency -->
+      <div class="input-group">
+        <span class="input-label">Income Frequency</span>
+        <div class="mode-wrap" id="freqWrap">
+          <button class="mode-btn" data-freq="weekly" onclick="setFreq(this)"><span class="mode-icon">📅</span>Weekly</button>
+          <button class="mode-btn" data-freq="fortnightly" onclick="setFreq(this)"><span class="mode-icon">📆</span>Fortnightly</button>
+          <button class="mode-btn active" data-freq="monthly" onclick="setFreq(this)"><span class="mode-icon">🗓️</span>Monthly</button>
+          <button class="mode-btn" data-freq="annual" onclick="setFreq(this)"><span class="mode-icon">📅</span>Annual</button>
+        </div>
+      </div>
+
+      <!-- ===== EXPENSE CATEGORIES ===== -->
+
+      <!-- Housing -->
+      <div class="expense-section" id="secHousing">
+        <div class="expense-section-header">
+          <span class="es-icon">🏠</span>Housing<span class="es-total" id="totalHousing">NZ$0</span>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Rent / Mortgage</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="rentMortgage" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Rates (Property Tax)</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="rates" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">House Insurance</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="houseInsurance" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Body Corp / Maintenance</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="bodyCorp" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+      </div>
+
+      <!-- Living -->
+      <div class="expense-section" id="secLiving">
+        <div class="expense-section-header">
+          <span class="es-icon">🍔</span>Living<span class="es-total" id="totalLiving">NZ$0</span>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Groceries / Food</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="groceries" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Utilities (Power, Gas, Internet)</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="utilities" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Phone / Mobile</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="phone" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Transport (Petrol, Bus, Car)</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="transport" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+      </div>
+
+      <!-- Financial -->
+      <div class="expense-section" id="secFinancial">
+        <div class="expense-section-header">
+          <span class="es-icon">💼</span>Financial<span class="es-total" id="totalFinancial">NZ$0</span>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">KiwiSaver</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" id="kiwisaverInput" data-expense="kiwisaver" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row" style="margin-top:8px">
+          <span class="expense-label">Insurance (Life, Health, Contents)</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="insurance" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Debt Repayments</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="debtRepayments" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Savings / Emergency Fund</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="savings" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+      </div>
+
+      <!-- Lifestyle -->
+      <div class="expense-section" id="secLifestyle">
+        <div class="expense-section-header">
+          <span class="es-icon">🎮</span>Lifestyle<span class="es-total" id="totalLifestyle">NZ$0</span>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Entertainment / Dining Out</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="entertainment" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Subscriptions (Netflix, Gym, etc.)</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="subscriptions" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Clothing / Personal</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="clothing" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+        <div class="expense-row">
+          <span class="expense-label">Gifts / Donations</span>
+          <div class="expense-wrap"><span class="input-currency">NZD</span><span class="input-prefix">$</span><input type="text" data-expense="gifts" placeholder="0" inputmode="decimal" autocomplete="off" oninput="fmtInput(this)"></div>
+        </div>
+      </div>
+
+    </div><!-- end .calc-panel (left) -->
+
+    <!-- ===== RIGHT: Results (sticky) ===== -->
+    <div class="calc-panel-right">
+
+      <div class="result-hero" id="resultHero">
+        <div class="rh-label" id="rhSurplusLabel">Monthly Surplus</div>
+        <div class="rh-value" id="rhSurplus">NZ$0.00</div>
+        <div class="rh-sub" id="rhSub">Based on your budget details</div>
+        <div class="rh-grid">
+          <div class="rh-cell">
+            <div class="rc-label">Total Income</div>
+            <div class="rc-value green" id="rhIncome">NZ$0</div>
+          </div>
+          <div class="rh-cell">
+            <div class="rc-label">Total Expenses</div>
+            <div class="rc-value" id="rhExpenses">NZ$0</div>
+          </div>
+          <div class="rh-cell">
+            <div class="rc-label">Savings Rate</div>
+            <div class="rc-value" id="rhSavingsRate">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Visual Budget Bar -->
+      <div class="budget-bar-wrap" id="budgetBarWrap">
+        <h4>📊 Where Your Money Goes</h4>
+        <div class="budget-bar">
+          <div class="bb-seg bb-housing" id="bbHousing" style="width:0%"></div>
+          <div class="bb-seg bb-living" id="bbLiving" style="width:0%"></div>
+          <div class="bb-seg bb-financial" id="bbFinancial" style="width:0%"></div>
+          <div class="bb-seg bb-lifestyle" id="bbLifestyle" style="width:0%"></div>
+          <div class="bb-seg bb-surplus" id="bbSurplus" style="width:0%"></div>
+        </div>
+        <div class="budget-legend">
+          <span><span class="dot housing"></span>Housing <strong id="legHousing">NZ$0</strong></span>
+          <span><span class="dot living"></span>Living <strong id="legLiving">NZ$0</strong></span>
+          <span><span class="dot financial"></span>Financial <strong id="legFinancial">NZ$0</strong></span>
+          <span><span class="dot lifestyle"></span>Lifestyle <strong id="legLifestyle">NZ$0</strong></span>
+          <span><span class="dot surplus"></span>Surplus <strong id="legSurplus">NZ$0</strong></span>
+        </div>
+      </div>
+
+      <!-- Period Toggle -->
+      <div class="period-toggle" id="periodToggle">
+        <button class="period-btn active" data-period="monthly" onclick="setPeriod(this)">Monthly</button>
+        <button class="period-btn" data-period="annual" onclick="setPeriod(this)">Annual</button>
+      </div>
+
+      <!-- Breakdown Table -->
+      <div class="breakdown" id="breakdownSection">
+        <div class="breakdown-card" id="breakdownCard"></div>
+      </div>
+
+    </div><!-- end .calc-panel-right -->
+
+  </div><!-- end .calc-layout -->
+
+  <!-- ===== BOTTOM: Info Strip (originally right panel) ===== -->
+  <div class="regs-strip">
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🇳🇿</span>NZ Housing Costs</h3>
+        <p>Typical weekly rent by NZ city:</p>
+        <table class="thresh-table">
+          <tr><th>City</th><th>Weekly Rent</th></tr>
+          <tr><td>Auckland</td><td>NZ$550–700</td></tr>
+          <tr><td>Wellington</td><td>NZ$450–600</td></tr>
+          <tr><td>Christchurch</td><td>NZ$400–550</td></tr>
+          <tr><td>Hamilton</td><td>NZ$420–530</td></tr>
+          <tr><td>Dunedin</td><td>NZ$350–480</td></tr>
+        </table>
+        <p style="margin-top:6px">NZ mortgage payments on a NZ$600k loan at 6.5%: ~NZ$760/week.</p>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">📊</span>Budget Rules Explained</h3>
+        <p><strong>50/30/20 Rule:</strong> A classic budgeting method — 50% Needs, 30% Wants, 20% Savings.</p>
+        <p style="margin-top:4px"><strong>60/20/20 Rule:</strong> NZ adaptation for high housing costs. NZ has some of the highest housing costs relative to income globally, so 60% is allocated to needs (including housing).</p>
+        <ul>
+          <li>Needs: rent, food, utilities, transport</li>
+          <li>Wants: entertainment, dining, subscriptions</li>
+          <li>Savings: emergency fund, investments, KiwiSaver</li>
+        </ul>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🎰</span>KiwiSaver</h3>
+        <table class="thresh-table">
+          <tr><th>Contribution</th><th>Rate</th></tr>
+          <tr><td>Employee (you choose)</td><td>3%, 4%, 6% or 8%</td></tr>
+          <tr><td>Employer (compulsory)</td><td>3%</td></tr>
+          <tr><td>Govt tax credit</td><td>Up to NZ$521/yr</td></tr>
+        </table>
+        <p style="margin-top:4px">Default rate is 3%. Even at 3%+3%+government credit, your retirement savings grow significantly over time.</p>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">💰</span>NZ Living Costs</h3>
+        <p>Typical NZ household expenses (Stats NZ data):</p>
+        <ul>
+          <li>Housing: 25–35% of income</li>
+          <li>Food: 15–18% of income</li>
+          <li>Transport: 10–15% of income</li>
+          <li>Utilities: 5–8% of income</li>
+          <li>Insurance: 3–5% of income</li>
+          <li>Entertainment: 5–10% of income</li>
+        </ul>
+        <p style="margin-top:4px">Source: Stats NZ Household Economic Survey.</p>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">ℹ️</span>Budget Help</h3>
+        <p>Free NZ budgeting resources:</p>
+        <ul>
+          <li><strong>Sorted.org.nz</strong> — free budgeting tool &amp; guides</li>
+          <li><strong>MoneyTalks</strong> — 0800 002 007 (free helpline)</li>
+          <li><strong>CAB</strong> — Citizens Advice Bureau</li>
+          <li><strong>FinCap</strong> — find a free budget adviser</li>
+          <li><strong>Work &amp; Income</strong> — entitlements &amp; support</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<script>
+// ===== SIDEBAR NAVIGATION =====
+(function(){
+  var fromCat = new URLSearchParams(window.location.search).get("from") || "finance";
+  document.getElementById("backLink").href = "index.html#" + fromCat;
+  var activeBtn = document.querySelector('.side-nav [data-cat="' + fromCat + '"]');
+  if(activeBtn) activeBtn.classList.add('active');
+  document.querySelectorAll('.side-nav .side-item').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var cat = this.dataset.cat;
+      if(cat) window.location.href = cat ? "index.html#" + cat : "index.html";
+    });
+  });
+})();
+
+// ===== STATE =====
+var currentMethod = '503020';
+var currentFreq = 'monthly';
+var currentPeriod = 'monthly';
+
+// ===== HELPERS =====
+function parseNum(str) {
+  if(!str) return 0;
+  return parseFloat(str.replace(/[^0-9.\-]/g, '')) || 0;
+}
+
+function fmtMoney(n) {
+  return 'NZ$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function fmtMoneyRound(n) {
+  return 'NZ$' + Math.round(n).toLocaleString('en-NZ');
+}
+
+function fmtPct(n) {
+  return n.toFixed(1) + '%';
+}
+
+function fmtInput(el) {
+  var v = el.value.replace(/[^0-9.]/g, '');
+  var parts = v.split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  el.value = parts.join('.');
+}
+
+// ===== GET METHOD PERCENTAGES =====
+function getMethodPcts() {
+  if(currentMethod === '503020') return {needs:50, wants:30, savings:20};
+  if(currentMethod === '602020') return {needs:60, wants:20, savings:20};
+  var n = parseNum(document.getElementById('customNeeds').value) || 50;
+  var w = parseNum(document.getElementById('customWants').value) || 30;
+  var s = parseNum(document.getElementById('customSavings').value) || 20;
+  return {needs:n, wants:w, savings:s};
+}
+
+// ===== CONVERT TO MONTHLY =====
+function toMonthly(amount, freq) {
+  if(freq === 'weekly') return amount * 52 / 12;
+  if(freq === 'fortnightly') return amount * 26 / 12;
+  if(freq === 'annual') return amount / 12;
+  return amount; // monthly
+}
+
+// ===== CONVERT MONTHLY TO DISPLAY PERIOD =====
+function toDisplay(monthly) {
+  if(currentPeriod === 'annual') return monthly * 12;
+  return monthly;
+}
+
+// ===== SET BUDGET METHOD =====
+function setMethod(btn) {
+  document.querySelectorAll('#methodWrap .type-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  currentMethod = btn.dataset.method;
+  var customWrap = document.getElementById('customPctWrap');
+  if(currentMethod === 'custom') {
+    customWrap.style.display = 'block';
+  } else {
+    customWrap.style.display = 'none';
+  }
+  calculate();
+}
+
+// ===== SET FREQUENCY =====
+function setFreq(btn) {
+  document.querySelectorAll('#freqWrap .mode-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  currentFreq = btn.dataset.freq;
+  calculate();
+}
+
+// ===== SET PERIOD =====
+function setPeriod(btn) {
+  document.querySelectorAll('.period-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  currentPeriod = btn.dataset.period;
+  calculate();
+}
+
+// ===== GET ALL EXPENSES (monthly) =====
+function getExpenses() {
+  var expenses = {};
+  var total = 0;
+  document.querySelectorAll('[data-expense]').forEach(function(el) {
+    var val = parseNum(el.value);
+    // All expense inputs are in the same frequency as income
+    var monthlyVal = toMonthly(val, currentFreq);
+    expenses[el.dataset.expense] = monthlyVal;
+    total += monthlyVal;
+  });
+  return {items: expenses, total: total};
+}
+
+// ===== CALCULATE =====
+function calculate() {
+  var incomeRaw = parseNum(document.getElementById('netIncome').value);
+  var monthlyIncome = toMonthly(incomeRaw, currentFreq);
+
+  if(monthlyIncome <= 0) {
+    document.getElementById('rhSurplusLabel').textContent = 'monthly surplus';
+    document.getElementById('rhSurplus').textContent = fmtMoney(0);
+    document.getElementById('rhSurplus').style.color = '#5EEAD4';
+    document.getElementById('rhSub').textContent = 'Enter your income above to get started';
+    document.getElementById('rhIncome').textContent = fmtMoneyRound(0);
+    document.getElementById('rhExpenses').textContent = fmtMoneyRound(0);
+    document.getElementById('rhSavingsRate').textContent = fmtPct(0);
+    document.getElementById('rhSavingsRate').style.color = '#5EEAD4';
+    document.getElementById('bbHousing').style.width = '0%';
+    document.getElementById('bbHousing').textContent = '';
+    document.getElementById('bbLiving').style.width = '0%';
+    document.getElementById('bbLiving').textContent = '';
+    document.getElementById('bbFinancial').style.width = '0%';
+    document.getElementById('bbFinancial').textContent = '';
+    document.getElementById('bbLifestyle').style.width = '0%';
+    document.getElementById('bbLifestyle').textContent = '';
+    document.getElementById('bbSurplus').style.width = '0%';
+    document.getElementById('bbSurplus').textContent = '';
+    document.getElementById('legHousing').textContent = fmtMoneyRound(0);
+    document.getElementById('legLiving').textContent = fmtMoneyRound(0);
+    document.getElementById('legFinancial').textContent = fmtMoneyRound(0);
+    document.getElementById('legLifestyle').textContent = fmtMoneyRound(0);
+    document.getElementById('legSurplus').textContent = fmtMoneyRound(0);
+    document.getElementById('breakdownCard').innerHTML = '';
+    updateSectionTotals(0,0,0,0);
+    return;
+  }
+
+  var exp = getExpenses();
+  var monthlyExpenses = exp.total;
+  var surplus = monthlyIncome - monthlyExpenses;
+  var savingsRate = surplus / monthlyIncome * 100;
+
+  // Section totals
+  var housingTotal = (exp.items.rentMortgage||0) + (exp.items.rates||0) + (exp.items.houseInsurance||0) + (exp.items.bodyCorp||0);
+  var livingTotal = (exp.items.groceries||0) + (exp.items.utilities||0) + (exp.items.phone||0) + (exp.items.transport||0);
+  var financialTotal = (exp.items.kiwisaver||0) + (exp.items.insurance||0) + (exp.items.debtRepayments||0) + (exp.items.savings||0);
+  var lifestyleTotal = (exp.items.entertainment||0) + (exp.items.subscriptions||0) + (exp.items.clothing||0) + (exp.items.gifts||0);
+
+  updateSectionTotals(housingTotal, livingTotal, financialTotal, lifestyleTotal);
+
+  // Method percentages
+  var pcts = getMethodPcts();
+
+  // Display period
+  var dIncome = toDisplay(monthlyIncome);
+  var dExpenses = toDisplay(monthlyExpenses);
+  var dSurplus = toDisplay(surplus);
+  var dHousing = toDisplay(housingTotal);
+  var dLiving = toDisplay(livingTotal);
+  var dFinancial = toDisplay(financialTotal);
+  var dLifestyle = toDisplay(lifestyleTotal);
+
+  var periodLabel = currentPeriod === 'annual' ? 'Annual' : 'Monthly';
+
+  // Result Hero
+  document.getElementById('rhSurplusLabel').textContent = periodLabel.toLowerCase() + ' surplus';
+  var surplusEl = document.getElementById('rhSurplus');
+  surplusEl.textContent = fmtMoney(dSurplus);
+  surplusEl.style.color = surplus >= 0 ? '#5EEAD4' : '#FCA5A5';
+  document.getElementById('rhSub').textContent = surplus >= 0 ? 'You have money left over — great!' : 'You are spending more than you earn';
+  document.getElementById('rhIncome').textContent = fmtMoneyRound(dIncome);
+  document.getElementById('rhExpenses').textContent = fmtMoneyRound(dExpenses);
+  var srEl = document.getElementById('rhSavingsRate');
+  srEl.textContent = fmtPct(savingsRate);
+  srEl.style.color = savingsRate >= 0 ? '#5EEAD4' : '#FCA5A5';
+
+  // Budget bar
+  var barTotal = monthlyIncome; // bar is % of income
+  var housingPct = housingTotal / barTotal * 100;
+  var livingPct = livingTotal / barTotal * 100;
+  var financialPct = financialTotal / barTotal * 100;
+  var lifestylePct = lifestyleTotal / barTotal * 100;
+  var surplusPct = Math.max(0, surplus) / barTotal * 100;
+
+  // If deficit, distribute the overflow proportionally
+  if(surplus < 0) {
+    surplusPct = 0;
+    var expPct = housingPct + livingPct + financialPct + lifestylePct;
+    if(expPct > 0) {
+      housingPct = housingPct / expPct * 100;
+      livingPct = livingPct / expPct * 100;
+      financialPct = financialPct / expPct * 100;
+      lifestylePct = lifestylePct / expPct * 100;
+    }
+  }
+
+  document.getElementById('bbHousing').style.width = housingPct.toFixed(1) + '%';
+  document.getElementById('bbHousing').textContent = housingPct >= 8 ? fmtPct(housingPct) : '';
+  document.getElementById('bbLiving').style.width = livingPct.toFixed(1) + '%';
+  document.getElementById('bbLiving').textContent = livingPct >= 8 ? fmtPct(livingPct) : '';
+  document.getElementById('bbFinancial').style.width = financialPct.toFixed(1) + '%';
+  document.getElementById('bbFinancial').textContent = financialPct >= 8 ? fmtPct(financialPct) : '';
+  document.getElementById('bbLifestyle').style.width = lifestylePct.toFixed(1) + '%';
+  document.getElementById('bbLifestyle').textContent = lifestylePct >= 8 ? fmtPct(lifestylePct) : '';
+  document.getElementById('bbSurplus').style.width = surplusPct.toFixed(1) + '%';
+  document.getElementById('bbSurplus').textContent = surplusPct >= 8 ? fmtPct(surplusPct) : '';
+
+  document.getElementById('legHousing').textContent = fmtMoneyRound(dHousing);
+  document.getElementById('legLiving').textContent = fmtMoneyRound(dLiving);
+  document.getElementById('legFinancial').textContent = fmtMoneyRound(dFinancial);
+  document.getElementById('legLifestyle').textContent = fmtMoneyRound(dLifestyle);
+  document.getElementById('legSurplus').textContent = fmtMoneyRound(dSurplus);
+
+  // Period toggle
+  // Breakdown table
+  var bdCard = document.getElementById('breakdownCard');
+
+  // Category analysis with method comparison
+  var needsCategories = ['rentMortgage','rates','houseInsurance','bodyCorp','groceries','utilities','phone','transport','insurance','debtRepayments'];
+  var wantsCategories = ['entertainment','subscriptions','clothing','gifts'];
+  var savingsCategories = ['kiwisaver','savings'];
+
+  var needsTotal = 0;
+  needsCategories.forEach(function(k){ needsTotal += (exp.items[k]||0); });
+  var wantsTotal = 0;
+  wantsCategories.forEach(function(k){ wantsTotal += (exp.items[k]||0); });
+  var savingsCatTotal = 0;
+  savingsCategories.forEach(function(k){ savingsCatTotal += (exp.items[k]||0); });
+
+  var needsPctIncome = needsTotal / monthlyIncome * 100;
+  var wantsPctIncome = wantsTotal / monthlyIncome * 100;
+  var savingsCatPctIncome = savingsCatTotal / monthlyIncome * 100;
+
+  var recNeeds = pcts.needs;
+  var recWants = pcts.wants;
+  var recSavings = pcts.savings;
+
+  var rows = '';
+
+  // Header row for method
+  rows += '<div class="breakdown-row multi-col" style="background:rgba(0,59,79,.06);font-weight:700;font-size:11.5px"><span class="br-label" style="color:var(--text)">Category</span><span class="br-value" style="font-size:11px">' + periodLabel + ' Amount</span><span class="br-value" style="font-size:11px">% of Income</span><span class="br-value" style="font-size:11px">Recommended</span></div>';
+
+  // Needs
+  var needsClass = needsPctIncome > recNeeds ? ' red' : (needsPctIncome <= recNeeds ? ' green' : '');
+  var needsOver = needsPctIncome > recNeeds ? ' <span class="br-extra" style="color:var(--red)">over</span>' : '';
+  rows += '<div class="breakdown-row multi-col' + (needsPctIncome > recNeeds ? ' over-budget' : '') + '"><span class="br-label">🏠 Needs (Housing + Living + Financial)</span><span class="br-value' + needsClass + '">' + fmtMoneyRound(toDisplay(needsTotal)) + needsOver + '</span><span class="br-value' + needsClass + '">' + fmtPct(needsPctIncome) + '</span><span class="br-value">' + fmtPct(recNeeds) + '</span></div>';
+
+  // Wants
+  var wantsClass = wantsPctIncome > recWants ? ' red' : ' green';
+  var wantsOver = wantsPctIncome > recWants ? ' <span class="br-extra" style="color:var(--red)">over</span>' : '';
+  rows += '<div class="breakdown-row multi-col' + (wantsPctIncome > recWants ? ' over-budget' : '') + '"><span class="br-label">🎮 Wants (Lifestyle)</span><span class="br-value' + wantsClass + '">' + fmtMoneyRound(toDisplay(wantsTotal)) + wantsOver + '</span><span class="br-value' + wantsClass + '">' + fmtPct(wantsPctIncome) + '</span><span class="br-value">' + fmtPct(recWants) + '</span></div>';
+
+  // Savings
+  var savClass = savingsCatPctIncome < recSavings ? ' red' : ' green';
+  var savOver = savingsCatPctIncome < recSavings ? ' <span class="br-extra" style="color:var(--red)">under</span>' : '';
+  rows += '<div class="breakdown-row multi-col' + (savingsCatPctIncome < recSavings ? ' over-budget' : '') + '"><span class="br-label">💰 Savings (KiwiSaver + Savings)</span><span class="br-value' + savClass + '">' + fmtMoneyRound(toDisplay(savingsCatTotal)) + savOver + '</span><span class="br-value' + savClass + '">' + fmtPct(savingsCatPctIncome) + '</span><span class="br-value">' + fmtPct(recSavings) + '</span></div>';
+
+  // Separator
+  rows += '<div class="breakdown-row" style="background:rgba(0,59,79,.03);font-size:11px"><span class="br-label" style="font-weight:600;color:var(--muted)">Detailed Breakdown</span></div>';
+
+  // Individual expenses
+  var allItems = [
+    {label:'🏠 Rent / Mortgage', key:'rentMortgage', group:'needs'},
+    {label:'🏠 Rates', key:'rates', group:'needs'},
+    {label:'🏠 House Insurance', key:'houseInsurance', group:'needs'},
+    {label:'🏠 Body Corp / Maintenance', key:'bodyCorp', group:'needs'},
+    {label:'🍔 Groceries / Food', key:'groceries', group:'needs'},
+    {label:'🍔 Utilities', key:'utilities', group:'needs'},
+    {label:'🍔 Phone / Mobile', key:'phone', group:'needs'},
+    {label:'🍔 Transport', key:'transport', group:'needs'},
+    {label:'💼 KiwiSaver', key:'kiwisaver', group:'savings'},
+    {label:'💼 Insurance', key:'insurance', group:'needs'},
+    {label:'💼 Debt Repayments', key:'debtRepayments', group:'needs'},
+    {label:'💼 Savings / Emergency', key:'savings', group:'savings'},
+    {label:'🎮 Entertainment / Dining', key:'entertainment', group:'wants'},
+    {label:'🎮 Subscriptions', key:'subscriptions', group:'wants'},
+    {label:'🎮 Clothing / Personal', key:'clothing', group:'wants'},
+    {label:'🎮 Gifts / Donations', key:'gifts', group:'wants'}
+  ];
+
+  allItems.forEach(function(item) {
+    var val = exp.items[item.key] || 0;
+    if(val === 0) return; // skip zero entries
+    var pctIncome = val / monthlyIncome * 100;
+    rows += '<div class="breakdown-row multi-col"><span class="br-label">' + item.label + '</span><span class="br-value">' + fmtMoneyRound(toDisplay(val)) + '</span><span class="br-value">' + fmtPct(pctIncome) + '</span><span class="br-value"></span></div>';
+  });
+
+  // Total row
+  rows += '<div class="breakdown-row multi-col total-row"><span class="br-label">Total Expenses</span><span class="br-value">' + fmtMoneyRound(toDisplay(monthlyExpenses)) + '</span><span class="br-value">' + fmtPct(monthlyExpenses / monthlyIncome * 100) + '</span><span class="br-value"></span></div>';
+  rows += '<div class="breakdown-row multi-col total-row"><span class="br-label">' + (surplus >= 0 ? 'Surplus' : 'Deficit') + '</span><span class="br-value' + (surplus >= 0 ? ' green' : ' red') + '">' + fmtMoneyRound(toDisplay(Math.abs(surplus))) + '</span><span class="br-value' + (surplus >= 0 ? ' green' : ' red') + '">' + fmtPct(Math.abs(savingsRate)) + '</span><span class="br-value"></span></div>';
+
+  bdCard.innerHTML = rows;
+}
+
+// ===== UPDATE SECTION TOTALS =====
+function updateSectionTotals(housing, living, financial, lifestyle) {
+  var periodMult = currentPeriod === 'annual' ? 12 : 1;
+  document.getElementById('totalHousing').textContent = fmtMoneyRound(housing * periodMult);
+  document.getElementById('totalLiving').textContent = fmtMoneyRound(living * periodMult);
+  document.getElementById('totalFinancial').textContent = fmtMoneyRound(financial * periodMult);
+  document.getElementById('totalLifestyle').textContent = fmtMoneyRound(lifestyle * periodMult);
+}
+
+// ===== LIVE CALCULATION ON INPUT =====
+document.getElementById('netIncome').addEventListener('input', function() { calculate(); });
+document.querySelectorAll('[data-expense]').forEach(function(el) {
+  el.addEventListener('input', function() { calculate(); });
+});
+document.getElementById('customNeeds').addEventListener('input', function() { calculate(); });
+document.getElementById('customWants').addEventListener('input', function() { calculate(); });
+document.getElementById('customSavings').addEventListener('input', function() { calculate(); });
+
+// ===== INIT =====
+calculate();
+</script>
+
+</body>
+</html>

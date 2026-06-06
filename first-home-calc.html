@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>First Home Calculator — Kāinga Ora Deposit & Grant Eligibility | ainav.nz</title>
+<meta name="description" content="Check your eligibility for the Kāinga Ora First Home scheme. Calculate 5% deposit requirements, First Home Grant amounts, and First Home Loan caps.">
+<meta name="keywords" content="first home calculator NZ, Kāinga Ora, First Home Grant, First Home Loan, 5% deposit, first home buyer NZ, house deposit">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ainav.nz/first-home-calc.html">
+<meta property="og:title" content="First Home Calculator — Kāinga Ora | ainav.nz">
+<meta property="og:description" content="Check your eligibility for the Kāinga Ora First Home scheme. Calculate 5% deposit requirements and grant amounts.">
+<meta property="og:url" content="https://ainav.nz/first-home-calc.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="First Home Calculator — NZ | ainav.nz">
+<meta name="twitter:description" content="Check NZ first home eligibility. Grant amounts, 5% deposit, income caps.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== CALCULATOR LAYOUT ===== */
+.calc-layout{display:flex;gap:16px;padding:16px 28px 24px;flex:1}
+.calc-panel{flex:1;min-width:0;max-width:480px}
+.regs-panel{width:260px;min-width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+
+/* ===== INPUT WRAP ===== */
+.input-wrap{margin-top:0;display:flex;align-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:9px;padding:0 14px;height:44px;transition:all .15s;box-shadow:var(--shadow-sm);cursor:text}
+.input-wrap:focus-within{border-color:var(--brand);background:#fff;box-shadow:var(--shadow-md)}
+.input-wrap .input-prefix{font-size:16px;font-weight:700;color:var(--brand);margin-right:4px;flex-shrink:0}
+.input-wrap .input-currency{font-size:11px;color:var(--sub);flex-shrink:0;margin-right:6px;font-weight:500}
+.input-wrap input{flex:1;border:none;background:transparent;outline:none;font-size:16px;font-weight:600;color:var(--text);font-family:inherit;min-width:0;text-align:right}
+.input-wrap input::placeholder{color:#CDD3DA;font-weight:400}
+.input-wrap .input-suffix{font-size:11px;color:var(--sub);flex-shrink:0;margin-left:6px;font-weight:500}
+
+/* ===== INPUT LABEL ===== */
+.input-label{display:block;font-size:12px;font-weight:600;color:var(--sub);margin-top:10px;margin-bottom:4px}
+
+/* ===== RADIO GROUP ===== */
+.radio-group{display:flex;gap:8px;margin-top:10px}
+.radio-btn{height:44px;padding:0 14px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;flex:1}
+.radio-btn:hover{background:#fff;border-color:var(--brand-light)}
+.radio-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* ===== PRESETS ===== */
+.presets{margin-top:12px;display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.presets-label{grid-column:1/-1;font-size:11px;font-weight:600;color:var(--sub)}
+.preset-btn{height:44px;padding:0 14px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;width:100%}
+.preset-btn:hover{background:#fff;border-color:var(--brand-light);color:var(--brand)}
+.preset-btn.active{background:var(--brand-ghost);border-color:var(--brand);color:var(--brand)}
+
+/* ===== INPUT ROW (2-col) ===== */
+.input-row{display:flex;gap:10px;margin-top:0}
+.input-row .input-group{flex:1;min-width:0}
+
+/* ===== BREAKDOWN CARD ===== */
+.breakdown{margin-top:14px}
+.breakdown-card{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.bd-hero{padding:16px 18px;background:linear-gradient(135deg,rgba(0,59,79,.92),rgba(0,100,122,.92));color:#fff;display:flex;justify-content:space-between;align-items:center}
+.bd-hero.hero-yes{background:linear-gradient(135deg,rgba(5,150,105,.88),rgba(4,120,97,.85))}
+.bd-hero.hero-no{background:linear-gradient(135deg,rgba(220,38,38,.88),rgba(185,28,28,.85))}
+.bd-hero.hero-partial{background:linear-gradient(135deg,rgba(217,119,6,.88),rgba(180,83,5,.85))}
+.bd-hero .hero-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);letter-spacing:.3px}
+.bd-hero .hero-value{font-size:28px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace;color:#5EEAD4}
+.bd-hero.hero-yes .hero-value{color:#5EEAD4}
+.bd-hero.hero-no .hero-value{color:#FCA5A5}
+.bd-hero.hero-partial .hero-value{color:#FDE68A}
+.bd-hero .hero-sub{font-size:10.5px;color:rgba(255,255,255,.55);margin-top:2px}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid #F0F2F4;font-size:12.5px}
+.breakdown-row:last-child{border-bottom:none}
+.breakdown-row .br-label{color:var(--sub)}
+.breakdown-row .br-value{font-weight:650;color:var(--text);font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace}
+.breakdown-row .br-value.green{color:#059669}
+.breakdown-row .br-value.red{color:#DC2626}
+.breakdown-row .br-value.amber{color:#D97706}
+.breakdown-row.net-row{background:rgba(0,59,79,.03)}
+
+/* ===== REGULATIONS PANEL ===== */
+.reg-card{background:rgba(255,255,255,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--glass-border);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow-sm)}
+.reg-card:hover{background:rgba(255,255,255,.75);box-shadow:var(--shadow-md)}
+.reg-card h3{font-size:12px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-.2px;display:flex;align-items:center;gap:5px}
+.reg-card h3 .rc-icon{font-size:13px}
+.reg-card p,.reg-card li{font-size:11.5px;color:var(--sub);line-height:1.55}
+.reg-card ul{padding-left:12px;margin-top:2px;list-style:none}
+.reg-card ul li::before{content:"—";margin-right:4px;color:var(--muted)}
+.reg-card .price-table{width:100%;font-size:11px;margin-top:4px;border-collapse:collapse}
+.reg-card .price-table th{text-align:left;padding:3px 5px;color:var(--muted);font-weight:600;font-size:10px;letter-spacing:.3px}
+.reg-card .price-table td{padding:3px 5px;color:var(--sub)}
+.reg-card .price-table tr:nth-child(even){background:rgba(0,59,79,.02)}
+.reg-card .acc-link{display:inline-flex;align-items:center;gap:4px;margin-top:3px;font-size:11.5px;font-weight:600;color:var(--brand);text-decoration:none;transition:color .15s}
+.reg-card .acc-link:hover{color:var(--brand-light);text-decoration:underline}
+.reg-card .acc-link svg{width:11px;height:11px}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .calc-layout{padding:14px 20px 20px}
+  .calc-panel{max-width:none}
+  .regs-panel{width:100%;min-width:0}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .calc-layout{padding:10px 14px 16px;gap:12px}
+  .input-wrap{height:40px}
+  .input-wrap input{font-size:14px}
+  .radio-group{flex-wrap:wrap}
+  .presets{grid-template-columns:1fr}
+  .regs-panel{gap:6px}
+  .bd-hero{padding:14px 16px}
+  .bd-hero .hero-value{font-size:24px}
+}
+@media(max-width:420px){
+  .preset-btn{height:40px;font-size:11px;padding:0 10px}
+  .presets{gap:4px}
+  .radio-btn{height:40px;font-size:11px}
+  .input-wrap{height:40px}
+  .input-row{flex-direction:column;gap:0}
+  .input-row .input-group{margin-top:8px}
+  .input-row .input-group:first-child{margin-top:0}
+}
+</style>
+</head>
+<body>
+
+<!-- Decorative background blobs -->
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">18</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">14</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">21</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">11</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">First Home Calculator</span>
+  </div>
+
+  <div class="calc-layout">
+
+    <!-- ===== LEFT: Calculator ===== -->
+    <div class="calc-panel">
+
+      <!-- Region -->
+      <div class="input-label">Region</div>
+      <div class="radio-group">
+        <button class="radio-btn active" id="regAuckland" onclick="setRegion('auckland')">Auckland</button>
+        <button class="radio-btn" id="regWellington" onclick="setRegion('wellington')">Wellington</button>
+        <button class="radio-btn" id="regChristchurch" onclick="setRegion('christchurch')">Christchurch</button>
+        <button class="radio-btn" id="regRest" onclick="setRegion('rest')">Rest of NZ</button>
+      </div>
+
+      <!-- Applicant Type -->
+      <div class="input-label">Applicant Type</div>
+      <div class="radio-group">
+        <button class="radio-btn active" id="typeSingle" onclick="setType('single')">Single</button>
+        <button class="radio-btn" id="typeCouple" onclick="setType('couple')">Couple / 2+</button>
+      </div>
+
+      <!-- Annual Income -->
+      <div class="input-label">Annual Income</div>
+      <div class="input-wrap">
+        <span class="input-currency">NZD</span><span class="input-prefix">$</span>
+            <input type="text" id="income" placeholder="Before tax" inputmode="decimal" autocomplete="off" aria-label="Annual Income">
+        <span class="input-suffix">/yrs</span>
+      </div>
+
+      <!-- KiwiSaver Years & Target House Price — same row -->
+      <div class="input-row">
+        <div class="input-group">
+          <div class="input-label">KiwiSaver</div>
+          <div class="input-wrap">
+            <input type="text" id="ksYears" placeholder="3+" inputmode="decimal" autocomplete="off" aria-label="KiwiSaver Years">
+            <span class="input-suffix">yrs</span>
+          </div>
+        </div>
+        <div class="input-group">
+          <div class="input-label">House Price</div>
+          <div class="input-wrap">
+            <span class="input-currency">NZD</span><span class="input-prefix">$</span>
+            <input type="text" id="housePrice" placeholder="Target" inputmode="decimal" autocomplete="off" aria-label="Target House Price">
+          </div>
+        </div>
+      </div>
+
+      <!-- Property Type -->
+      <div class="input-label">Property Type</div>
+      <div class="radio-group">
+        <button class="radio-btn active" id="ptExisting" onclick="setPropType('existing')">Existing</button>
+        <button class="radio-btn" id="ptNew" onclick="setPropType('newbuild')">New Build</button>
+      </div>
+
+      <!-- Quick Presets -->
+      <div class="presets">
+        <span class="presets-label">Quick</span>
+        <button class="preset-btn" onclick="pressPreset('auckland','single',85000,3,820000)">AKL Single $820K</button>
+        <button class="preset-btn" onclick="pressPreset('auckland','couple',140000,4,920000)">AKL Couple $920K</button>
+        <button class="preset-btn" onclick="pressPreset('wellington','single',80000,5,680000)">WLG Single $680K</button>
+        <button class="preset-btn" onclick="pressPreset('christchurch','couple',120000,3,560000)">CHCH Couple $560K</button>
+      </div>
+
+      <!-- Breakdown (always visible) -->
+      <div class="breakdown">
+        <div class="breakdown-card" id="breakdownCard"></div>
+      </div>
+
+    </div>
+
+    <!-- ===== RIGHT: Regulations ===== -->
+    <div class="regs-panel">
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">📘</span>Kāinga Ora First Home Scheme</h3>
+        <p>The First Home Grant gives eligible buyers <strong>$5,000–$20,000</strong> towards a first home. The First Home Loan lets you buy with just <strong>5% deposit</strong>.</p>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">📐</span>Income &amp; Price Caps</h3>
+        <p><strong>Income caps:</strong></p>
+        <ul>
+          <li>Single: <strong>$95,000</strong></li>
+          <li>Couple / 2+: <strong>$150,000</strong></li>
+        </ul>
+        <p style="margin-top:4px"><strong>House price caps:</strong></p>
+        <table class="price-table">
+          <tr><th>Region</th><th>Existing</th><th>New</th></tr>
+          <tr><td>Auckland</td><td>$875k</td><td>$975k</td></tr>
+          <tr><td>Wellington</td><td>$700k</td><td>$800k</td></tr>
+          <tr><td>Christchurch</td><td>$575k</td><td>$675k</td></tr>
+          <tr><td>Rest of NZ</td><td>$525k</td><td>$625k</td></tr>
+        </table>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🏠</span>Grant Amounts</h3>
+        <p><strong>Existing:</strong> 3yr=$5k, 4yr=$7.5k, 5+yr=$10k per person</p>
+        <p><strong>New build:</strong> 3yr=$10k, 4yr=$15k, 5+yr=$20k per person</p>
+        <p style="font-size:10.5px;color:var(--muted);margin-top:4px">Must meet income cap and price cap.</p>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🔗</span>Official Reference</h3>
+        <p>Full eligibility rules at Kāinga Ora website.</p>
+        <a class="acc-link" href="https://kaingaora.govt.nz/home-ownership/first-home-grant" target="_blank" rel="noopener noreferrer">
+          kaingaora.govt.nz
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">⚠️</span>Important Notes</h3>
+        <ul>
+          <li>Must have contributed to KS 3+ yrs</li>
+          <li>Property must be in NZ and you must live in it</li>
+          <li>First Home Loan rate set by your bank</li>
+          <li>Income is gross (before tax)</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var applicantType = "single";
+  var propType = "existing";
+  var region = "auckland";
+
+  function fmt(n) {
+    return "$" + n.toLocaleString("en-NZ", {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+  function fmtW(n) {
+    return "$" + n.toLocaleString("en-NZ", {maximumFractionDigits:0});
+  }
+  function fmtRaw(s) {
+    var num = parseFloat(String(s).replace(/,/g,""));
+    if (isNaN(num)) return s;
+    return num.toLocaleString("en-NZ", {maximumFractionDigits:2});
+  }
+  function getRawVal(el) {
+    return el.value.replace(/,/g, "");
+  }
+
+  function formatInput(el) {
+    var raw = getRawVal(el);
+    if (raw === "" || raw === "." || raw === "-") return;
+    var num = parseFloat(raw);
+    if (isNaN(num)) return;
+    var pos = el.selectionStart;
+    var wasAtEnd = pos >= el.value.length;
+    el.value = fmtRaw(raw);
+    if (wasAtEnd) {
+      el.setSelectionRange(el.value.length, el.value.length);
+    } else {
+      var newPos = Math.min(pos, el.value.length);
+      el.setSelectionRange(newPos, newPos);
+    }
+  }
+
+  window.setRegion = function(r) {
+    region = r;
+    ["regAuckland","regWellington","regChristchurch","regRest"].forEach(function(id){ document.getElementById(id).classList.remove("active"); });
+    var idMap = {auckland:"regAuckland",wellington:"regWellington",christchurch:"regChristchurch",rest:"regRest"};
+    document.getElementById(idMap[r]).classList.add("active");
+    calc();
+  };
+
+  window.setType = function(t) {
+    applicantType = t;
+    document.getElementById("typeSingle").classList.remove("active");
+    document.getElementById("typeCouple").classList.remove("active");
+    document.getElementById("type" + t.charAt(0).toUpperCase() + t.slice(1)).classList.add("active");
+    calc();
+  };
+
+  window.setPropType = function(t) {
+    propType = t;
+    document.getElementById("ptExisting").classList.remove("active");
+    document.getElementById("ptNew").classList.remove("active");
+    if (t === "existing") document.getElementById("ptExisting").classList.add("active");
+    else document.getElementById("ptNew").classList.add("active");
+    calc();
+  };
+
+  // Price caps: [existing, newbuild]
+  var priceCaps = {
+    auckland:    [875000, 975000],
+    wellington:   [700000, 800000],
+    christchurch: [575000, 675000],
+    rest:         [525000, 625000]
+  };
+  var incomeCaps = { single: 95000, couple: 150000 };
+
+  function calc() {
+    var income = parseFloat(getRawVal(document.getElementById("income"))) || 0;
+    var ksYears = parseFloat(getRawVal(document.getElementById("ksYears"))) || 0;
+    var price = parseFloat(getRawVal(document.getElementById("housePrice"))) || 0;
+
+    var cap = priceCaps[region] || priceCaps.rest;
+    var priceCap = propType === "existing" ? cap[0] : cap[1];
+    var incomeCap = incomeCaps[applicantType];
+
+    // Grant amount
+    var grantPerPerson = 0;
+    var persons = applicantType === "couple" ? 2 : 1;
+    if (ksYears >= 5) {
+      grantPerPerson = propType === "existing" ? 10000 : 20000;
+    } else if (ksYears >= 4) {
+      grantPerPerson = propType === "existing" ? 7500 : 15000;
+    } else if (ksYears >= 3) {
+      grantPerPerson = propType === "existing" ? 5000 : 10000;
+    }
+    var totalGrant = grantPerPerson * persons;
+
+    // 5% deposit
+    var deposit5 = price * 0.05;
+
+    // Eligibility checks
+    var incomeOK = income <= incomeCap;
+    var priceOK = price <= priceCap;
+    var ksOK = ksYears >= 3;
+
+    var grantEligible = incomeOK && priceOK && ksOK && totalGrant > 0;
+    var loanEligible = incomeOK && priceOK;
+
+    buildBreakdown(income, ksYears, price, incomeCap, priceCap, totalGrant, deposit5, incomeOK, priceOK, ksOK, grantEligible, loanEligible);
+  }
+
+  function buildBreakdown(income, ksYears, price, incomeCap, priceCap, totalGrant, deposit5, incomeOK, priceOK, ksOK, grantEligible, loanEligible) {
+    var html = "";
+    var hasInput = price > 0;
+
+    // Determine hero style
+    var heroClass = "bd-hero";
+    var heroText = "—";
+    var subText = "Enter details to check eligibility";
+
+    if (hasInput) {
+      if (loanEligible) {
+        heroClass += " hero-yes";
+        heroText = "ELIGIBLE";
+        subText = "You may qualify for First Home Loan + Grant";
+      } else if (grantEligible) {
+        heroClass += " hero-partial";
+        heroText = "PARTIAL";
+        subText = "Grant eligible, but not First Home Loan";
+      } else {
+        heroClass += " hero-no";
+        heroText = "NOT ELIGIBLE";
+        subText = "Does not meet eligibility criteria";
+      }
+    }
+
+    // Hero
+    html += '<div class="' + heroClass + '">';
+    html += '<div><div class="hero-label">Eligibility Status</div><div class="hero-sub">' + subText + '</div></div>';
+    html += '<div class="hero-value">' + heroText + '</div>';
+    html += '</div>';
+
+    // Detail rows
+    html += '<div class="breakdown-row"><span class="br-label">First Home Grant</span><span class="br-value">' + (totalGrant > 0 ? fmtW(totalGrant) : "Not eligible") + '</span></div>';
+    html += '<div class="breakdown-row"><span class="br-label">5% Deposit Needed</span><span class="br-value">' + (hasInput ? fmtW(deposit5) : "$0.00") + '</span></div>';
+    html += '<div class="breakdown-row"><span class="br-label">Income Cap</span><span class="br-value">' + fmtW(incomeCap) + '</span></div>';
+    html += '<div class="breakdown-row"><span class="br-label">Your Income vs Cap</span><span class="br-value ' + (incomeOK ? 'green' : 'red') + '">' + (hasInput ? (incomeOK ? '✓ Under cap' : '✗ Over cap') : '—') + '</span></div>';
+    html += '<div class="breakdown-row"><span class="br-label">Price Cap</span><span class="br-value">' + fmtW(priceCap) + ' ' + (propType === 'newbuild' ? '(new)' : '(existing)') + '</span></div>';
+    html += '<div class="breakdown-row"><span class="br-label">Your Price vs Cap</span><span class="br-value ' + (priceOK ? 'green' : 'red') + '">' + (hasInput ? (priceOK ? '✓ Under cap' : '✗ Over cap') : '—') + '</span></div>';
+    html += '<div class="breakdown-row"><span class="br-label">KiwiSaver 3+ Yrs?</span><span class="br-value ' + (ksOK ? 'green' : 'red') + '">' + (hasInput ? (ksOK ? '✓ 3+ yrs' : '✗ Need 3+ yrs') : '—') + '</span></div>';
+    html += '<div class="breakdown-row net-row"><span class="br-label">First Home Loan</span><span class="br-value ' + (loanEligible ? 'green' : 'red') + '">' + (hasInput ? (loanEligible ? '✓ ELIGIBLE' : '✗ NOT ELIGIBLE') : '—') + '</span></div>';
+    html += '<div class="breakdown-row"><span class="br-label">First Home Grant</span><span class="br-value ' + (grantEligible ? 'green' : 'red') + '">' + (hasInput ? (grantEligible ? '✓ ELIGIBLE' : '✗ NOT ELIGIBLE') : '—') + '</span></div>';
+
+    document.getElementById("breakdownCard").innerHTML = html;
+  }
+
+  // Presets
+  window.pressPreset = function(regionVal, type, income, ksYears, price) {
+    setRegion(regionVal);
+    setType(type);
+    document.getElementById("income").value = fmtRaw(String(income));
+    document.getElementById("ksYears").value = String(ksYears);
+    document.getElementById("housePrice").value = fmtRaw(String(price));
+    document.querySelectorAll(".preset-btn").forEach(function(b){ b.classList.remove("active"); });
+    if (event && event.target) event.target.classList.add("active");
+    calc();
+  };
+
+  function clearPresets() {
+    document.querySelectorAll(".preset-btn").forEach(function(b){ b.classList.remove("active"); });
+  }
+
+  // Input listeners
+  ["income", "housePrice"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener("input", function() {
+        clearPresets();
+        formatInput(this);
+        calc();
+      });
+      el.addEventListener("paste", function() {
+        setTimeout(function() {
+          var raw = getRawVal(el);
+          var num = parseFloat(raw);
+          if (!isNaN(num)) el.value = fmtRaw(String(num));
+          clearPresets();
+          calc();
+        }, 50);
+      });
+    }
+  });
+
+  // ksYears: integer only
+  document.getElementById("ksYears").addEventListener("input", function() {
+    this.value = this.value.replace(/[^0-9]/g, "");
+    clearPresets();
+    calc();
+  });
+
+  // Auto-focus
+  document.getElementById("income").focus();
+
+  // Initial calc (zero-state always visible)
+  // Set default values and calc
+  document.getElementById("income").value = "85,000";
+  document.getElementById("ksYears").value = "3";
+  document.getElementById("housePrice").value = "820,000";
+  calc();
+
+  // Sidebar
+  var sideButtons = document.querySelectorAll(".side-nav .side-item");
+  sideButtons.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var cat = this.getAttribute("data-cat");
+      if (cat) window.location.href = "index.html#" + cat;
+      else window.location.href = "index.html";
+    });
+  });
+  var fromCat = new URLSearchParams(window.location.search).get("from") || "local";
+  document.getElementById("backLink").href = "index.html#" + fromCat;
+  var activeBtn = document.querySelector('.side-nav [data-cat="' + fromCat + '"]');
+  if (activeBtn) activeBtn.classList.add("active");
+})();
+</script>
+
+</body>
+</html>

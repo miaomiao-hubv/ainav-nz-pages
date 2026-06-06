@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document Compress — Compress DOCX &amp; PDF | ainav.nz</title>
+<meta name="description" content="Compress DOCX and PDF documents to reduce file size. Compress images inside documents. Free browser-based tool.">
+<meta name="keywords" content="document compress, compress docx, compress pdf, reduce document size, free tool">
+<link rel="canonical" href="https://ainav.nz/document-compress.html">
+<meta property="og:title" content="Document Compress — Compress DOCX & PDF | ainav.nz">
+<meta property="og:description" content="Compress DOCX and PDF documents. Free, private, browser-based.">
+<meta property="og:url" content="https://ainav.nz/document-compress.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --danger:#D92D20;--danger-light:#FEE2E2;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== TOOL LAYOUT ===== */
+.tool-layout{display:flex;flex-direction:column;gap:20px;padding:24px 32px;flex:1;align-items:center}
+.tool-main{width:100%;max-width:960px;display:flex;flex-direction:column;gap:18px}
+
+/* ===== HEADER CARDS ===== */
+.tool-header{display:flex;gap:16px;flex-wrap:wrap}
+.header-card{flex:1;min-width:260px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.header-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.header-card p,.header-card li{font-size:12px;color:var(--sub);line-height:1.6}
+.header-card ul{padding-left:0;margin-top:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.header-card ul li{display:flex;align-items:flex-start;gap:6px}
+.header-card ul li::before{content:"•";color:var(--brand-light);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* ===== UPLOAD ZONE ===== */
+.upload-zone{width:100%;border:2.5px dashed rgba(0,59,79,.12);border-radius:20px;padding:72px 28px;text-align:center;cursor:pointer;transition:all .3s;background:rgba(255,255,255,.4);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,.03);display:flex;flex-direction:column;align-items:center;gap:10px}
+.upload-zone:hover{border-color:var(--brand-light);background:rgba(255,255,255,.65);transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,0,0,.08)}
+.upload-zone .uz-icon{font-size:52px;margin-bottom:4px;opacity:.75}
+.upload-zone .uz-text{font-size:16px;font-weight:600;color:var(--text)}
+.upload-zone .uz-hint,.upload-zone .uz-sub{font-size:13px;color:var(--muted);margin-top:2px}
+
+/* ===== BUTTONS ===== */
+.btn-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:44px;padding:0 22px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s}
+.btn-action:hover{background:#fff;border-color:#C0C8CE}
+.btn-action:active{transform:scale(.98)}
+.btn-action:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.btn-action.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 10px rgba(0,59,79,.2)}
+.btn-action.btn-primary:hover{background:var(--brand-light);border-color:var(--brand-light)}
+.btn-action .btn-emoji{font-size:16px}
+
+/* ===== CONTROLS ===== */
+.controls-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:18px}
+.toggle-btn{height:38px;padding:0 18px;border-radius:8px;border:1.5px solid var(--border);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s}
+.toggle-btn:hover{background:#fff;border-color:#C0C8CE}
+.toggle-btn:active{transform:scale(.98)}
+.toggle-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* ===== FILE INFO ===== */
+.file-info{font-size:12px;color:var(--sub);padding:2px 0}
+.file-info span{font-weight:600;color:var(--text)}
+
+/* ===== FORMAT BADGE ===== */
+.format-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:600;margin-top:8px;background:var(--brand-ghost);color:var(--brand)}
+
+/* ===== SIZE DISPLAY ===== */
+.size-display{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px}
+.size-card{flex:1;min-width:140px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:12px;padding:14px 18px;text-align:center}
+.size-card .sc-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.size-card .sc-value{font-size:20px;font-weight:700;color:var(--text)}
+.size-card .sc-value.after{color:var(--brand)}
+.size-card .sc-savings{font-size:11px;color:var(--brand-light);font-weight:600;margin-top:2px}
+
+/* ===== LOADING ===== */
+.loading-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,.7);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:12px}
+.loading-spinner{width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .tool-layout{padding:18px 20px}
+  .header-card{min-width:220px}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .tool-layout{padding:12px 14px}
+  .upload-zone{padding:52px 20px}
+}
+@media(max-width:420px){
+  .btn-action{height:42px;padding:0 16px;font-size:13px}
+  .upload-zone{padding:40px 16px}
+  .upload-zone .uz-icon{font-size:40px}
+  .upload-zone .uz-text{font-size:14px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">21</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">18</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item active" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">19</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">9</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html#office">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">Document Compress</span>
+  </div>
+
+  <div class="tool-layout">
+
+    <div class="tool-main">
+
+      <!-- Header Info Banner -->
+      <div class="tool-header">
+        <div class="header-card">
+          <h3>📁 DOCX Structure</h3>
+          <p>A DOCX file is actually a ZIP archive containing XML files and media. Compression works by finding embedded images and re-encoding them at lower quality. The text content remains untouched.</p>
+        </div>
+        <div class="header-card">
+          <h3>💡 Compression Tips</h3>
+          <ul>
+            <li>PDFs with images compress best — text-only files see modest gains</li>
+            <li>DOCX compression targets embedded images only</li>
+            <li>"High" compression may noticeably reduce image quality</li>
+            <li>For scanned PDFs, expect the largest file size reduction</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Upload Zone -->
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+        <div class="uz-icon">📁</div>
+        <div class="uz-text">Drop a DOCX or PDF file or click to upload</div>
+        <div class="uz-sub">Supports .docx and .pdf files</div>
+      </div>
+      <input type="file" id="fileInput" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" style="display:none">
+
+      <!-- Editor Area (hidden initially) -->
+      <div id="editorArea" style="display:none">
+        <div class="file-info" id="fileInfo"></div>
+        <div class="format-badge" id="formatBadge"></div>
+
+        <!-- Compression Level -->
+        <div class="controls-row">
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <span style="font-size:12.5px;font-weight:600;color:var(--text)">Compression Quality</span>
+            <div style="display:flex;gap:6px">
+              <button class="toggle-btn" id="btnLow" onclick="setLevel('low')">Low</button>
+              <button class="toggle-btn active" id="btnMedium" onclick="setLevel('medium')">Medium</button>
+              <button class="toggle-btn" id="btnHigh" onclick="setLevel('high')">High</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Size Display -->
+        <div class="size-display" id="sizeDisplay">
+          <div class="size-card">
+            <div class="sc-label">Before</div>
+            <div class="sc-value" id="beforeSize">—</div>
+          </div>
+          <div class="size-card">
+            <div class="sc-label">After</div>
+            <div class="sc-value after" id="afterSize">—</div>
+            <div class="sc-savings" id="savingsInfo"></div>
+          </div>
+        </div>
+
+        <div class="controls-row">
+          <button class="btn-action" onclick="resetUpload()">
+            <span class="btn-emoji">↩</span> Reset
+          </button>
+          <button class="btn-action btn-primary" id="btnCompress" onclick="compressDocument()">
+            <span class="btn-emoji">📦</span> Compress & Download
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function(){
+  var fileBytes = null;
+  var fileName = "";
+  var originalSize = 0;
+  var fileType = ""; // "pdf" or "docx"
+  var compressionLevel = "medium";
+
+  var fileInput = document.getElementById("fileInput");
+  var uploadZone = document.getElementById("uploadZone");
+  var editorArea = document.getElementById("editorArea");
+
+  fileInput.addEventListener("change", function(e) {
+    if (e.target.files && e.target.files[0]) loadFile(e.target.files[0]);
+  });
+
+  uploadZone.addEventListener("dragover", function(e) { e.preventDefault(); uploadZone.style.borderColor = "var(--brand-light)"; });
+  uploadZone.addEventListener("dragleave", function() { uploadZone.style.borderColor = ""; });
+  uploadZone.addEventListener("drop", function(e) {
+    e.preventDefault();
+    uploadZone.style.borderColor = "";
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+  });
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + " B";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+  }
+
+  function detectType(name) {
+    if (/\.pdf$/i.test(name)) return "pdf";
+    if (/\.docx$/i.test(name)) return "docx";
+    return "";
+  }
+
+  function getJpegQuality() {
+    if (compressionLevel === "low") return 0.85;
+    if (compressionLevel === "medium") return 0.6;
+    return 0.3;
+  }
+
+  function getEstimateFactor() {
+    if (compressionLevel === "low") return 0.85;
+    if (compressionLevel === "medium") return 0.65;
+    return 0.40;
+  }
+
+  function loadFile(file) {
+    var detected = detectType(file.name);
+    if (!detected) {
+      alert("Please upload a .pdf or .docx file.");
+      return;
+    }
+
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+      fileBytes = new Uint8Array(ev.target.result);
+      fileName = file.name;
+      originalSize = file.size;
+      fileType = detected;
+      uploadZone.style.display = "none";
+      editorArea.style.display = "flex";
+      document.getElementById("fileInfo").innerHTML = "<span>" + file.name + "</span> · " + formatSize(originalSize);
+      document.getElementById("formatBadge").innerHTML = "Detected: <strong>" + fileType.toUpperCase() + "</strong>";
+      document.getElementById("beforeSize").textContent = formatSize(originalSize);
+      document.getElementById("afterSize").textContent = "~" + formatSize(Math.round(originalSize * getEstimateFactor()));
+      document.getElementById("savingsInfo").textContent = "Estimated up to " + Math.round((1 - getEstimateFactor()) * 100) + "% reduction";
+    };
+    reader.readAsArrayBuffer(file);
+  }
+
+  window.setLevel = function(level) {
+    compressionLevel = level;
+    document.getElementById("btnLow").classList.toggle("active", level === "low");
+    document.getElementById("btnMedium").classList.toggle("active", level === "medium");
+    document.getElementById("btnHigh").classList.toggle("active", level === "high");
+    if (originalSize) {
+      document.getElementById("afterSize").textContent = "~" + formatSize(Math.round(originalSize * getEstimateFactor()));
+      document.getElementById("savingsInfo").textContent = "Estimated up to " + Math.round((1 - getEstimateFactor()) * 100) + "% reduction";
+    }
+  };
+
+  window.resetUpload = function() {
+    fileBytes = null;
+    fileName = "";
+    originalSize = 0;
+    fileType = "";
+    uploadZone.style.display = "flex";
+    editorArea.style.display = "none";
+    fileInput.value = "";
+  };
+
+  function showLoading(text) {
+    var ol = document.createElement("div");
+    ol.className = "loading-overlay";
+    ol.id = "loadingOverlay";
+    ol.innerHTML = '<div class="loading-spinner"></div><div class="loading-text">' + text + '</div>';
+    document.body.appendChild(ol);
+  }
+
+  function hideLoading() {
+    var ol = document.getElementById("loadingOverlay");
+    if (ol) ol.remove();
+  }
+
+  // Compress image via canvas
+  function compressImage(imageData, quality) {
+    return new Promise(function(resolve) {
+      var blob = new Blob([imageData], { type: "image/png" });
+      var url = URL.createObjectURL(blob);
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob(function(compressedBlob) {
+          URL.revokeObjectURL(url);
+          if (compressedBlob) {
+            var reader = new FileReader();
+            reader.onload = function() { resolve(new Uint8Array(reader.result)); };
+            reader.readAsArrayBuffer(compressedBlob);
+          } else {
+            resolve(imageData);
+          }
+        }, "image/jpeg", quality);
+      };
+      img.onerror = function() {
+        URL.revokeObjectURL(url);
+        resolve(imageData);
+      };
+      img.src = url;
+    });
+  }
+
+  async function compressPDF() {
+    var pdfDoc = await PDFLib.PDFDocument.load(fileBytes, { ignoreEncryption: true });
+
+    // Remove metadata
+    pdfDoc.setTitle("");
+    pdfDoc.setAuthor("");
+    pdfDoc.setSubject("");
+    pdfDoc.setKeywords([]);
+    pdfDoc.setProducer("");
+    pdfDoc.setCreator("");
+
+    // Flatten form fields
+    try {
+      var form = pdfDoc.getForm();
+      if (form) {
+        form.flatten();
+      }
+    } catch(e) {}
+
+    var compressedBytes = await pdfDoc.save({ useObjectStreams: true });
+    return compressedBytes;
+  }
+
+  async function compressDOCX() {
+    var zip = await JSZip.loadAsync(fileBytes);
+    var quality = getJpegQuality();
+    var imageExtensions = ["png", "jpg", "jpeg", "gif", "bmp", "tiff", "tif", "emf", "wmf"];
+    var compressedCount = 0;
+
+    var promises = [];
+    zip.forEach(function(relativePath, zipEntry) {
+      if (!zipEntry.dir) {
+        var ext = relativePath.split(".").pop().toLowerCase();
+        if (imageExtensions.indexOf(ext) !== -1 && relativePath.indexOf("word/media/") !== -1) {
+          promises.push(
+            zipEntry.async("uint8array").then(function(data) {
+              return compressImage(data, quality).then(function(compressed) {
+                if (compressed.length < data.length) {
+                  zip.file(relativePath, compressed);
+                  compressedCount++;
+                }
+              });
+            }).catch(function() {
+              // Skip images that can't be compressed
+            })
+          );
+        }
+      }
+    });
+
+    await Promise.all(promises);
+
+    var compressedZip = await zip.generateAsync({
+      type: "uint8array",
+      compression: "DEFLATE",
+      compressionOptions: { level: compressionLevel === "high" ? 9 : compressionLevel === "medium" ? 6 : 3 }
+    });
+
+    return compressedZip;
+  }
+
+  window.compressDocument = async function() {
+    if (!fileBytes) return;
+    showLoading("Compressing " + fileType.toUpperCase() + "...");
+
+    try {
+      var resultBytes;
+      if (fileType === "pdf") {
+        resultBytes = await compressPDF();
+      } else {
+        resultBytes = await compressDOCX();
+      }
+
+      var compressedSize = resultBytes.length;
+
+      // Update display
+      document.getElementById("afterSize").textContent = formatSize(compressedSize);
+      var savings = Math.round((1 - compressedSize / originalSize) * 100);
+      if (savings > 0) {
+        document.getElementById("savingsInfo").textContent = savings + "% reduction achieved";
+      } else {
+        document.getElementById("savingsInfo").textContent = "File already optimized";
+      }
+
+      var mimeType = fileType === "pdf" ? "application/pdf" : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      var blob = new Blob([resultBytes], { type: mimeType });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      var baseName = fileName.replace(/\.(pdf|docx)$/i, "");
+      a.download = baseName + "-compressed." + fileType;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      alert("Error compressing document: " + err.message);
+    } finally {
+      hideLoading();
+    }
+  };
+
+  // Sidebar
+  document.querySelectorAll(".side-nav .side-item").forEach(function(b){
+    b.addEventListener("click",function(){
+      var c=this.getAttribute("data-cat");
+      window.location.href=c?"index.html#"+c:"index.html";
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

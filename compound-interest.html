@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compound Interest Calculator — NZ Investment Growth | ainav.nz</title>
+<meta name="description" content="Calculate compound interest returns for New Zealand investments. Compare KiwiSaver, term deposits, savings accounts & funds with NZ rates.">
+<meta name="keywords" content="compound interest calculator NZ, KiwiSaver returns, term deposit calculator, investment growth New Zealand, NZ savings calculator">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ainav.nz/compound-interest.html">
+<meta property="og:title" content="Compound Interest Calculator — NZ Investment Growth | ainav.nz">
+<meta property="og:description" content="Calculate compound interest returns for NZ investments. Compare KiwiSaver, term deposits & savings with NZ rates.">
+<meta property="og:url" content="https://ainav.nz/compound-interest.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Compound Interest Calculator — NZ | ainav.nz">
+<meta name="twitter:description" content="NZ compound interest calculator with KiwiSaver, term deposits & savings rates.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --green:#059669;--green-bg:rgba(52,211,153,.12);
+  --red:#DC2626;--red-bg:rgba(248,113,113,.10);
+  --blue:#2563EB;--blue-bg:rgba(37,99,235,.10);
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== CALCULATOR LAYOUT ===== */
+.calc-layout{display:flex;gap:16px;padding:16px 28px 24px;flex:1}
+.calc-panel{flex:1;min-width:0;max-width:560px}
+.regs-panel{width:260px;min-width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+
+/* ===== INPUT AREA ===== */
+.input-wrap{margin-top:0;display:flex;align-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:9px;padding:0 14px;height:44px;transition:all .15s;box-shadow:var(--shadow-sm);cursor:text}
+.input-wrap:focus-within{border-color:var(--brand);background:#fff;box-shadow:var(--shadow-md)}
+.input-wrap .input-prefix{font-size:16px;font-weight:700;color:var(--brand);margin-right:4px;flex-shrink:0}
+.input-wrap .input-currency{font-size:11px;color:var(--sub);flex-shrink:0;margin-right:6px;font-weight:500}
+.input-wrap input{flex:1;border:none;background:transparent;outline:none;font-size:16px;font-weight:600;color:var(--text);font-family:inherit;min-width:0;text-align:right}
+.input-wrap input::placeholder{color:#CDD3DA;font-weight:400}
+.input-wrap .input-suffix{font-size:11px;color:var(--sub);flex-shrink:0;margin-left:6px;font-weight:500}
+.input-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+.input-group{margin-top:12px}
+.input-group:first-child{margin-top:0}
+.input-row{display:flex;gap:12px;margin-top:12px}
+.input-row .input-group{margin-top:0;flex:1;min-width:0}
+
+/* ===== TYPE BUTTONS ===== */
+.type-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px}
+.type-btn{height:40px;padding:0 10px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:5px;width:100%}
+.type-btn:hover{background:#fff;border-color:var(--brand-light);color:var(--brand)}
+.type-btn.active{background:var(--brand-ghost);border-color:var(--brand);color:var(--brand)}
+
+/* ===== MODE TOGGLE ===== */
+.mode-wrap{display:flex;gap:8px;margin-top:10px}
+.mode-btn{flex:1;height:44px;padding:0 14px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:6px;box-shadow:var(--shadow-sm)}
+.mode-btn:hover{background:#fff;border-color:#C0C8CE}
+.mode-btn.active{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 8px rgba(0,59,79,.25)}
+.mode-btn .mode-icon{font-size:16px}
+
+/* ===== PRESET BUTTONS ===== */
+.presets{margin-top:10px;display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.presets-label{grid-column:1/-1;font-size:12px;font-weight:600;color:var(--sub)}
+.preset-btn{height:38px;padding:0 12px;border-radius:8px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;gap:4px;width:100%}
+.preset-btn:hover{background:#fff;border-color:var(--brand-light);color:var(--brand)}
+.preset-btn.active{background:var(--brand-ghost);border-color:var(--brand);color:var(--brand)}
+
+/* ===== RESULT HERO ===== */
+.result-hero{margin-top:16px;background:linear-gradient(135deg,rgba(0,59,79,.92),rgba(0,100,122,.92));border-radius:12px;padding:20px 22px;color:#fff;box-shadow:0 4px 16px rgba(0,59,79,.2)}
+.result-hero .rh-label{font-size:11px;font-weight:700;color:rgba(255,255,255,.65);letter-spacing:.5px}
+.result-hero .rh-value{font-size:32px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace;margin-top:4px}
+.result-hero .rh-sub{font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
+.result-hero .rh-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px}
+.result-hero .rh-cell{background:rgba(255,255,255,.1);border-radius:8px;padding:10px 12px}
+.result-hero .rh-cell .rc-label{font-size:10px;font-weight:600;color:rgba(255,255,255,.6);letter-spacing:.3px}
+.result-hero .rh-cell .rc-value{font-size:18px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace}
+.result-hero .rh-cell .rc-value.green{color:#5EEAD4}
+
+/* ===== BREAKDOWN TABLE ===== */
+.breakdown{margin-top:16px}
+.breakdown-card{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid #F0F2F4;font-size:12.5px}
+.breakdown-row:last-child{border-bottom:none}
+.breakdown-row .br-label{color:var(--sub)}
+.breakdown-row .br-value{font-weight:650;color:var(--text);font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace}
+.breakdown-row .br-value.green{color:var(--green)}
+.breakdown-row .br-value.red{color:var(--red)}
+.breakdown-row.total-row{background:rgba(0,59,79,.04);border-top:2px solid var(--border)}
+.breakdown-row.total-row .br-label{font-weight:700;color:var(--text)}
+.breakdown-row.total-row .br-value{font-weight:700;font-size:13.5px}
+
+/* ===== GROWTH TABLE ===== */
+.amort-section{margin-top:16px}
+.amort-card{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.amort-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border)}
+.amort-header h4{font-size:12px;font-weight:700;color:var(--text)}
+.amort-toggle{font-size:11px;font-weight:600;color:var(--brand);cursor:pointer;background:none;border:none;font-family:inherit}
+.amort-toggle:hover{text-decoration:underline}
+.amort-table-wrap{max-height:320px;overflow-y:auto}
+.amort-table-wrap::-webkit-scrollbar{width:4px}
+.amort-table-wrap::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.amort-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.amort-table th{padding:8px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.3px;background:rgba(0,59,79,.03);position:sticky;top:0;z-index:1}
+.amort-table td{padding:8px 12px;border-bottom:1px solid #F5F6F7;font-variant-numeric:tabular-nums;color:var(--sub)}
+.amort-table tr:hover td{background:rgba(0,59,79,.02)}
+.amort-table .td-interest{color:var(--green)}
+.amort-table .td-principal{color:var(--blue)}
+.amort-table .td-balance{font-weight:600;color:var(--text)}
+
+/* ===== VISUAL BAR ===== */
+.split-bar-wrap{margin-top:16px;background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow-sm)}
+.split-bar-wrap h4{font-size:12px;font-weight:700;color:var(--text);margin-bottom:10px}
+.split-bar{height:28px;border-radius:8px;overflow:hidden;display:flex}
+.split-bar .sb-interest{background:linear-gradient(90deg,#60A5FA,#3B82F6);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;min-width:40px}
+.split-bar .sb-principal{background:linear-gradient(90deg,#34D399,#5EEAD4);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;min-width:40px}
+.split-legend{display:flex;gap:16px;margin-top:8px;font-size:11px;color:var(--sub)}
+.split-legend span{display:flex;align-items:center;gap:4px}
+.split-legend .dot{width:8px;height:8px;border-radius:3px;flex-shrink:0}
+.split-legend .dot.interest{background:#3B82F6}
+.split-legend .dot.principal{background:#34D399}
+
+/* ===== REGULATIONS PANEL ===== */
+.reg-card{background:rgba(255,255,255,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--glass-border);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow-sm)}
+.reg-card:hover{background:rgba(255,255,255,.75);box-shadow:var(--shadow-md)}
+.reg-card h3{font-size:12px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-.2px;display:flex;align-items:center;gap:5px}
+.reg-card h3 .rc-icon{font-size:13px}
+.reg-card p,.reg-card li{font-size:11.5px;color:var(--sub);line-height:1.55}
+.reg-card ul{padding-left:12px;margin-top:2px;list-style:none}
+.reg-card ul li::before{content:"—";margin-right:4px;color:var(--muted)}
+.reg-card .thresh-table{width:100%;font-size:11px;margin-top:4px;border-collapse:collapse}
+.reg-card .thresh-table th{text-align:left;padding:3px 5px;color:var(--muted);font-weight:600;font-size:10px;letter-spacing:.3px}
+.reg-card .thresh-table td{padding:3px 5px;color:var(--sub)}
+.reg-card .thresh-table tr:nth-child(even){background:rgba(0,59,79,.02)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .calc-layout{padding:14px 20px 20px}
+  .calc-panel{max-width:none}
+  .regs-panel{width:100%;min-width:0}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .calc-layout{padding:10px 14px 16px;gap:12px;flex-direction:column}
+  .input-wrap{height:40px}
+  .input-wrap input{font-size:14px}
+  .type-wrap{grid-template-columns:repeat(2,1fr);gap:6px}
+  .type-btn{height:36px;font-size:11px;padding:0 6px}
+  .result-hero .rh-grid{grid-template-columns:1fr}
+  .result-hero .rh-value{font-size:26px}
+  .regs-panel{gap:6px}
+  .input-row{flex-direction:column;gap:0}
+  .input-row .input-group{margin-top:12px}
+  .input-row .input-group:first-child{margin-top:0}
+  .presets{grid-template-columns:1fr}
+}
+@media(max-width:420px){
+  .mode-btn{height:40px;font-size:11px;padding:0 10px}
+  .preset-btn{height:36px;font-size:11px;padding:0 10px}
+  .presets{grid-template-columns:1fr}
+  .result-hero .rh-value{font-size:22px}
+  .result-hero .rh-cell .rc-value{font-size:15px}
+  .input-wrap{height:40px}
+  .type-wrap{grid-template-columns:repeat(2,1fr);gap:5px}
+  .type-btn{height:32px;font-size:10.5px;padding:0 5px}
+  .rh-grid{grid-template-columns:1fr!important}
+}
+</style>
+</head>
+<body>
+
+<!-- Decorative background blobs -->
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">85</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">21</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">18</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">9</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">Compound Interest Calculator</span>
+  </div>
+
+  <div class="calc-layout">
+
+    <!-- ===== LEFT: Calculator ===== -->
+    <div class="calc-panel">
+
+      <!-- Investment Type -->
+      <div class="input-group">
+        <span class="input-label">Investment type</span>
+        <div class="type-wrap" id="investTypeWrap">
+          <button class="type-btn active" data-type="savings" data-rate="4.50" data-term="5" onclick="setInvestType(this)">🏦 Savings</button>
+          <button class="type-btn" data-type="term-deposit" data-rate="5.80" data-term="1" onclick="setInvestType(this)">📊 Term Deposit</button>
+          <button class="type-btn" data-type="kiwisaver" data-rate="7.00" data-term="30" onclick="setInvestType(this)">🎰 KiwiSaver</button>
+          <button class="type-btn" data-type="fund" data-rate="8.50" data-term="10" onclick="setInvestType(this)">📈 Fund</button>
+          <button class="type-btn" data-type="property" data-rate="6.50" data-term="10" onclick="setInvestType(this)">🏠 Property</button>
+          <button class="type-btn" data-type="bonds" data-rate="5.50" data-term="5" onclick="setInvestType(this)">📋 Bonds</button>
+        </div>
+      </div>
+
+      <!-- Initial Investment -->
+      <div class="input-group">
+        <span class="input-label">Initial investment</span>
+        <div class="input-wrap">
+          <span class="input-currency">NZD</span>
+          <span class="input-prefix">$</span>
+          <input type="text" id="initialInvestment" placeholder="e.g. 10,000" inputmode="decimal" autocomplete="off" aria-label="Initial Investment" oninput="fmtInput(this)">
+        </div>
+      </div>
+
+      <!-- Interest Rate & Term -->
+      <div class="input-row">
+        <div class="input-group">
+          <span class="input-label">Interest rate</span>
+          <div class="input-wrap">
+            <input type="text" id="interestRate" placeholder="e.g. 4.50" inputmode="decimal" autocomplete="off" aria-label="Interest Rate">
+            <span class="input-suffix">%/yr</span>
+          </div>
+        </div>
+        <div class="input-group">
+          <span class="input-label">Investment term</span>
+          <div class="input-wrap">
+            <input type="text" id="investTerm" placeholder="e.g. 5" inputmode="decimal" autocomplete="off" aria-label="Investment Term">
+            <span class="input-suffix">years</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Regular Contribution -->
+      <div class="input-group">
+        <span class="input-label">Regular contribution</span>
+        <div class="input-wrap">
+          <span class="input-currency">NZD</span>
+          <span class="input-prefix">$</span>
+          <input type="text" id="regularContribution" placeholder="e.g. 100" inputmode="decimal" autocomplete="off" aria-label="Regular Contribution" oninput="fmtInput(this)">
+        </div>
+      </div>
+
+      <!-- Contribution Frequency -->
+      <div class="input-group">
+        <span class="input-label">Contribution frequency</span>
+        <div class="mode-wrap" id="contribFreqWrap">
+          <button class="mode-btn" data-freq="weekly" onclick="setContribFreq(this)">📅 Weekly</button>
+          <button class="mode-btn active" data-freq="fortnightly" onclick="setContribFreq(this)">📆 Fortnightly</button>
+          <button class="mode-btn" data-freq="monthly" onclick="setContribFreq(this)">🗓️ Monthly</button>
+        </div>
+      </div>
+
+      <!-- Compounding Frequency -->
+      <div class="input-group">
+        <span class="input-label">Compounding frequency</span>
+        <div class="mode-wrap" id="compoundFreqWrap">
+          <button class="mode-btn active" data-compound="monthly" onclick="setCompoundFreq(this)">📊 Monthly</button>
+          <button class="mode-btn" data-compound="quarterly" onclick="setCompoundFreq(this)">📊 Quarterly</button>
+          <button class="mode-btn" data-compound="annually" onclick="setCompoundFreq(this)">📊 Annually</button>
+        </div>
+      </div>
+
+      <!-- Result Hero -->
+      <div class="result-hero" id="resultHero">
+        <div class="rh-label">Final balance</div>
+        <div class="rh-value" id="rhBalance">NZ$0.00</div>
+        <div class="rh-sub" id="rhSub">Based on your investment details</div>
+        <div class="rh-grid">
+          <div class="rh-cell">
+            <div class="rc-label">Total Contributions</div>
+            <div class="rc-value" id="rhContributions">NZ$0</div>
+          </div>
+          <div class="rh-cell">
+            <div class="rc-label">Interest Earned</div>
+            <div class="rc-value green" id="rhInterest">NZ$0</div>
+          </div>
+          <div class="rh-cell">
+            <div class="rc-label">Growth</div>
+            <div class="rc-value green" id="rhGrowth">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Split Bar -->
+      <div class="split-bar-wrap" id="splitBar">
+        <h4>📊 Contributions vs Interest Earned</h4>
+        <div class="split-bar">
+          <div class="sb-principal" id="sbContributions" style="width:0%"></div>
+          <div class="sb-interest" id="sbInterest" style="width:0%"></div>
+        </div>
+        <div class="split-legend">
+          <span><span class="dot principal"></span>Contributions <strong id="legendContributions">NZ$0</strong></span>
+          <span><span class="dot interest"></span>Interest <strong id="legendInterest">NZ$0</strong></span>
+        </div>
+      </div>
+
+      <!-- Breakdown Table -->
+      <div class="breakdown" id="breakdownSection">
+        <div class="breakdown-card" id="breakdownCard"></div>
+      </div>
+
+      <!-- Year-by-Year Growth Table -->
+      <div class="amort-section" id="amortSection">
+        <div class="amort-card">
+          <div class="amort-header">
+            <h4>📈 Year-by-Year Growth</h4>
+            <button class="amort-toggle" id="amortToggle" onclick="toggleAmort()">Show yearly growth</button>
+          </div>
+          <div class="amort-table-wrap" id="amortWrap">
+            <table class="amort-table">
+              <thead>
+                <tr><th>Year</th><th>Balance</th><th>Contributions</th><th>Interest</th><th>Growth</th></tr>
+              </thead>
+              <tbody id="amortBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== RIGHT: Info Panel ===== -->
+    <div class="regs-panel">
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🇳🇿</span>NZ Investment Rates Guide</h3>
+        <table class="thresh-table">
+          <tr><th>Investment Type</th><th>Typical Rate</th></tr>
+          <tr><td>Savings account</td><td>3.50–5.50%</td></tr>
+          <tr><td>Term deposit (1yr)</td><td>5.00–6.20%</td></tr>
+          <tr><td>KiwiSaver (conservative)</td><td>3.00–5.00%</td></tr>
+          <tr><td>KiwiSaver (balanced)</td><td>5.00–7.50%</td></tr>
+          <tr><td>KiwiSaver (growth)</td><td>6.00–9.00%</td></tr>
+          <tr><td>Managed funds</td><td>5.00–10.00%</td></tr>
+          <tr><td>NZ bonds</td><td>4.50–6.00%</td></tr>
+        </table>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🎰</span>KiwiSaver Details</h3>
+        <p>New Zealand's retirement savings scheme:</p>
+        <ul>
+          <li>Employee contribution: <strong>3% default</strong> (can choose 4%, 6%, 8%, 10%)</li>
+          <li>Employer contribution: <strong>3%</strong> (minus PIE tax)</li>
+          <li>Government annual credit: <strong>up to NZ$521</strong> (if earning NZ$34,000+)</li>
+          <li>Prescribed Investor Rate (PIR): <strong>28%</strong> default</li>
+          <li>First-home withdrawal available after 3 years</li>
+        </ul>
+        <p style="margin-top:6px;font-weight:600;color:var(--text)">Fund types:</p>
+        <ul>
+          <li><strong>Conservative</strong> — low risk, lower returns</li>
+          <li><strong>Balanced</strong> — medium risk, moderate returns</li>
+          <li><strong>Growth</strong> — higher risk, higher long-term returns</li>
+        </ul>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">📊</span>PIE Tax Rates</h3>
+        <p>Portfolio Investment Entity (PIE) tax rates for investment income:</p>
+        <table class="thresh-table">
+          <tr><th>PIR Rate</th><th>Taxable Income Threshold</th></tr>
+          <tr><td>10.5%</td><td>Up to NZ$14,000</td></tr>
+          <tr><td>17.5%</td><td>NZ$14,001–NZ$48,000</td></tr>
+          <tr><td>28%</td><td>NZ$48,001–NZ$70,000</td></tr>
+          <tr><td>30%</td><td>NZ$70,001–NZ$180,000</td></tr>
+          <tr><td>33%</td><td>Over NZ$180,000</td></tr>
+        </table>
+        <p style="margin-top:4px">Most KiwiSaver members use the <strong>28% PIR</strong> rate.</p>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">💰</span>Compound Frequency</h3>
+        <p>How compounding frequency affects your returns:</p>
+        <ul>
+          <li><strong>Annually</strong> — interest calculated once per year</li>
+          <li><strong>Quarterly</strong> — interest calculated 4 times per year</li>
+          <li><strong>Monthly</strong> — interest calculated 12 times per year</li>
+        </ul>
+        <p style="margin-top:4px">More frequent compounding = higher returns. Over 30 years, monthly compounding can yield significantly more than annual compounding on the same rate.</p>
+        <p style="margin-top:4px;font-weight:600;color:var(--text)">Example: NZ$10,000 at 5% for 30 years</p>
+        <ul>
+          <li>Annual: NZ$43,219</li>
+          <li>Quarterly: NZ$44,677</li>
+          <li>Monthly: NZ$44,823</li>
+        </ul>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">ℹ️</span>NZ Resources</h3>
+        <p>Free tools and support for NZ investors:</p>
+        <ul>
+          <li><strong>Sorted.org.nz</strong> — free calculators &amp; guides</li>
+          <li><strong>FMA</strong> (Financial Markets Authority) — investor protection</li>
+          <li><strong>MoneyTalks</strong> — 0800 002 007</li>
+          <li><strong>IRD</strong> — KiwiSaver &amp; PIE tax info</li>
+          <li>Compare fund providers on <strong>Canstar</strong> or <strong>Interest.co.nz</strong></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<script>
+// ===== SIDEBAR NAVIGATION =====
+(function(){
+  var fromCat = new URLSearchParams(window.location.search).get("from") || "finance";
+  document.getElementById("backLink").href = "index.html#" + fromCat;
+  var activeBtn = document.querySelector('.side-nav [data-cat="' + fromCat + '"]');
+  if(activeBtn) activeBtn.classList.add('active');
+  document.querySelectorAll('.side-nav .side-item').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var cat = this.dataset.cat;
+      if(cat) window.location.href = cat ? "index.html#" + cat : "index.html";
+    });
+  });
+})();
+
+// ===== STATE =====
+var currentContribFreq = 'fortnightly';
+var currentCompoundFreq = 'monthly';
+
+// ===== HELPERS =====
+function parseNum(str) {
+  if(!str) return 0;
+  return parseFloat(str.replace(/[^0-9.\-]/g, '')) || 0;
+}
+
+function fmtMoney(n) {
+  return 'NZ$' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function fmtMoneyRound(n) {
+  return 'NZ$' + Math.round(n).toLocaleString('en-NZ');
+}
+
+function fmtPct(n) {
+  return n.toFixed(1) + '%';
+}
+
+function fmtInput(el) {
+  var v = el.value.replace(/[^0-9.]/g, '');
+  var parts = v.split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  el.value = parts.join('.');
+}
+
+// ===== INVESTMENT TYPE CHANGE =====
+function setInvestType(btn) {
+  document.querySelectorAll('#investTypeWrap .type-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  var rate = btn.dataset.rate;
+  var term = btn.dataset.term;
+  document.getElementById('interestRate').value = rate;
+  document.getElementById('investTerm').value = term;
+
+  // Set sensible default contribution per type
+  var type = btn.dataset.type;
+  if(type === 'kiwisaver') {
+    document.getElementById('regularContribution').value = '207';
+  } else if(type === 'savings') {
+    document.getElementById('regularContribution').value = '50';
+  } else if(type === 'term-deposit') {
+    document.getElementById('regularContribution').value = '0';
+  } else if(type === 'fund') {
+    document.getElementById('regularContribution').value = '200';
+  } else if(type === 'property') {
+    document.getElementById('regularContribution').value = '0';
+  } else if(type === 'bonds') {
+    document.getElementById('regularContribution').value = '0';
+  } else {
+    document.getElementById('regularContribution').value = '100';
+  }
+
+  calculate();
+}
+
+// ===== SET INITIAL INVESTMENT =====
+function setInitial(val) {
+  document.getElementById('initialInvestment').value = val.toLocaleString('en-NZ');
+  calculate();
+}
+
+// ===== SET CONTRIBUTION FREQUENCY =====
+function setContribFreq(btn) {
+  document.querySelectorAll('#contribFreqWrap .mode-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  currentContribFreq = btn.dataset.freq;
+  calculate();
+}
+
+// ===== SET COMPOUNDING FREQUENCY =====
+function setCompoundFreq(btn) {
+  document.querySelectorAll('#compoundFreqWrap .mode-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  currentCompoundFreq = btn.dataset.compound;
+  calculate();
+}
+
+// ===== CALCULATE =====
+function calculate() {
+  var P = parseNum(document.getElementById('initialInvestment').value);
+  var r = parseNum(document.getElementById('interestRate').value) / 100;
+  var t = parseNum(document.getElementById('investTerm').value);
+  var contribPerPeriod = parseNum(document.getElementById('regularContribution').value);
+
+  if(P <= 0 && contribPerPeriod <= 0) {
+    document.getElementById('rhBalance').textContent = fmtMoney(0);
+    document.getElementById('rhSub').textContent = 'Enter your investment details above';
+    document.getElementById('rhContributions').textContent = fmtMoneyRound(0);
+    document.getElementById('rhInterest').textContent = fmtMoneyRound(0);
+    document.getElementById('rhGrowth').textContent = fmtPct(0);
+    document.getElementById('sbContributions').style.width = '50%';
+    document.getElementById('sbContributions').textContent = fmtPct(50);
+    document.getElementById('sbInterest').style.width = '50%';
+    document.getElementById('sbInterest').textContent = fmtPct(0);
+    document.getElementById('legendContributions').textContent = fmtMoneyRound(0);
+    document.getElementById('legendInterest').textContent = fmtMoneyRound(0);
+    var bdCard = document.getElementById('breakdownCard');
+    bdCard.innerHTML =
+      '<div class="breakdown-row"><span class="br-label">Initial investment</span><span class="br-value">' + fmtMoney(P) + '</span></div>' +
+      '<div class="breakdown-row"><span class="br-label">Interest rate</span><span class="br-value">0.00% p.a.</span></div>' +
+      '<div class="breakdown-row"><span class="br-label">Investment term</span><span class="br-value">0 years</span></div>' +
+      '<div class="breakdown-row"><span class="br-label">Regular contribution</span><span class="br-value">' + fmtMoney(contribPerPeriod) + ' / ' + currentContribFreq + '</span></div>' +
+      '<div class="breakdown-row"><span class="br-label">Total contributions</span><span class="br-value">' + fmtMoneyRound(0) + '</span></div>' +
+      '<div class="breakdown-row"><span class="br-label">Total interest earned</span><span class="br-value green">' + fmtMoneyRound(0) + '</span></div>' +
+      '<div class="breakdown-row total-row"><span class="br-label">Final balance</span><span class="br-value">' + fmtMoney(0) + '</span></div>';
+    document.getElementById('amortWrap').style.display = 'none';
+    document.getElementById('amortToggle').textContent = 'Show yearly growth';
+    document.getElementById('amortBody').innerHTML = '';
+    return;
+  }
+
+  if(r < 0 || t <= 0) {
+    document.getElementById('rhBalance').textContent = fmtMoney(P);
+    document.getElementById('rhSub').textContent = 'Enter rate and term to see growth';
+    document.getElementById('rhContributions').textContent = fmtMoneyRound(P);
+    document.getElementById('rhInterest').textContent = fmtMoneyRound(0);
+    document.getElementById('rhGrowth').textContent = fmtPct(0);
+    document.getElementById('sbContributions').style.width = '100%';
+    document.getElementById('sbContributions').textContent = fmtPct(100);
+    document.getElementById('sbInterest').style.width = '0%';
+    document.getElementById('sbInterest').textContent = fmtPct(0);
+    document.getElementById('legendContributions').textContent = fmtMoneyRound(P);
+    document.getElementById('legendInterest').textContent = fmtMoneyRound(0);
+    var bdCard2 = document.getElementById('breakdownCard');
+    bdCard2.innerHTML =
+      '<div class="breakdown-row"><span class="br-label">Initial investment</span><span class="br-value">' + fmtMoney(P) + '</span></div>' +
+      '<div class="breakdown-row"><span class="br-label">Interest rate</span><span class="br-value">0.00% p.a.</span></div>' +
+      '<div class="breakdown-row"><span class="br-label">Investment term</span><span class="br-value">0 years</span></div>' +
+      '<div class="breakdown-row"><span class="br-label">Regular contribution</span><span class="br-value">' + fmtMoney(contribPerPeriod) + ' / ' + currentContribFreq + '</span></div>' +
+      '<div class="breakdown-row"><span class="br-label">Total contributions</span><span class="br-value">' + fmtMoneyRound(P) + '</span></div>' +
+      '<div class="breakdown-row"><span class="br-label">Total interest earned</span><span class="br-value green">' + fmtMoneyRound(0) + '</span></div>' +
+      '<div class="breakdown-row total-row"><span class="br-label">Final balance</span><span class="br-value">' + fmtMoney(P) + '</span></div>';
+    document.getElementById('amortWrap').style.display = 'none';
+    document.getElementById('amortToggle').textContent = 'Show yearly growth';
+    document.getElementById('amortBody').innerHTML = '';
+    return;
+  }
+
+  // Default rate to 0 if not set
+  if(isNaN(r) || r < 0) r = 0;
+
+  // Contribution periods per year
+  var contribPeriodsPerYear;
+  if(currentContribFreq === 'weekly') {
+    contribPeriodsPerYear = 52;
+  } else if(currentContribFreq === 'fortnightly') {
+    contribPeriodsPerYear = 26;
+  } else {
+    contribPeriodsPerYear = 12;
+  }
+
+  // Compounding periods per year
+  var compoundPeriodsPerYear;
+  if(currentCompoundFreq === 'monthly') {
+    compoundPeriodsPerYear = 12;
+  } else if(currentCompoundFreq === 'quarterly') {
+    compoundPeriodsPerYear = 4;
+  } else {
+    compoundPeriodsPerYear = 1;
+  }
+
+  var totalYears = Math.round(t);
+  if(totalYears <= 0) totalYears = 1;
+
+  // Calculate year by year
+  var balance = P;
+  var totalContributions = P;
+  var totalInterest = 0;
+  var yearlyData = [];
+
+  for(var year = 1; year <= totalYears; year++) {
+    var yearStartBalance = balance;
+    var yearContributions = 0;
+    var yearInterest = 0;
+
+    // Simulate each contribution period within the year
+    for(var cp = 0; cp < contribPeriodsPerYear; cp++) {
+      // Add contribution
+      balance += contribPerPeriod;
+      yearContributions += contribPerPeriod;
+
+      // Calculate interest for this portion of the year
+      // Interest compounds at compound frequency
+      var periodsPerContribPeriod = compoundPeriodsPerYear / contribPeriodsPerYear;
+      if(periodsPerContribPeriod >= 1) {
+        // More compounding periods than contribution periods
+        // Compound interest for this sub-period
+        var subRate = r / compoundPeriodsPerYear;
+        var subPeriods = periodsPerContribPeriod;
+        for(var sp = 0; sp < subPeriods; sp++) {
+          var interestThisSub = balance * subRate;
+          balance += interestThisSub;
+          yearInterest += interestThisSub;
+        }
+      } else {
+        // Fewer compounding periods than contribution periods
+        // Only compound when we hit a compounding boundary
+        var contribsPerCompound = contribPeriodsPerYear / compoundPeriodsPerYear;
+        if(cp % Math.round(contribsPerCompound) === 0) {
+          var compoundRate = r / compoundPeriodsPerYear;
+          var interestThisCompound = balance * compoundRate;
+          balance += interestThisCompound;
+          yearInterest += interestThisCompound;
+        }
+      }
+    }
+
+    totalContributions += yearContributions;
+    totalInterest += yearInterest;
+
+    var growthPct = yearStartBalance > 0 ? ((balance - yearStartBalance) / yearStartBalance * 100) : 0;
+
+    yearlyData.push({
+      year: year,
+      balance: balance,
+      contributions: totalContributions,
+      interest: yearInterest,
+      growth: growthPct
+    });
+  }
+
+  var finalBalance = balance;
+  var totalInterestEarned = finalBalance - totalContributions;
+  if(totalInterestEarned < 0) totalInterestEarned = 0;
+  var growthPctOverall = totalContributions > 0 ? (totalInterestEarned / totalContributions * 100) : 0;
+
+  // Update hero
+  document.getElementById('rhBalance').textContent = fmtMoney(finalBalance);
+  document.getElementById('rhSub').textContent = 'after ' + totalYears + ' year' + (totalYears !== 1 ? 's' : '') + ' at ' + (r * 100).toFixed(2) + '% p.a.';
+  document.getElementById('rhContributions').textContent = fmtMoneyRound(totalContributions);
+  document.getElementById('rhInterest').textContent = fmtMoneyRound(totalInterestEarned);
+  document.getElementById('rhGrowth').textContent = fmtPct(growthPctOverall);
+
+  // Split bar
+  var interestPct = finalBalance > 0 ? (totalInterestEarned / finalBalance * 100) : 0;
+  var contributionsPct = 100 - interestPct;
+  document.getElementById('sbContributions').style.width = contributionsPct.toFixed(1) + '%';
+  document.getElementById('sbContributions').textContent = fmtPct(contributionsPct);
+  document.getElementById('sbInterest').style.width = interestPct.toFixed(1) + '%';
+  document.getElementById('sbInterest').textContent = fmtPct(interestPct);
+  document.getElementById('legendContributions').textContent = fmtMoneyRound(totalContributions);
+  document.getElementById('legendInterest').textContent = fmtMoneyRound(totalInterestEarned);
+
+  // Breakdown
+  var bdCard = document.getElementById('breakdownCard');
+  bdCard.innerHTML =
+    '<div class="breakdown-row"><span class="br-label">Initial investment</span><span class="br-value">' + fmtMoney(P) + '</span></div>' +
+    '<div class="breakdown-row"><span class="br-label">Interest rate</span><span class="br-value">' + (r * 100).toFixed(2) + '% p.a.</span></div>' +
+    '<div class="breakdown-row"><span class="br-label">Investment term</span><span class="br-value">' + totalYears + ' year' + (totalYears !== 1 ? 's' : '') + '</span></div>' +
+    '<div class="breakdown-row"><span class="br-label">Regular contribution</span><span class="br-value">' + fmtMoney(contribPerPeriod) + ' / ' + currentContribFreq + '</span></div>' +
+    '<div class="breakdown-row"><span class="br-label">Total contributions</span><span class="br-value">' + fmtMoneyRound(totalContributions) + '</span></div>' +
+    '<div class="breakdown-row"><span class="br-label">Total interest earned</span><span class="br-value green">' + fmtMoneyRound(totalInterestEarned) + '</span></div>' +
+    '<div class="breakdown-row total-row"><span class="br-label">Final balance</span><span class="br-value">' + fmtMoney(finalBalance) + '</span></div>';
+
+  // Year-by-year growth table
+  document.getElementById('amortWrap').style.display = 'none';
+  document.getElementById('amortToggle').textContent = 'Show yearly growth';
+  var amortBody = document.getElementById('amortBody');
+  amortBody.innerHTML = yearlyData.map(function(y) {
+    return '<tr>' +
+      '<td>Year ' + y.year + '</td>' +
+      '<td class="td-balance">' + fmtMoneyRound(y.balance) + '</td>' +
+      '<td class="td-principal">' + fmtMoneyRound(y.contributions) + '</td>' +
+      '<td class="td-interest">' + fmtMoneyRound(y.interest) + '</td>' +
+      '<td>' + fmtPct(y.growth) + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function toggleAmort() {
+  var wrap = document.getElementById('amortWrap');
+  var btn = document.getElementById('amortToggle');
+  if(wrap.style.display === 'none') {
+    wrap.style.display = 'block';
+    btn.textContent = 'Hide yearly growth';
+  } else {
+    wrap.style.display = 'none';
+    btn.textContent = 'Show yearly growth';
+  }
+}
+
+// ===== LIVE CALCULATION ON INPUT =====
+document.querySelectorAll('#initialInvestment, #interestRate, #investTerm, #regularContribution').forEach(function(el) {
+  el.addEventListener('input', function() { calculate(); });
+});
+
+// ===== INIT =====
+document.querySelector('#investTypeWrap .type-btn.active').click();
+</script>
+
+</body>
+</html>

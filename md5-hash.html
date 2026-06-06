@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MD5 Hash Generator — Free Online MD5 Hash Tool | ainav.nz</title>
+<meta name="description" content="Generate MD5 hashes for text and files instantly in your browser. Free, private, no server calls.">
+<meta name="keywords" content="md5 hash, md5 generator, hash tool, sha1 hash, sha256 hash, online hash generator">
+<link rel="canonical" href="https://ainav.nz/md5-hash.html">
+<meta property="og:title" content="MD5 Hash Generator — Free Online MD5 Hash Tool | ainav.nz">
+<meta property="og:description" content="Generate MD5 hashes for text and files instantly. Free, private, browser-based.">
+<meta property="og:url" content="https://ainav.nz/md5-hash.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MD5 Hash Generator — Free Online MD5 Hash Tool | ainav.nz">
+<meta name="twitter:description" content="Generate MD5 hashes for text and files instantly.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --danger:#D92D20;--danger-light:#FEE2E2;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+.tool-layout{display:flex;flex-direction:column;gap:20px;padding:24px 32px;flex:1;align-items:center}
+.tool-main{width:100%;max-width:960px;display:flex;flex-direction:column;gap:18px}
+
+.tool-header{display:flex;gap:16px;flex-wrap:wrap}
+.header-card{flex:1;min-width:260px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.header-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.header-card p,.header-card li{font-size:12px;color:var(--sub);line-height:1.6}
+.header-card ul{padding-left:0;margin-top:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.header-card ul li{display:flex;align-items:flex-start;gap:6px}
+.header-card ul li::before{content:"•";color:var(--brand-light);font-weight:700;flex-shrink:0;margin-top:1px}
+
+.btn-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:44px;padding:0 22px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s}
+.btn-action:hover{background:#fff;border-color:#C0C8CE}
+.btn-action:active{transform:scale(.98)}
+.btn-action:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.btn-action.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 10px rgba(0,59,79,.2)}
+.btn-action.btn-primary:hover{background:var(--brand-light);border-color:var(--brand-light)}
+.btn-action .btn-emoji{font-size:16px}
+
+.code-input{width:100%;min-height:200px;border:1.5px solid var(--border);border-radius:12px;padding:16px;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:13px;line-height:1.6;color:var(--text);background:rgba(255,255,255,.6);backdrop-filter:blur(8px);resize:vertical;outline:none;transition:border-color .15s;box-shadow:var(--shadow-sm)}
+.code-input:focus{border-color:var(--brand);background:#fff}
+.code-output{width:100%;min-height:200px;border:1.5px solid var(--border);border-radius:12px;padding:16px;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:13px;line-height:1.6;color:var(--text);background:rgba(255,255,255,.4);overflow:auto;white-space:pre-wrap;word-break:break-all;box-shadow:var(--shadow-sm)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.copy-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,.6);font-size:12px;font-weight:600;color:var(--sub);cursor:pointer;font-family:inherit;transition:all .15s}
+.copy-btn:hover{background:#fff;border-color:var(--brand);color:var(--brand)}
+.input-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+.toggle-row{display:flex;gap:8px;flex-wrap:wrap}
+.toggle-btn{padding:8px 18px;border-radius:8px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;font-family:inherit;transition:all .15s}
+.toggle-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.toggle-btn:hover:not(.active){background:rgba(255,255,255,.9)}
+.result-box{margin-top:12px;padding:16px;border-radius:12px;background:rgba(255,255,255,.5);border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.color-swatch{width:100%;height:80px;border-radius:12px;border:1px solid var(--border);margin-bottom:12px;transition:background-color .2s}
+.color-value-row{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:8px;background:rgba(255,255,255,.5);border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .15s}
+.color-value-row:hover{background:rgba(255,255,255,.8);border-color:var(--brand)}
+.color-value-row .cv-label{font-size:11px;font-weight:700;color:var(--muted);min-width:40px;text-transform:uppercase}
+.color-value-row .cv-value{font-size:13px;font-weight:600;color:var(--text);font-family:'SF Mono',monospace;flex:1}
+
+.upload-zone{width:100%;border:2.5px dashed rgba(0,59,79,.12);border-radius:20px;padding:44px 28px;text-align:center;cursor:pointer;transition:all .3s;background:rgba(255,255,255,.4);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 4px 24px rgba(0,0,0,.03);display:flex;flex-direction:column;align-items:center;gap:10px}
+.upload-zone:hover{border-color:var(--brand-light);background:rgba(255,255,255,.65);transform:translateY(-1px);box-shadow:0 8px 32px rgba(0,0,0,.08)}
+.upload-zone .uz-icon{font-size:40px;margin-bottom:4px;opacity:.75}
+.upload-zone .uz-text{font-size:16px;font-weight:600;color:var(--text)}
+.upload-zone .uz-hint,.upload-zone .uz-sub{font-size:13px;color:var(--muted);margin-top:2px}
+
+@media(max-width:1024px){
+  .tool-layout{padding:18px 20px}
+  .header-card{min-width:220px}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .tool-layout{padding:12px 14px}
+  .upload-zone{padding:32px 20px}
+}
+@media(max-width:420px){
+  .btn-action{height:42px;padding:0 16px;font-size:13px}
+  .upload-zone{padding:24px 16px}
+  .upload-zone .uz-icon{font-size:32px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">18</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">14</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">21</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item active" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">11</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html#dev">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">MD5 Hash Generator</span>
+  </div>
+
+  <div class="tool-layout">
+
+    <div class="tool-main">
+
+      <div class="tool-header">
+        <div class="header-card">
+          <h3>🔐 How It Works</h3>
+          <p>Enter text or upload a file to generate its MD5 hash — all processing happens locally.</p>
+        </div>
+        <div class="header-card">
+          <h3>💡 Tips</h3>
+          <ul>
+            <li>MD5 is a one-way hash function</li>
+            <li>Same input always produces the same hash</li>
+            <li>Not recommended for password storage</li>
+          </ul>
+        </div>
+      </div>
+
+      <label class="input-label">Text Input</label>
+      <textarea class="code-input" id="textInput" placeholder="Enter text to hash..."></textarea>
+
+      <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+        <div class="uz-icon">📁</div>
+        <div class="uz-text">Drop a file or click to upload</div>
+        <div class="uz-sub">Hash any file — MD5, SHA-1, SHA-256</div>
+      </div>
+      <input type="file" id="fileInput" style="display:none">
+
+      <div class="btn-row">
+        <button class="btn-action btn-primary" onclick="generateHash()">
+          <span class="btn-emoji">🔐</span> Generate Hash
+        </button>
+      </div>
+
+      <div class="result-box" id="resultBox" style="display:none">
+        <div class="color-value-row" onclick="copyValue('md5Val')" title="Click to copy">
+          <span class="cv-label">MD5</span>
+          <span class="cv-value" id="md5Val"></span>
+          <span class="copy-btn">Copy</span>
+        </div>
+        <div class="color-value-row" onclick="copyValue('sha1Val')" title="Click to copy">
+          <span class="cv-label">SHA-1</span>
+          <span class="cv-value" id="sha1Val"></span>
+          <span class="copy-btn">Copy</span>
+        </div>
+        <div class="color-value-row" onclick="copyValue('sha256Val')" title="Click to copy">
+          <span class="cv-label">SHA-256</span>
+          <span class="cv-value" id="sha256Val"></span>
+          <span class="copy-btn">Copy</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  // ===== Minimal MD5 Implementation =====
+  var md5 = (function(){
+    function safeAdd(x, y) {
+      var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+      var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+      return (msw << 16) | (lsw & 0xFFFF);
+    }
+    function bitRotateLeft(num, cnt) {
+      return (num << cnt) | (num >>> (32 - cnt));
+    }
+    function md5cmn(q, a, b, x, s, t) {
+      return safeAdd(bitRotateLeft(safeAdd(safeAdd(a, q), safeAdd(x, t)), s), b);
+    }
+    function md5ff(a, b, c, d, x, s, t) { return md5cmn((b & c) | ((~b) & d), a, b, x, s, t); }
+    function md5gg(a, b, c, d, x, s, t) { return md5cmn((b & d) | (c & (~d)), a, b, x, s, t); }
+    function md5hh(a, b, c, d, x, s, t) { return md5cmn(b ^ c ^ d, a, b, x, s, t); }
+    function md5ii(a, b, c, d, x, s, t) { return md5cmn(c ^ (b | (~d)), a, b, x, s, t); }
+
+    function binlMD5(x, len) {
+      x[len >> 5] |= 0x80 << (len % 32);
+      x[(((len + 64) >>> 9) << 4) + 14] = len;
+      var a = 1732584193, b = -271733879, c = -1732584194, d = 271733878;
+      for (var i = 0; i < x.length; i += 16) {
+        var olda = a, oldb = b, oldc = c, oldd = d;
+        a=md5ff(a,b,c,d,x[i],7,-680876936);d=md5ff(d,a,b,c,x[i+1],12,-389564586);c=md5ff(c,d,a,b,x[i+2],17,606105819);b=md5ff(b,c,d,a,x[i+3],22,-1044525330);
+        a=md5ff(a,b,c,d,x[i+4],7,-176418897);d=md5ff(d,a,b,c,x[i+5],12,1200080426);c=md5ff(c,d,a,b,x[i+6],17,-1473231341);b=md5ff(b,c,d,a,x[i+7],22,-45705983);
+        a=md5ff(a,b,c,d,x[i+8],7,1770035416);d=md5ff(d,a,b,c,x[i+9],12,-1958414417);c=md5ff(c,d,a,b,x[i+10],17,-42063);b=md5ff(b,c,d,a,x[i+11],22,-1990404162);
+        a=md5ff(a,b,c,d,x[i+12],7,1804603682);d=md5ff(d,a,b,c,x[i+13],12,-40341101);c=md5ff(c,d,a,b,x[i+14],17,-1502002290);b=md5ff(b,c,d,a,x[i+15],22,1236535329);
+        a=md5gg(a,b,c,d,x[i+1],5,-165796510);d=md5gg(d,a,b,c,x[i+6],9,-1069501632);c=md5gg(c,d,a,b,x[i+11],14,643717713);b=md5gg(b,c,d,a,x[i],20,-373897302);
+        a=md5gg(a,b,c,d,x[i+5],5,-701558691);d=md5gg(d,a,b,c,x[i+10],9,38016083);c=md5gg(c,d,a,b,x[i+15],14,-660478335);b=md5gg(b,c,d,a,x[i+4],20,-405537848);
+        a=md5gg(a,b,c,d,x[i+9],5,568446438);d=md5gg(d,a,b,c,x[i+14],9,-1019803690);c=md5gg(c,d,a,b,x[i+3],14,-187363961);b=md5gg(b,c,d,a,x[i+8],20,1163531501);
+        a=md5gg(a,b,c,d,x[i+13],5,-1444681467);d=md5gg(d,a,b,c,x[i+2],9,-51403784);c=md5gg(c,d,a,b,x[i+7],14,1735328473);b=md5gg(b,c,d,a,x[i+12],20,-1926607734);
+        a=md5hh(a,b,c,d,x[i+5],4,-378558);d=md5hh(d,a,b,c,x[i+8],11,-2022574463);c=md5hh(c,d,a,b,x[i+11],16,1839030562);b=md5hh(b,c,d,a,x[i+14],23,-35309556);
+        a=md5hh(a,b,c,d,x[i+1],4,-1530992060);d=md5hh(d,a,b,c,x[i+4],11,1272893353);c=md5hh(c,d,a,b,x[i+7],16,-155497632);b=md5hh(b,c,d,a,x[i+10],23,-1094730640);
+        a=md5hh(a,b,c,d,x[i+13],4,681279174);d=md5hh(d,a,b,c,x[i],11,-358537222);c=md5hh(c,d,a,b,x[i+3],16,-722521979);b=md5hh(b,c,d,a,x[i+6],23,76029189);
+        a=md5hh(a,b,c,d,x[i+9],4,-640364487);d=md5hh(d,a,b,c,x[i+12],11,-421815835);c=md5hh(c,d,a,b,x[i+15],16,530742520);b=md5hh(b,c,d,a,x[i+2],23,-995338651);
+        a=md5ii(a,b,c,d,x[i],6,-198630844);d=md5ii(d,a,b,c,x[i+7],10,1126891415);c=md5ii(c,d,a,b,x[i+14],15,-1416354905);b=md5ii(b,c,d,a,x[i+5],21,-57434055);
+        a=md5ii(a,b,c,d,x[i+12],6,1700485571);d=md5ii(d,a,b,c,x[i+3],10,-1894986606);c=md5ii(c,d,a,b,x[i+10],15,-1051523);b=md5ii(b,c,d,a,x[i+1],21,-2054922799);
+        a=md5ii(a,b,c,d,x[i+8],6,1873313359);d=md5ii(d,a,b,c,x[i+15],10,-30611744);c=md5ii(c,d,a,b,x[i+6],15,-1560198380);b=md5ii(b,c,d,a,x[i+13],21,1309151649);
+        a=md5ii(a,b,c,d,x[i+4],6,-145523070);d=md5ii(d,a,b,c,x[i+11],10,-1120210379);c=md5ii(c,d,a,b,x[i+2],15,718787259);b=md5ii(b,c,d,a,x[i+9],21,-343485551);
+        a=safeAdd(a,olda);b=safeAdd(b,oldb);c=safeAdd(c,oldc);d=safeAdd(d,oldd);
+      }
+      return [a,b,c,d];
+    }
+
+    function binl2rstr(input) {
+      var output = '';
+      for (var i = 0; i < input.length * 32; i += 8) {
+        output += String.fromCharCode((input[i >> 5] >>> (i % 32)) & 0xFF);
+      }
+      return output;
+    }
+
+    function rstr2binl(input) {
+      var output = [];
+      for (var i = 0; i < input.length * 8; i += 32) output[i >> 5] = 0;
+      for (var i = 0; i < input.length * 8; i += 8) {
+        output[i >> 5] |= (input.charCodeAt(i / 8) & 0xFF) << (i % 32);
+      }
+      return output;
+    }
+
+    function rstrMD5(s) { return binl2rstr(binlMD5(rstr2binl(s), s.length * 8)); }
+
+    function rstr2hex(input) {
+      var hexTab = '0123456789abcdef';
+      var output = '';
+      for (var i = 0; i < input.length; i++) {
+        var x = input.charCodeAt(i);
+        output += hexTab.charAt((x >>> 4) & 0x0F) + hexTab.charAt(x & 0x0F);
+      }
+      return output;
+    }
+
+    function str2rstrUTF8(input) {
+      return unescape(encodeURIComponent(input));
+    }
+
+    return function(str) {
+      return rstr2hex(rstrMD5(str2rstrUTF8(str)));
+    };
+  })();
+
+  // ===== ArrayBuffer to Hex =====
+  function buf2hex(buffer) {
+    return Array.prototype.map.call(new Uint8Array(buffer), function(b){
+      return ('0' + b.toString(16)).slice(-2);
+    }).join('');
+  }
+
+  // ===== File handling =====
+  var uploadZone = document.getElementById('uploadZone');
+  var fileInput = document.getElementById('fileInput');
+  var selectedFile = null;
+
+  fileInput.addEventListener('change', function(e) {
+    if (e.target.files && e.target.files[0]) {
+      selectedFile = e.target.files[0];
+      uploadZone.querySelector('.uz-text').textContent = selectedFile.name;
+      uploadZone.querySelector('.uz-sub').textContent = (selectedFile.size / 1024).toFixed(1) + ' KB';
+    }
+  });
+
+  uploadZone.addEventListener('dragover', function(e) {
+    e.preventDefault();
+    uploadZone.style.borderColor = 'var(--brand-light)';
+  });
+  uploadZone.addEventListener('dragleave', function() {
+    uploadZone.style.borderColor = '';
+  });
+  uploadZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    uploadZone.style.borderColor = '';
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      selectedFile = e.dataTransfer.files[0];
+      fileInput.files = e.dataTransfer.files;
+      uploadZone.querySelector('.uz-text').textContent = selectedFile.name;
+      uploadZone.querySelector('.uz-sub').textContent = (selectedFile.size / 1024).toFixed(1) + ' KB';
+    }
+  });
+
+  // ===== Generate Hash =====
+  window.generateHash = function() {
+    var text = document.getElementById('textInput').value;
+    var resultBox = document.getElementById('resultBox');
+
+    if (!text && !selectedFile) return;
+
+    if (selectedFile) {
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        var arrBuf = ev.target.result;
+        var bytes = new Uint8Array(arrBuf);
+        // MD5 from binary string
+        var binaryStr = '';
+        for (var i = 0; i < bytes.length; i++) binaryStr += String.fromCharCode(bytes[i]);
+        document.getElementById('md5Val').textContent = md5(binaryStr);
+
+        // SHA-1 and SHA-256 via SubtleCrypto
+        crypto.subtle.digest('SHA-1', arrBuf).then(function(hash) {
+          document.getElementById('sha1Val').textContent = buf2hex(hash);
+        });
+        crypto.subtle.digest('SHA-256', arrBuf).then(function(hash) {
+          document.getElementById('sha256Val').textContent = buf2hex(hash);
+        });
+        resultBox.style.display = 'block';
+      };
+      reader.readAsArrayBuffer(selectedFile);
+    } else {
+      // Text mode
+      document.getElementById('md5Val').textContent = md5(text);
+
+      var encoder = new TextEncoder();
+      var data = encoder.encode(text);
+      crypto.subtle.digest('SHA-1', data).then(function(hash) {
+        document.getElementById('sha1Val').textContent = buf2hex(hash);
+      });
+      crypto.subtle.digest('SHA-256', data).then(function(hash) {
+        document.getElementById('sha256Val').textContent = buf2hex(hash);
+      });
+      resultBox.style.display = 'block';
+    }
+  };
+
+  window.copyValue = function(id) {
+    var text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(function(){
+      var el = document.getElementById(id);
+      var orig = el.textContent;
+      el.textContent = 'Copied!';
+      setTimeout(function(){ el.textContent = orig; }, 1000);
+    });
+  };
+
+  // Sidebar
+  document.querySelectorAll('.side-nav .side-item').forEach(function(b){
+    b.addEventListener('click', function(){
+      var c = this.getAttribute('data-cat');
+      window.location.href = c ? 'index.html#'+c : 'index.html';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

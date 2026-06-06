@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JSON Diff — Compare Two JSON Objects Side by Side | ainav.nz</title>
+<meta name="description" content="Compare two JSON objects and highlight the differences. Free browser-based JSON comparison tool.">
+<meta name="keywords" content="json diff, json compare, json difference, compare json objects, json diff tool">
+<link rel="canonical" href="https://ainav.nz/json-diff.html">
+<meta property="og:title" content="JSON Diff — Compare Two JSON Objects Side by Side | ainav.nz">
+<meta property="og:description" content="Compare two JSON objects and highlight the differences. Free, private, browser-based.">
+<meta property="og:url" content="https://ainav.nz/json-diff.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JSON Diff — Compare Two JSON Objects Side by Side | ainav.nz">
+<meta name="twitter:description" content="Compare two JSON objects and highlight the differences.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --danger:#D92D20;--danger-light:#FEE2E2;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+.tool-layout{display:flex;flex-direction:column;gap:20px;padding:24px 32px;flex:1;align-items:center}
+.tool-main{width:100%;max-width:960px;display:flex;flex-direction:column;gap:18px}
+
+.tool-header{display:flex;gap:16px;flex-wrap:wrap}
+.header-card{flex:1;min-width:260px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.header-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.header-card p,.header-card li{font-size:12px;color:var(--sub);line-height:1.6}
+.header-card ul{padding-left:0;margin-top:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.header-card ul li{display:flex;align-items:flex-start;gap:6px}
+.header-card ul li::before{content:"•";color:var(--brand-light);font-weight:700;flex-shrink:0;margin-top:1px}
+
+.btn-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:44px;padding:0 22px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s}
+.btn-action:hover{background:#fff;border-color:#C0C8CE}
+.btn-action:active{transform:scale(.98)}
+.btn-action:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.btn-action.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 10px rgba(0,59,79,.2)}
+.btn-action.btn-primary:hover{background:var(--brand-light);border-color:var(--brand-light)}
+.btn-action .btn-emoji{font-size:16px}
+
+.code-input{width:100%;min-height:200px;border:1.5px solid var(--border);border-radius:12px;padding:16px;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:13px;line-height:1.6;color:var(--text);background:rgba(255,255,255,.6);backdrop-filter:blur(8px);resize:vertical;outline:none;transition:border-color .15s;box-shadow:var(--shadow-sm)}
+.code-input:focus{border-color:var(--brand);background:#fff}
+.code-output{width:100%;min-height:200px;border:1.5px solid var(--border);border-radius:12px;padding:16px;font-family:'SF Mono',SFMono-Regular,Consolas,'Liberation Mono',Menlo,monospace;font-size:13px;line-height:1.6;color:var(--text);background:rgba(255,255,255,.4);overflow:auto;white-space:pre-wrap;word-break:break-all;box-shadow:var(--shadow-sm)}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+.copy-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;border:1px solid var(--border);background:rgba(255,255,255,.6);font-size:12px;font-weight:600;color:var(--sub);cursor:pointer;font-family:inherit;transition:all .15s}
+.copy-btn:hover{background:#fff;border-color:var(--brand);color:var(--brand)}
+.input-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+.toggle-row{display:flex;gap:8px;flex-wrap:wrap}
+.toggle-btn{padding:8px 18px;border-radius:8px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;font-family:inherit;transition:all .15s}
+.toggle-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.toggle-btn:hover:not(.active){background:rgba(255,255,255,.9)}
+.result-box{margin-top:12px;padding:16px;border-radius:12px;background:rgba(255,255,255,.5);border:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.color-swatch{width:100%;height:80px;border-radius:12px;border:1px solid var(--border);margin-bottom:12px;transition:background-color .2s}
+.color-value-row{display:flex;align-items:center;gap:10px;padding:8px 14px;border-radius:8px;background:rgba(255,255,255,.5);border:1px solid var(--border);margin-bottom:6px;cursor:pointer;transition:all .15s}
+.color-value-row:hover{background:rgba(255,255,255,.8);border-color:var(--brand)}
+.color-value-row .cv-label{font-size:11px;font-weight:700;color:var(--muted);min-width:40px;text-transform:uppercase}
+.color-value-row .cv-value{font-size:13px;font-weight:600;color:var(--text);font-family:'SF Mono',monospace;flex:1}
+
+.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.diff-status{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px;display:none;align-items:center;gap:8px}
+.diff-status.valid{display:flex;background:#dcfce7;color:#16a34a;border:1px solid #bbf7d0}
+.diff-status.invalid{display:flex;background:var(--danger-light);color:var(--danger);border:1px solid #fecaca}
+.diff-result-item{padding:10px 14px;border-radius:8px;margin-bottom:6px;font-size:13px;font-family:'SF Mono',monospace;line-height:1.5}
+.diff-result-item.added{background:#dcfce7;border:1px solid #bbf7d0;color:#16a34a}
+.diff-result-item.removed{background:#fef2f2;border:1px solid #fecaca;color:#dc2626}
+.diff-result-item.changed{background:#fef9c3;border:1px solid #fef08a;color:#ca8a04}
+.diff-result-item .diff-path{font-weight:700;margin-right:8px}
+.diff-summary{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.diff-summary span{font-size:12px;font-weight:600;padding:4px 10px;border-radius:6px}
+.diff-summary .added-count{background:#dcfce7;color:#16a34a}
+.diff-summary .removed-count{background:#fef2f2;color:#dc2626}
+.diff-summary .changed-count{background:#fef9c3;color:#ca8a04}
+
+@media(max-width:1024px){
+  .tool-layout{padding:18px 20px}
+  .header-card{min-width:220px}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .tool-layout{padding:12px 14px}
+  .diff-grid{grid-template-columns:1fr}
+}
+@media(max-width:420px){
+  .btn-action{height:42px;padding:0 16px;font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">18</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">14</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">21</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item active" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">11</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html#dev">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">JSON Diff</span>
+  </div>
+
+  <div class="tool-layout">
+
+    <div class="tool-main">
+
+      <div class="tool-header">
+        <div class="header-card">
+          <h3>🔍 How It Works</h3>
+          <p>Paste two JSON objects and click Compare to see what's different between them.</p>
+        </div>
+        <div class="header-card">
+          <h3>💡 Tips</h3>
+          <ul>
+            <li>Added keys shown in green</li>
+            <li>Removed keys in red</li>
+            <li>Changed values in yellow</li>
+            <li>Invalid JSON shows an error</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="diff-grid">
+        <div>
+          <label class="input-label">JSON A</label>
+          <textarea class="code-input" id="jsonA" placeholder='{"name": "Alice", "age": 30}'></textarea>
+        </div>
+        <div>
+          <label class="input-label">JSON B</label>
+          <textarea class="code-input" id="jsonB" placeholder='{"name": "Bob", "age": 30, "city": "Auckland"}'></textarea>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-action btn-primary" onclick="compareJson()">
+          <span class="btn-emoji">🔍</span> Compare
+        </button>
+      </div>
+
+      <div class="diff-status" id="diffStatus"></div>
+      <div id="diffSummary" class="diff-summary"></div>
+      <div id="diffResult"></div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  function deepDiff(a, b, path) {
+    var diffs = [];
+    if (a === b) return diffs;
+
+    var aType = a === null ? 'null' : Array.isArray(a) ? 'array' : typeof a;
+    var bType = b === null ? 'null' : Array.isArray(b) ? 'array' : typeof b;
+
+    if (aType !== bType) {
+      diffs.push({type: 'changed', path: path, from: a, to: b});
+      return diffs;
+    }
+
+    if (aType === 'object' && bType === 'object') {
+      var allKeys = {};
+      Object.keys(a).forEach(function(k){ allKeys[k]=true; });
+      Object.keys(b).forEach(function(k){ allKeys[k]=true; });
+      Object.keys(allKeys).forEach(function(key) {
+        var keyPath = path + '.' + key;
+        if (!(key in a)) {
+          diffs.push({type: 'added', path: keyPath, value: b[key]});
+        } else if (!(key in b)) {
+          diffs.push({type: 'removed', path: keyPath, value: a[key]});
+        } else {
+          diffs = diffs.concat(deepDiff(a[key], b[key], keyPath));
+        }
+      });
+    } else if (aType === 'array' && bType === 'array') {
+      var maxLen = Math.max(a.length, b.length);
+      for (var i = 0; i < maxLen; i++) {
+        var idxPath = path + '[' + i + ']';
+        if (i >= a.length) {
+          diffs.push({type: 'added', path: idxPath, value: b[i]});
+        } else if (i >= b.length) {
+          diffs.push({type: 'removed', path: idxPath, value: a[i]});
+        } else {
+          diffs = diffs.concat(deepDiff(a[i], b[i], idxPath));
+        }
+      }
+    } else if (a !== b) {
+      diffs.push({type: 'changed', path: path, from: a, to: b});
+    }
+
+    return diffs;
+  }
+
+  window.compareJson = function() {
+    var statusEl = document.getElementById('diffStatus');
+    var resultEl = document.getElementById('diffResult');
+    var summaryEl = document.getElementById('diffSummary');
+    statusEl.className = 'diff-status';
+    statusEl.style.display = 'none';
+    resultEl.innerHTML = '';
+    summaryEl.innerHTML = '';
+
+    var aText = document.getElementById('jsonA').value.trim();
+    var bText = document.getElementById('jsonB').value.trim();
+
+    if (!aText || !bText) {
+      statusEl.className = 'diff-status invalid';
+      statusEl.style.display = 'flex';
+      statusEl.textContent = 'Please enter JSON in both fields.';
+      return;
+    }
+
+    var a, b;
+    try { a = JSON.parse(aText); } catch(e) {
+      statusEl.className = 'diff-status invalid';
+      statusEl.style.display = 'flex';
+      statusEl.textContent = 'JSON A is invalid: ' + e.message;
+      return;
+    }
+    try { b = JSON.parse(bText); } catch(e) {
+      statusEl.className = 'diff-status invalid';
+      statusEl.style.display = 'flex';
+      statusEl.textContent = 'JSON B is invalid: ' + e.message;
+      return;
+    }
+
+    var diffs = deepDiff(a, b, 'root');
+
+    if (diffs.length === 0) {
+      statusEl.className = 'diff-status valid';
+      statusEl.style.display = 'flex';
+      statusEl.textContent = '✓ JSON objects are identical!';
+      return;
+    }
+
+    var added = 0, removed = 0, changed = 0;
+    diffs.forEach(function(d) {
+      if (d.type === 'added') added++;
+      else if (d.type === 'removed') removed++;
+      else changed++;
+    });
+
+    summaryEl.innerHTML =
+      '<span class="added-count">+' + added + ' added</span>' +
+      '<span class="removed-count">-' + removed + ' removed</span>' +
+      '<span class="changed-count">~' + changed + ' changed</span>';
+
+    var html = '';
+    diffs.forEach(function(d) {
+      var cls = d.type;
+      var label = d.type === 'added' ? '+' : d.type === 'removed' ? '-' : '~';
+      var msg = '';
+      if (d.type === 'added') {
+        msg = label + ' <span class="diff-path">' + escHtml(d.path) + '</span> = ' + escHtml(JSON.stringify(d.value));
+      } else if (d.type === 'removed') {
+        msg = label + ' <span class="diff-path">' + escHtml(d.path) + '</span> = ' + escHtml(JSON.stringify(d.value));
+      } else {
+        msg = label + ' <span class="diff-path">' + escHtml(d.path) + '</span> from ' + escHtml(JSON.stringify(d.from)) + ' to ' + escHtml(JSON.stringify(d.to));
+      }
+      html += '<div class="diff-result-item ' + cls + '">' + msg + '</div>';
+    });
+
+    resultEl.innerHTML = html;
+  };
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  document.querySelectorAll('.side-nav .side-item').forEach(function(b){
+    b.addEventListener('click', function(){
+      var c = this.getAttribute('data-cat');
+      window.location.href = c ? 'index.html#'+c : 'index.html';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

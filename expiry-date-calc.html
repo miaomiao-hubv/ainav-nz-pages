@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Expiry Date Calculator — Food & Product Shelf Life | ainav.nz</title>
+<meta name="description" content="Calculate expiry dates for food, medicine, and products. Enter purchase date and shelf life to find the exact expiry date and days remaining.">
+<meta name="keywords" content="expiry date calculator, shelf life calculator, best before date, food expiry, product shelf life">
+<link rel="canonical" href="https://ainav.nz/expiry-date-calc.html">
+<meta property="og:title" content="Expiry Date Calculator — Food & Product Shelf Life | ainav.nz">
+<meta property="og:description" content="Calculate expiry dates for food, medicine, and products. Free, private, browser-based.">
+<meta property="og:url" content="https://ainav.nz/expiry-date-calc.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Expiry Date Calculator — Food & Product Shelf Life | ainav.nz">
+<meta name="twitter:description" content="Calculate expiry dates for food, medicine, and products.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --danger:#D92D20;--danger-light:#FEE2E2;
+  --success:#059669;
+  --warning:#D97706;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== TOOL LAYOUT ===== */
+.tool-layout{display:flex;flex-direction:column;gap:20px;padding:24px 32px;flex:1;align-items:center}
+.tool-main{width:100%;max-width:960px;display:flex;flex-direction:column;gap:18px}
+
+/* ===== HEADER CARDS ===== */
+.tool-header{display:flex;gap:16px;flex-wrap:wrap}
+.header-card{flex:1;min-width:260px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.header-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.header-card p,.header-card li{font-size:12px;color:var(--sub);line-height:1.6}
+.header-card ul{padding-left:0;margin-top:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.header-card ul li{display:flex;align-items:flex-start;gap:6px}
+.header-card ul li::before{content:"•";color:var(--brand-light);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* ===== BUTTONS ===== */
+.btn-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:44px;padding:0 22px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s}
+.btn-action:hover{background:#fff;border-color:#C0C8CE}
+.btn-action:active{transform:scale(.98)}
+.btn-action.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 10px rgba(0,59,79,.2)}
+.btn-action.btn-primary:hover{background:var(--brand-light);border-color:var(--brand-light)}
+
+/* ===== INPUT & FORM ===== */
+.input-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+.text-input{width:100%;height:44px;border:1.5px solid var(--border);border-radius:9px;padding:0 14px;font-size:14px;font-weight:500;color:var(--text);background:rgba(255,255,255,.6);backdrop-filter:blur(8px);outline:none;transition:border-color .15s;font-family:inherit}
+.text-input:focus{border-color:var(--brand);background:#fff}
+.toggle-row{display:flex;gap:8px;flex-wrap:wrap}
+.toggle-btn{padding:8px 18px;border-radius:8px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;font-family:inherit;transition:all .15s}
+.toggle-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.toggle-btn:hover:not(.active){background:rgba(255,255,255,.9)}
+.input-group{display:flex;flex-direction:column;gap:6px}
+.input-row{display:flex;gap:14px;flex-wrap:wrap}
+.input-row .input-group{flex:1;min-width:160px}
+
+/* ===== RESULT BOX ===== */
+.result-box{padding:20px;border-radius:14px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);border:1px solid var(--border);box-shadow:var(--shadow-md)}
+.result-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.result-item{padding:14px 16px;border-radius:10px;background:rgba(255,255,255,.6);border:1px solid var(--border)}
+.result-item .ri-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.result-item .ri-value{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.result-item .ri-sub{font-size:12px;margin-top:2px}
+.result-item.status-safe .ri-sub{color:var(--success)}
+.result-item.status-warning .ri-sub{color:var(--warning)}
+.result-item.status-expired .ri-sub{color:var(--danger)}
+
+/* ===== REG CARDS ===== */
+.reg-cards{display:flex;gap:14px;flex-wrap:wrap}
+.reg-card{flex:1;min-width:240px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.reg-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.reg-card p,.reg-card li{font-size:12px;color:var(--sub);line-height:1.6}
+.reg-card ul{padding-left:0;margin-top:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.reg-card ul li{display:flex;align-items:flex-start;gap:6px}
+.reg-card ul li::before{content:"•";color:var(--brand-light);font-weight:700;flex-shrink:0;margin-top:1px}
+.reg-card table{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+.reg-card th,.reg-card td{padding:6px 10px;text-align:left;border-bottom:1px solid var(--border)}
+.reg-card th{font-weight:700;color:var(--text);font-size:11px;text-transform:uppercase;letter-spacing:.3px}
+.reg-card td{color:var(--sub)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .tool-layout{padding:18px 20px}
+  .header-card{min-width:220px}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .tool-layout{padding:12px 14px}
+  .input-row{flex-direction:column}
+  .result-grid{grid-template-columns:1fr}
+}
+@media(max-width:420px){
+  .btn-action{height:42px;padding:0 16px;font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">21</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">18</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">19</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item active" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">9</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html#lifestyle">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">Expiry Date Calculator</span>
+  </div>
+
+  <div class="tool-layout">
+
+    <div class="tool-main">
+
+      <!-- Header Info Banner -->
+      <div class="tool-header">
+        <div class="header-card">
+          <h3>📅 How It Works</h3>
+          <p>Enter the purchase or production date and the shelf life duration. The calculator will determine the exact expiry date and how many days remain.</p>
+        </div>
+        <div class="header-card">
+          <h3>💡 Tips</h3>
+          <ul>
+            <li>Use category presets for common products</li>
+            <li>Shelf life assumes proper storage conditions</li>
+            <li>Always check the actual label on your product</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Inputs -->
+      <div class="input-row">
+        <div class="input-group">
+          <label class="input-label" for="startDate">Purchase / Production Date</label>
+          <input type="date" id="startDate" class="text-input">
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="shelfLife">Shelf Life</label>
+          <input type="number" id="shelfLife" class="text-input" value="7" min="1" placeholder="e.g. 7">
+        </div>
+      </div>
+
+      <!-- Unit Buttons -->
+      <div>
+        <label class="input-label">Shelf Life Unit</label>
+        <div class="toggle-row" id="unitGroup">
+          <button class="toggle-btn active" onclick="setUnit('days',this)">Days</button>
+          <button class="toggle-btn" onclick="setUnit('weeks',this)">Weeks</button>
+          <button class="toggle-btn" onclick="setUnit('months',this)">Months</button>
+          <button class="toggle-btn" onclick="setUnit('years',this)">Years</button>
+        </div>
+      </div>
+
+      <!-- Category Presets -->
+      <div>
+        <label class="input-label">Category Presets</label>
+        <div class="toggle-row" id="presetGroup">
+          <button class="toggle-btn" onclick="setPreset(7,'days',this)">Dairy 7d</button>
+          <button class="toggle-btn" onclick="setPreset(3,'days',this)">Meat 3d</button>
+          <button class="toggle-btn" onclick="setPreset(2,'years',this)">Canned 2yr</button>
+          <button class="toggle-btn" onclick="setPreset(2,'years',this)">Medicine 2yr</button>
+          <button class="toggle-btn" onclick="setPreset(3,'years',this)">Cosmetics 3yr</button>
+        </div>
+      </div>
+
+      <!-- Calculate Button -->
+      <div>
+        <button class="btn-action btn-primary" onclick="calculate()" style="width:100%">Calculate Expiry Date</button>
+      </div>
+
+      <!-- Results -->
+      <div class="result-box" id="resultBox">
+        <div class="result-grid">
+          <div class="result-item" id="expiryItem">
+            <div class="ri-label">Expiry Date</div>
+            <div class="ri-value" id="expiryDate">—</div>
+          </div>
+          <div class="result-item" id="daysItem">
+            <div class="ri-label">Days Remaining</div>
+            <div class="ri-value" id="daysRemaining">—</div>
+            <div class="ri-sub" id="daysLabel">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reg Cards -->
+      <div class="reg-cards">
+        <div class="reg-card">
+          <h3>🇳🇿 NZ Food Safety</h3>
+          <ul>
+            <li>MPI (Ministry for Primary Industries) — mpi.govt.nz</li>
+            <li>Food Safety Authority guidelines for storage</li>
+            <li>"Best Before" ≠ "Use By" — know the difference</li>
+            <li>Food can often be safe after "Best Before" but not "Use By"</li>
+            <li>Report food safety issues to MPI</li>
+          </ul>
+        </div>
+        <div class="reg-card">
+          <h3>📋 Common Shelf Life</h3>
+          <table>
+            <tr><th>Product</th><th>Shelf Life</th></tr>
+            <tr><td>Fresh Milk</td><td>7 – 14 days</td></tr>
+            <tr><td>Raw Meat</td><td>2 – 5 days</td></tr>
+            <tr><td>Canned Goods</td><td>1 – 5 years</td></tr>
+            <tr><td>Dry Pasta</td><td>1 – 2 years</td></tr>
+            <tr><td>Prescription Medicine</td><td>1 – 2 years</td></tr>
+            <tr><td>Cosmetics (unopened)</td><td>1 – 3 years</td></tr>
+            <tr><td>Cosmetics (opened)</td><td>6 – 12 months</td></tr>
+            <tr><td>Frozen Vegetables</td><td>8 – 12 months</td></tr>
+          </table>
+        </div>
+        <div class="reg-card">
+          <h3>🧊 Storage Tips</h3>
+          <ul>
+            <li>Fridge should be at or below 4°C</li>
+            <li>Freezer should be at or below -18°C</li>
+            <li>Store raw meat on the bottom shelf</li>
+            <li>Keep perishables out of the "danger zone" (4–60°C)</li>
+            <li>First In, First Out (FIFO) rotation method</li>
+            <li>Label containers with the date opened</li>
+            <li>Vacuum sealing can extend shelf life by 2–3x</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var unit='days';
+
+  // Set default date to today
+  var today=new Date();
+  var yyyy=today.getFullYear();
+  var mm=String(today.getMonth()+1).padStart(2,'0');
+  var dd=String(today.getDate()).padStart(2,'0');
+  document.getElementById('startDate').value=yyyy+'-'+mm+'-'+dd;
+
+  function setUnit(u,btn){
+    unit=u;
+    var group=document.getElementById('unitGroup');
+    group.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+  }
+  window.setUnit=setUnit;
+
+  function setPreset(val,u,btn){
+    document.getElementById('shelfLife').value=val;
+    unit=u;
+    // Update unit buttons
+    var group=document.getElementById('unitGroup');
+    group.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});
+    // Find and activate the matching unit button
+    group.querySelectorAll('.toggle-btn').forEach(function(b){
+      if(b.textContent.toLowerCase().indexOf(u)===0) b.classList.add('active');
+    });
+    // Highlight preset button
+    var presetGroup=document.getElementById('presetGroup');
+    presetGroup.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+    calculate();
+  }
+  window.setPreset=setPreset;
+
+  function calculate(){
+    var startStr=document.getElementById('startDate').value;
+    var shelfLife=parseInt(document.getElementById('shelfLife').value,10);
+
+    if(!startStr||isNaN(shelfLife)||shelfLife<=0)return;
+
+    var parts=startStr.split('-');
+    var startDate=new Date(parseInt(parts[0],10),parseInt(parts[1],10)-1,parseInt(parts[2],10));
+    var expiryDate=new Date(startDate);
+
+    if(unit==='days'){
+      expiryDate.setDate(expiryDate.getDate()+shelfLife);
+    }else if(unit==='weeks'){
+      expiryDate.setDate(expiryDate.getDate()+(shelfLife*7));
+    }else if(unit==='months'){
+      expiryDate.setMonth(expiryDate.getMonth()+shelfLife);
+    }else if(unit==='years'){
+      expiryDate.setFullYear(expiryDate.getFullYear()+shelfLife);
+    }
+
+    var now=new Date();
+    now.setHours(0,0,0,0);
+    var diffMs=expiryDate.getTime()-now.getTime();
+    var diffDays=Math.ceil(diffMs/(1000*60*60*24));
+
+    // Format expiry date nicely
+    var opts={weekday:'long',year:'numeric',month:'long',day:'numeric'};
+    document.getElementById('expiryDate').textContent=expiryDate.toLocaleDateString('en-NZ',opts);
+
+    var daysItem=document.getElementById('daysItem');
+    var daysLabel=document.getElementById('daysLabel');
+
+    if(diffDays>7){
+      daysItem.className='result-item status-safe';
+      document.getElementById('daysRemaining').textContent=diffDays.toLocaleString('en-NZ');
+      daysLabel.textContent='Safe — more than 7 days remaining';
+    }else if(diffDays>0){
+      daysItem.className='result-item status-warning';
+      document.getElementById('daysRemaining').textContent=diffDays.toLocaleString('en-NZ');
+      daysLabel.textContent='Caution — expiring soon!';
+    }else if(diffDays===0){
+      daysItem.className='result-item status-warning';
+      document.getElementById('daysRemaining').textContent='0';
+      daysLabel.textContent='Expires today!';
+    }else{
+      daysItem.className='result-item status-expired';
+      document.getElementById('daysRemaining').textContent=Math.abs(diffDays).toLocaleString('en-NZ');
+      daysLabel.textContent='EXPIRED — '+Math.abs(diffDays).toLocaleString('en-NZ')+' day'+(Math.abs(diffDays)===1?'':'s')+' ago';
+    }
+  }
+  window.calculate=calculate;
+
+  document.getElementById('startDate').addEventListener('change',calculate);
+  document.getElementById('shelfLife').addEventListener('input',calculate);
+
+  // Sidebar
+  document.querySelectorAll('.side-nav .side-item').forEach(function(b){
+    b.addEventListener('click',function(){
+      var c=this.getAttribute('data-cat');
+      window.location.href=c?'index.html#'+c:'index.html';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

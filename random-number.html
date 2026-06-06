@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Random Number Generator | ainav.nz</title>
+<meta name="description" content="Generate random numbers with custom range, precision, and count. Choose integer or decimal mode, allow or disallow duplicates.">
+<meta name="keywords" content="random number generator, RNG, random integer, random decimal, number picker">
+<link rel="canonical" href="https://ainav.nz/random-number.html">
+<meta property="og:title" content="Random Number Generator | ainav.nz">
+<meta property="og:description" content="Generate random numbers with custom range and precision. Free, private, browser-based.">
+<meta property="og:url" content="https://ainav.nz/random-number.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Random Number Generator | ainav.nz">
+<meta name="twitter:description" content="Generate random numbers with custom range and precision.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --danger:#D92D20;--danger-light:#FEE2E2;
+  --success:#059669;
+  --warning:#D97706;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== TOOL LAYOUT ===== */
+.tool-layout{display:flex;flex-direction:column;gap:20px;padding:24px 32px;flex:1;align-items:center}
+.tool-main{width:100%;max-width:960px;display:flex;flex-direction:column;gap:18px}
+
+/* ===== HEADER CARDS ===== */
+.tool-header{display:flex;gap:16px;flex-wrap:wrap}
+.header-card{flex:1;min-width:260px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.header-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.header-card p,.header-card li{font-size:12px;color:var(--sub);line-height:1.6}
+.header-card ul{padding-left:0;margin-top:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.header-card ul li{display:flex;align-items:flex-start;gap:6px}
+.header-card ul li::before{content:"•";color:var(--brand-light);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* ===== BUTTONS ===== */
+.btn-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:44px;padding:0 22px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s}
+.btn-action:hover{background:#fff;border-color:#C0C8CE}
+.btn-action:active{transform:scale(.98)}
+.btn-action.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 10px rgba(0,59,79,.2)}
+.btn-action.btn-primary:hover{background:var(--brand-light);border-color:var(--brand-light)}
+
+/* ===== INPUT & FORM ===== */
+.input-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+.text-input{width:100%;height:44px;border:1.5px solid var(--border);border-radius:9px;padding:0 14px;font-size:14px;font-weight:500;color:var(--text);background:rgba(255,255,255,.6);backdrop-filter:blur(8px);outline:none;transition:border-color .15s;font-family:inherit}
+.text-input:focus{border-color:var(--brand);background:#fff}
+.toggle-row{display:flex;gap:8px;flex-wrap:wrap}
+.toggle-btn{padding:8px 18px;border-radius:8px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;font-family:inherit;transition:all .15s}
+.toggle-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.toggle-btn:hover:not(.active){background:rgba(255,255,255,.9)}
+.input-group{display:flex;flex-direction:column;gap:6px}
+.input-row{display:flex;gap:14px;flex-wrap:wrap}
+.input-row .input-group{flex:1;min-width:120px}
+
+/* ===== NUMBER CHIPS ===== */
+.number-chips{display:flex;flex-wrap:wrap;gap:10px;padding:20px;border-radius:14px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);border:1px solid var(--border);box-shadow:var(--shadow-md)}
+.number-chip{display:inline-flex;align-items:center;justify-content:center;min-width:60px;height:48px;padding:0 16px;border-radius:10px;background:rgba(255,255,255,.7);backdrop-filter:blur(8px);border:1.5px solid var(--border);font-size:16px;font-weight:700;color:var(--text);font-family:'SF Mono',SFMono-Regular,Consolas,monospace;box-shadow:0 2px 6px rgba(0,0,0,.04);transition:all .15s;cursor:pointer;animation:chipIn .3s ease backwards}
+.number-chip:hover{border-color:var(--brand);background:#fff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08)}
+@keyframes chipIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+.copy-hint{font-size:11px;color:var(--muted);text-align:center;margin-top:8px}
+
+/* ===== REG CARDS ===== */
+.reg-cards{display:flex;gap:14px;flex-wrap:wrap}
+.reg-card{flex:1;min-width:240px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.reg-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.reg-card p,.reg-card li{font-size:12px;color:var(--sub);line-height:1.6}
+.reg-card ul{padding-left:0;margin-top:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.reg-card ul li{display:flex;align-items:flex-start;gap:6px}
+.reg-card ul li::before{content:"•";color:var(--brand-light);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .tool-layout{padding:18px 20px}
+  .header-card{min-width:220px}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .tool-layout{padding:12px 14px}
+  .input-row{flex-direction:column}
+  .number-chip{min-width:50px;height:42px;font-size:14px}
+}
+@media(max-width:420px){
+  .btn-action{height:42px;padding:0 16px;font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">21</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">18</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">19</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item active" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">9</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html#lifestyle">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">Random Number Generator</span>
+  </div>
+
+  <div class="tool-layout">
+
+    <div class="tool-main">
+
+      <!-- Header Info Banner -->
+      <div class="tool-header">
+        <div class="header-card">
+          <h3>🎲 How It Works</h3>
+          <p>Set a range, choose how many numbers to generate, and pick integer or decimal mode. Numbers are generated using your browser's built-in random function.</p>
+        </div>
+        <div class="header-card">
+          <h3>💡 Tips</h3>
+          <ul>
+            <li>Click any number chip to copy it</li>
+            <li>Use "No duplicates" for lottery-style picks</li>
+            <li>Decimal mode gives precision to your chosen decimal place</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Inputs -->
+      <div class="input-row">
+        <div class="input-group">
+          <label class="input-label" for="minVal">Minimum</label>
+          <input type="number" id="minVal" class="text-input" value="1" placeholder="e.g. 1">
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="maxVal">Maximum</label>
+          <input type="number" id="maxVal" class="text-input" value="100" placeholder="e.g. 100">
+        </div>
+        <div class="input-group">
+          <label class="input-label" for="count">How Many</label>
+          <input type="number" id="count" class="text-input" value="5" min="1" max="200" placeholder="e.g. 5">
+        </div>
+      </div>
+
+      <!-- Mode Buttons -->
+      <div>
+        <label class="input-label">Number Mode</label>
+        <div class="toggle-row" id="modeGroup">
+          <button class="toggle-btn active" onclick="setMode('int',this)">Integer</button>
+          <button class="toggle-btn" onclick="setMode('1dp',this)">1 Decimal</button>
+          <button class="toggle-btn" onclick="setMode('2dp',this)">2 Decimals</button>
+          <button class="toggle-btn" onclick="setMode('3dp',this)">3 Decimals</button>
+        </div>
+      </div>
+
+      <!-- Duplicate Toggle -->
+      <div>
+        <label class="input-label">Duplicates</label>
+        <div class="toggle-row" id="dupGroup">
+          <button class="toggle-btn" onclick="setDup('yes',this)">Allow Duplicates</button>
+          <button class="toggle-btn active" onclick="setDup('no',this)">No Duplicates</button>
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <div>
+        <button class="btn-action btn-primary" onclick="generate()" style="width:100%">Generate Numbers</button>
+      </div>
+
+      <!-- Results -->
+      <div class="number-chips" id="resultsWrap" style="display:none">
+      </div>
+      <div class="copy-hint" id="copyHint" style="display:none">Click a number to copy it</div>
+
+      <!-- Reg Cards -->
+      <div class="reg-cards">
+        <div class="reg-card">
+          <h3>🔬 Randomness Explained</h3>
+          <p>This tool uses <code>Math.random()</code>, which generates pseudo-random numbers. While not cryptographically secure, it's suitable for everyday uses like games, draws, and decision-making.</p>
+          <p style="margin-top:8px">True randomness requires hardware-based entropy sources, such as radioactive decay or atmospheric noise.</p>
+        </div>
+        <div class="reg-card">
+          <h3>🎯 Common Uses</h3>
+          <ul>
+            <li>Lottery and raffle draws</li>
+            <li>Random team or task assignment</li>
+            <li>Board game dice replacement</li>
+            <li>Statistical sampling</li>
+            <li>Password and PIN generation</li>
+            <li>Decision making when you can't choose</li>
+          </ul>
+        </div>
+        <div class="reg-card">
+          <h3>📊 Fun Stats</h3>
+          <ul>
+            <li>There are 13,983,816 possible Lotto 6/49 combinations</li>
+            <li>A 6-digit PIN has 1,000,000 possible values</li>
+            <li>The odds of rolling 6 sixes in Yahtzee: 1 in 7,776</li>
+            <li>Shuffling a 52-card deck: 8.07 × 10<sup>67</sup> possible orderings</li>
+            <li>Your browser's RNG cycles after ~2<sup>128</sup> values</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var numMode='int';
+  var allowDup=false;
+
+  function setMode(m,btn){
+    numMode=m;
+    var group=document.getElementById('modeGroup');
+    group.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+  }
+  window.setMode=setMode;
+
+  function setDup(d,btn){
+    allowDup=d==='yes';
+    var group=document.getElementById('dupGroup');
+    group.querySelectorAll('.toggle-btn').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+  }
+  window.setDup=setDup;
+
+  function generate(){
+    var min=parseFloat(document.getElementById('minVal').value);
+    var max=parseFloat(document.getElementById('maxVal').value);
+    var count=parseInt(document.getElementById('count').value,10);
+
+    if(isNaN(min)||isNaN(max)||isNaN(count)||min>=max||count<1){
+      return;
+    }
+
+    var dp=0;
+    if(numMode==='1dp')dp=1;
+    else if(numMode==='2dp')dp=2;
+    else if(numMode==='3dp')dp=3;
+
+    var results=[];
+    var seen={};
+    var maxAttempts=count*100;
+    var attempts=0;
+
+    while(results.length<count&&attempts<maxAttempts){
+      attempts++;
+      var val;
+      if(numMode==='int'){
+        val=Math.floor(Math.random()*(max-min+1))+min;
+      }else{
+        var factor=Math.pow(10,dp);
+        val=Math.round((Math.random()*(max-min)+min)*factor)/factor;
+      }
+
+      if(!allowDup){
+        var key=val.toString();
+        if(seen[key])continue;
+        seen[key]=true;
+      }
+      results.push(val);
+    }
+
+    var wrap=document.getElementById('resultsWrap');
+    wrap.style.display='flex';
+    wrap.innerHTML='';
+    document.getElementById('copyHint').style.display='';
+
+    results.forEach(function(n,i){
+      var chip=document.createElement('div');
+      chip.className='number-chip';
+      chip.style.animationDelay=(i*0.05)+'s';
+
+      if(numMode==='int'){
+        chip.textContent=n.toLocaleString('en-NZ');
+      }else{
+        chip.textContent=n.toLocaleString('en-NZ',{minimumFractionDigits:dp,maximumFractionDigits:dp});
+      }
+
+      chip.addEventListener('click',function(){
+        var text=chip.textContent;
+        navigator.clipboard.writeText(text.replace(/,/g,'')).then(function(){
+          var orig=chip.textContent;
+          chip.textContent='Copied!';
+          chip.style.borderColor='var(--success)';
+          chip.style.color='var(--success)';
+          setTimeout(function(){
+            chip.textContent=orig;
+            chip.style.borderColor='';
+            chip.style.color='';
+          },800);
+        });
+      });
+
+      wrap.appendChild(chip);
+    });
+  }
+  window.generate=generate;
+
+  // Sidebar
+  document.querySelectorAll('.side-nav .side-item').forEach(function(b){
+    b.addEventListener('click',function(){
+      var c=this.getAttribute('data-cat');
+      window.location.href=c?'index.html#'+c:'index.html';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

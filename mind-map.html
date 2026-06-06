@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mind Map — Visual Idea Organizer | ainav.nz</title>
+<meta name="description" content="Create visual mind maps to organize ideas. Drag, edit, and export. Free browser-based mind mapping tool.">
+<meta name="keywords" content="mind map, idea organizer, brainstorming, visual thinking, mind mapping tool">
+<link rel="canonical" href="https://ainav.nz/mind-map.html">
+<meta property="og:title" content="Mind Map — Visual Idea Organizer | ainav.nz">
+<meta property="og:description" content="Create visual mind maps to organize ideas. Free, private, browser-based.">
+<meta property="og:url" content="https://ainav.nz/mind-map.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mind Map — Visual Idea Organizer | ainav.nz">
+<meta name="twitter:description" content="Create visual mind maps to organize ideas.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --danger:#D92D20;--danger-light:#FEE2E2;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+.tool-layout{display:flex;flex-direction:column;gap:20px;padding:24px 32px;flex:1;align-items:center}
+.tool-main{width:100%;max-width:960px;display:flex;flex-direction:column;gap:18px}
+
+.tool-header{display:flex;gap:16px;flex-wrap:wrap}
+.header-card{flex:1;min-width:260px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.header-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.header-card p,.header-card li{font-size:12px;color:var(--sub);line-height:1.6}
+.header-card ul{padding-left:0;margin-top:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.header-card ul li{display:flex;align-items:flex-start;gap:6px}
+.header-card ul li::before{content:"•";color:var(--brand-light);font-weight:700;flex-shrink:0;margin-top:1px}
+
+.input-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+
+/* ===== MIND MAP CANVAS ===== */
+.canvas-wrap{position:relative;width:100%;height:500px;border-radius:14px;border:1.5px solid var(--border);background:rgba(255,255,255,.4);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);overflow:hidden;box-shadow:var(--shadow-sm)}
+.canvas-wrap canvas{display:block;width:100%;height:100%;cursor:grab}
+.canvas-wrap canvas:active{cursor:grabbing}
+
+/* ===== CONTROLS ===== */
+.controls-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:44px;padding:0 22px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s}
+.btn-action:hover{background:#fff;border-color:#C0C8CE}
+.btn-action:active{transform:scale(.98)}
+.btn-action.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 10px rgba(0,59,79,.2)}
+.btn-action.btn-primary:hover{background:var(--brand-light);border-color:var(--brand-light)}
+.btn-action.btn-danger{background:var(--danger);color:#fff;border-color:var(--danger)}
+.btn-action.btn-danger:hover{background:#B5241B;border-color:#B5241B}
+
+/* Color buttons */
+.color-row{display:flex;gap:6px;align-items:center}
+.color-btn{width:32px;height:32px;border-radius:8px;border:2px solid var(--border);cursor:pointer;transition:all .15s}
+.color-btn:hover{transform:scale(1.1)}
+.color-btn.active{border-color:var(--text);box-shadow:0 0 0 2px rgba(0,0,0,.15)}
+
+/* ===== REG CARDS ===== */
+.reg-cards{display:flex;gap:16px;flex-wrap:wrap}
+.reg-card{flex:1;min-width:260px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:18px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.reg-card h4{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.reg-card p,.reg-card li{font-size:12px;color:var(--sub);line-height:1.6}
+.reg-card ul{padding-left:0;margin-top:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.reg-card ul li{display:flex;align-items:flex-start;gap:6px}
+.reg-card ul li::before{content:"•";color:var(--brand-light);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* ===== EDIT MODAL ===== */
+.edit-modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.3);z-index:200;align-items:center;justify-content:center}
+.edit-modal.visible{display:flex}
+.edit-box{background:#fff;border-radius:14px;padding:24px;width:340px;box-shadow:0 8px 30px rgba(0,0,0,.15)}
+.edit-box h4{font-size:14px;font-weight:700;margin-bottom:12px}
+.edit-box input{width:100%;height:40px;border:1.5px solid var(--border);border-radius:8px;padding:0 12px;font-size:14px;outline:none;font-family:inherit;margin-bottom:12px}
+.edit-box input:focus{border-color:var(--brand)}
+.edit-box .btn-row{display:flex;gap:8px;justify-content:flex-end}
+
+@media(max-width:1024px){
+  .tool-layout{padding:18px 20px}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .tool-layout{padding:12px 14px}
+  .canvas-wrap{height:400px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">21</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">18</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">19</span></button>
+    <button class="side-item active" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">9</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html#academic">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">Mind Map</span>
+  </div>
+
+  <div class="tool-layout">
+
+    <div class="tool-main">
+
+      <div class="tool-header">
+        <div class="header-card">
+          <h3>🧠 How It Works</h3>
+          <p>Create nodes to organize your ideas visually. Drag to reposition, double-click to edit text, and connect ideas with child nodes.</p>
+        </div>
+        <div class="header-card">
+          <h3>💡 Tips</h3>
+          <ul>
+            <li>Click a node to select it</li>
+            <li>Double-click a node to edit text</li>
+            <li>Use "Add Child" to create sub-nodes</li>
+            <li>Drag nodes to reposition them</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="controls-row">
+        <button class="btn-action btn-primary" onclick="addChildNode()">➕ Add Child Node</button>
+        <button class="btn-action btn-danger" onclick="deleteSelected()">🗑️ Delete Selected</button>
+        <button class="btn-action" onclick="exportPNG()">📷 Export PNG</button>
+        <div class="color-row">
+          <span class="input-label" style="margin:0;white-space:nowrap">Node Color:</span>
+          <button class="color-btn active" style="background:#003B4F" data-color="#003B4F" onclick="setNodeColor(this)"></button>
+          <button class="color-btn" style="background:#00647A" data-color="#00647A" onclick="setNodeColor(this)"></button>
+          <button class="color-btn" style="background:#D4A843" data-color="#D4A843" onclick="setNodeColor(this)"></button>
+          <button class="color-btn" style="background:#4DABF7" data-color="#4DABF7" onclick="setNodeColor(this)"></button>
+          <button class="color-btn" style="background:#69DB7C" data-color="#69DB7C" onclick="setNodeColor(this)"></button>
+          <button class="color-btn" style="background:#FF6B6B" data-color="#FF6B6B" onclick="setNodeColor(this)"></button>
+          <button class="color-btn" style="background:#9775FA" data-color="#9775FA" onclick="setNodeColor(this)"></button>
+        </div>
+      </div>
+
+      <!-- Canvas -->
+      <div class="canvas-wrap">
+        <canvas id="mindmapCanvas"></canvas>
+      </div>
+
+      <!-- Reg Cards -->
+      <div class="reg-cards">
+        <div class="reg-card">
+          <h4>💡 Mind Mapping Tips</h4>
+          <ul>
+            <li>Start with a central idea in the middle</li>
+            <li>Branch out with related sub-topics</li>
+            <li>Use colors to group related concepts</li>
+            <li>Keep node text short and clear</li>
+            <li>Add depth with multiple levels of children</li>
+          </ul>
+        </div>
+        <div class="reg-card">
+          <h4>📚 Study Techniques</h4>
+          <ul>
+            <li>Use mind maps for exam revision</li>
+            <li>Map out essay structures before writing</li>
+            <li>Create concept maps for complex topics</li>
+            <li>Review and update maps regularly</li>
+            <li>Share maps with study groups</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<!-- Edit Modal -->
+<div class="edit-modal" id="editModal">
+  <div class="edit-box">
+    <h4>Edit Node Text</h4>
+    <input type="text" id="editInput" placeholder="Enter node text...">
+    <div class="btn-row">
+      <button class="btn-action" onclick="cancelEdit()">Cancel</button>
+      <button class="btn-action btn-primary" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var canvas = document.getElementById('mindmapCanvas');
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+
+  var nodes = [];
+  var nextId = 1;
+  var selectedId = null;
+  var draggingId = null;
+  var dragOffX = 0, dragOffY = 0;
+  var currentColor = '#003B4F';
+  var editingId = null;
+
+  function resizeCanvas(){
+    var rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * dpr;
+    canvas.height = rect.height * dpr;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+
+  function createNode(text, x, y, parent, color){
+    var node = {
+      id: nextId++,
+      text: text,
+      x: x,
+      y: y,
+      parent: parent,
+      color: color || '#003B4F'
+    };
+    nodes.push(node);
+    return node;
+  }
+
+  function draw(){
+    var w = canvas.width / dpr;
+    var h = canvas.height / dpr;
+    ctx.clearRect(0,0,w,h);
+
+    // Draw connections
+    nodes.forEach(function(n){
+      if(n.parent !== null){
+        var p = nodes.find(function(nd){return nd.id === n.parent;});
+        if(p){
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          // Curved line
+          var midX = (p.x + n.x) / 2;
+          ctx.bezierCurveTo(midX, p.y, midX, n.y, n.x, n.y);
+          ctx.strokeStyle = '#B0BDC4';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      }
+    });
+
+    // Draw nodes
+    nodes.forEach(function(n){
+      var isSelected = n.id === selectedId;
+      var textWidth = ctx.measureText(n.text).width || 40;
+      var nodeW = Math.max(100, textWidth + 40);
+      var nodeH = 40;
+
+      ctx.save();
+
+      // Shadow
+      if(isSelected){
+        ctx.shadowColor = 'rgba(0,59,79,0.25)';
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 4;
+      } else {
+        ctx.shadowColor = 'rgba(0,0,0,0.08)';
+        ctx.shadowBlur = 6;
+        ctx.shadowOffsetY = 2;
+      }
+
+      // Node background
+      var radius = 12;
+      ctx.beginPath();
+      ctx.roundRect(n.x - nodeW/2, n.y - nodeH/2, nodeW, nodeH, radius);
+      ctx.fillStyle = n.color;
+      ctx.fill();
+
+      // Selection border
+      if(isSelected){
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+
+      ctx.restore();
+
+      // Text
+      ctx.fillStyle = '#fff';
+      ctx.font = '600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(n.text, n.x, n.y);
+    });
+  }
+
+  function getNodeAt(mx, my){
+    // Reverse loop so top nodes are picked first
+    for(var i = nodes.length - 1; i >= 0; i--){
+      var n = nodes[i];
+      ctx.font = '600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      var textWidth = ctx.measureText(n.text).width || 40;
+      var nodeW = Math.max(100, textWidth + 40);
+      var nodeH = 40;
+      if(mx >= n.x - nodeW/2 && mx <= n.x + nodeW/2 && my >= n.y - nodeH/2 && my <= n.y + nodeH/2){
+        return n;
+      }
+    }
+    return null;
+  }
+
+  function getMousePos(e){
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+
+  canvas.addEventListener('mousedown', function(e){
+    var pos = getMousePos(e);
+    var node = getNodeAt(pos.x, pos.y);
+    if(node){
+      selectedId = node.id;
+      draggingId = node.id;
+      dragOffX = pos.x - node.x;
+      dragOffY = pos.y - node.y;
+    } else {
+      selectedId = null;
+    }
+    draw();
+  });
+
+  canvas.addEventListener('mousemove', function(e){
+    if(draggingId !== null){
+      var pos = getMousePos(e);
+      var node = nodes.find(function(n){return n.id === draggingId;});
+      if(node){
+        node.x = pos.x - dragOffX;
+        node.y = pos.y - dragOffY;
+        draw();
+      }
+    }
+  });
+
+  canvas.addEventListener('mouseup', function(){
+    draggingId = null;
+  });
+
+  canvas.addEventListener('mouseleave', function(){
+    draggingId = null;
+  });
+
+  canvas.addEventListener('dblclick', function(e){
+    var pos = getMousePos(e);
+    var node = getNodeAt(pos.x, pos.y);
+    if(node){
+      editingId = node.id;
+      document.getElementById('editInput').value = node.text;
+      document.getElementById('editModal').classList.add('visible');
+      document.getElementById('editInput').focus();
+    }
+  });
+
+  // Touch support
+  canvas.addEventListener('touchstart', function(e){
+    e.preventDefault();
+    var touch = e.touches[0];
+    var pos = getMousePos(touch);
+    var node = getNodeAt(pos.x, pos.y);
+    if(node){
+      selectedId = node.id;
+      draggingId = node.id;
+      dragOffX = pos.x - node.x;
+      dragOffY = pos.y - node.y;
+    } else {
+      selectedId = null;
+    }
+    draw();
+  }, {passive: false});
+
+  canvas.addEventListener('touchmove', function(e){
+    e.preventDefault();
+    if(draggingId !== null){
+      var touch = e.touches[0];
+      var pos = getMousePos(touch);
+      var node = nodes.find(function(n){return n.id === draggingId;});
+      if(node){
+        node.x = pos.x - dragOffX;
+        node.y = pos.y - dragOffY;
+        draw();
+      }
+    }
+  }, {passive: false});
+
+  canvas.addEventListener('touchend', function(){
+    draggingId = null;
+  });
+
+  window.addChildNode = function(){
+    var parent = selectedId ? nodes.find(function(n){return n.id === selectedId;}) : null;
+    var cx = canvas.width / dpr / 2;
+    var cy = canvas.height / dpr / 2;
+
+    if(parent){
+      // Place child near parent
+      var angle = Math.random() * Math.PI * 2;
+      var dist = 120;
+      var newX = parent.x + Math.cos(angle) * dist;
+      var newY = parent.y + Math.sin(angle) * dist;
+      createNode('New Node', newX, newY, parent.id, currentColor);
+    } else if(nodes.length === 0){
+      // Create center node
+      createNode('Central Idea', cx, cy, null, currentColor);
+      selectedId = 1;
+    } else {
+      // Add to root
+      var root = nodes[0];
+      var angle = Math.random() * Math.PI * 2;
+      var dist = 120;
+      createNode('New Node', root.x + Math.cos(angle) * dist, root.y + Math.sin(angle) * dist, root.id, currentColor);
+    }
+    draw();
+  };
+
+  window.deleteSelected = function(){
+    if(!selectedId) return;
+    // Remove node and all its descendants
+    var toRemove = new Set();
+    function collectDescendants(id){
+      toRemove.add(id);
+      nodes.forEach(function(n){
+        if(n.parent === id) collectDescendants(n.id);
+      });
+    }
+    collectDescendants(selectedId);
+    nodes = nodes.filter(function(n){return !toRemove.has(n.id);});
+    selectedId = null;
+    draw();
+  };
+
+  window.setNodeColor = function(btn){
+    document.querySelectorAll('.color-btn').forEach(function(b){b.classList.remove('active')});
+    btn.classList.add('active');
+    currentColor = btn.getAttribute('data-color');
+    if(selectedId){
+      var node = nodes.find(function(n){return n.id === selectedId;});
+      if(node){
+        node.color = currentColor;
+        draw();
+      }
+    }
+  };
+
+  window.exportPNG = function(){
+    // Create a temporary canvas with white background
+    var tmpCanvas = document.createElement('canvas');
+    var w = canvas.width / dpr;
+    var h = canvas.height / dpr;
+    tmpCanvas.width = w * 2;
+    tmpCanvas.height = h * 2;
+    var tmpCtx = tmpCanvas.getContext('2d');
+    tmpCtx.scale(2, 2);
+    tmpCtx.fillStyle = '#fff';
+    tmpCtx.fillRect(0, 0, w, h);
+
+    // Draw connections
+    nodes.forEach(function(n){
+      if(n.parent !== null){
+        var p = nodes.find(function(nd){return nd.id === n.parent;});
+        if(p){
+          tmpCtx.beginPath();
+          tmpCtx.moveTo(p.x, p.y);
+          var midX = (p.x + n.x) / 2;
+          tmpCtx.bezierCurveTo(midX, p.y, midX, n.y, n.x, n.y);
+          tmpCtx.strokeStyle = '#B0BDC4';
+          tmpCtx.lineWidth = 2;
+          tmpCtx.stroke();
+        }
+      }
+    });
+
+    // Draw nodes
+    nodes.forEach(function(n){
+      tmpCtx.font = '600 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      var textWidth = tmpCtx.measureText(n.text).width || 40;
+      var nodeW = Math.max(100, textWidth + 40);
+      var nodeH = 40;
+      var radius = 12;
+
+      tmpCtx.beginPath();
+      tmpCtx.roundRect(n.x - nodeW/2, n.y - nodeH/2, nodeW, nodeH, radius);
+      tmpCtx.fillStyle = n.color;
+      tmpCtx.shadowColor = 'rgba(0,0,0,0.08)';
+      tmpCtx.shadowBlur = 6;
+      tmpCtx.shadowOffsetY = 2;
+      tmpCtx.fill();
+      tmpCtx.shadowColor = 'transparent';
+
+      tmpCtx.fillStyle = '#fff';
+      tmpCtx.textAlign = 'center';
+      tmpCtx.textBaseline = 'middle';
+      tmpCtx.fillText(n.text, n.x, n.y);
+    });
+
+    var link = document.createElement('a');
+    link.download = 'mind-map.png';
+    link.href = tmpCanvas.toDataURL('image/png');
+    link.click();
+  };
+
+  window.saveEdit = function(){
+    var val = document.getElementById('editInput').value.trim();
+    if(val && editingId !== null){
+      var node = nodes.find(function(n){return n.id === editingId;});
+      if(node) node.text = val;
+    }
+    document.getElementById('editModal').classList.remove('visible');
+    editingId = null;
+    draw();
+  };
+
+  window.cancelEdit = function(){
+    document.getElementById('editModal').classList.remove('visible');
+    editingId = null;
+  };
+
+  // Handle enter key in edit modal
+  document.getElementById('editInput').addEventListener('keydown', function(e){
+    if(e.key === 'Enter') saveEdit();
+    if(e.key === 'Escape') cancelEdit();
+  });
+
+  // Sidebar
+  document.querySelectorAll('.side-nav .side-item').forEach(function(b){
+    b.addEventListener('click',function(){
+      var c = this.getAttribute('data-cat');
+      window.location.href = c ? 'index.html#'+c : 'index.html';
+    });
+  });
+
+  // Initialize with a center node
+  var cx = 480;
+  var cy = 250;
+  createNode('Central Idea', cx, cy, null, '#003B4F');
+  selectedId = 1;
+
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+})();
+</script>
+
+</body>
+</html>

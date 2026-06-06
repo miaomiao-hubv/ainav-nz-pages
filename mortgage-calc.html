@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mortgage Calculator — NZ Home Loan Repayments | ainav.nz</title>
+<meta name="description" content="Calculate mortgage repayments for New Zealand home loans. Weekly, fortnightly, and monthly repayment breakdown with amortization schedule.">
+<meta name="keywords" content="mortgage calculator NZ, home loan calculator, mortgage repayment, NZ property loan, interest rate calculator, principal and interest">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ainav.nz/mortgage-calc.html">
+<meta property="og:title" content="Mortgage Calculator — NZ Home Loan Repayments | ainav.nz">
+<meta property="og:description" content="Calculate NZ mortgage repayments with weekly, fortnightly, and monthly options. Amortization schedule included.">
+<meta property="og:url" content="https://ainav.nz/mortgage-calc.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mortgage Calculator — NZ | ainav.nz">
+<meta name="twitter:description" content="Calculate NZ mortgage repayments. Weekly, fortnightly, monthly options.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== CALCULATOR LAYOUT ===== */
+.calc-layout{display:flex;gap:16px;padding:16px 28px 24px;flex:1}
+.calc-panel{flex:1;min-width:0;max-width:480px}
+.regs-panel{width:260px;min-width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+
+/* ===== INPUT LABEL ===== */
+.input-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+
+/* ===== INPUT GROUP ===== */
+.input-group{margin-top:12px}
+.input-group:first-child{margin-top:0}
+
+/* ===== INPUT AREA ===== */
+.input-wrap{margin-top:0;display:flex;align-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:9px;padding:0 14px;height:44px;transition:all .15s;box-shadow:var(--shadow-sm);cursor:text}
+.input-wrap:focus-within{border-color:var(--brand);background:#fff;box-shadow:var(--shadow-md)}
+.input-wrap .input-currency{font-size:11px;color:var(--sub);flex-shrink:0;margin-right:6px;font-weight:500}
+.input-wrap .input-prefix{font-size:16px;font-weight:700;color:var(--brand);margin-right:4px;flex-shrink:0}
+.input-wrap input{flex:1;border:none;background:transparent;outline:none;font-size:16px;font-weight:600;color:var(--text);font-family:inherit;min-width:0;text-align:right}
+.input-wrap input::placeholder{color:#CDD3DA;font-weight:400}
+
+/* ===== INPUT ROW (for side-by-side fields) ===== */
+.input-row{display:flex;gap:12px;margin-top:12px}
+.input-row .input-group{margin-top:0;flex:1;min-width:0}
+
+/* ===== FREQUENCY TOGGLE ===== */
+.freq-wrap{display:flex;gap:8px;margin-top:12px}
+.freq-btn{flex:1;height:44px;padding:0 14px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
+.freq-btn:hover{background:#fff;border-color:#C0C8CE}
+.freq-btn.active{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 8px rgba(0,59,79,.25)}
+
+/* ===== BREAKDOWN TABLE ===== */
+.breakdown{margin-top:16px}
+.breakdown-card{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.bd-hero{padding:16px 18px;background:linear-gradient(135deg,rgba(0,59,79,.92),rgba(0,100,122,.92));color:#fff;display:flex;justify-content:space-between;align-items:center}
+.bd-hero .hero-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.3px}
+.bd-hero .hero-value{font-size:28px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace;color:#5EEAD4}
+.bd-hero .hero-sub{font-size:10.5px;color:rgba(255,255,255,.55);margin-top:2px}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid #F0F2F4;font-size:12.5px}
+.breakdown-row:last-child{border-bottom:none}
+.breakdown-row .br-label{color:var(--sub)}
+.breakdown-row .br-value{font-weight:650;color:var(--text);font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace}
+.breakdown-row.net-row{background:rgba(0,59,79,.03)}
+.breakdown-row.net-row .br-value{font-weight:700;color:#0D7A3E;font-size:13.5px}
+
+/* ===== AMORTIZATION TABLE ===== */
+.amort-table{margin-top:14px}
+.amort-title{font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}
+.amort-scroll{overflow-x:auto}
+.amort-scroll table{width:100%;border-collapse:collapse;font-size:12px}
+.amort-scroll th{background:rgba(0,59,79,.06);padding:7px 10px;text-align:right;font-weight:600;color:var(--text);font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;border-bottom:2px solid var(--border)}
+.amort-scroll th:first-child{text-align:center}
+.amort-scroll td{padding:6px 10px;text-align:right;color:var(--sub);border-bottom:1px solid #F0F2F4;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace}
+.amort-scroll td:first-child{text-align:center;color:var(--text);font-weight:600}
+.amort-scroll tr:hover td{background:rgba(0,59,79,.02)}
+.amort-card{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+
+/* ===== REGULATIONS PANEL ===== */
+.reg-card{background:rgba(255,255,255,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--glass-border);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow-sm)}
+.reg-card:hover{background:rgba(255,255,255,.75);box-shadow:var(--shadow-md)}
+.reg-card h3{font-size:12px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-.2px;display:flex;align-items:center;gap:5px}
+.reg-card h3 .rc-icon{font-size:13px}
+.reg-card p,.reg-card li{font-size:11.5px;color:var(--sub);line-height:1.55}
+.reg-card ul{padding-left:12px;margin-top:2px;list-style:none}
+.reg-card ul li::before{content:"—";margin-right:4px;color:var(--muted)}
+.reg-card .formula{display:inline-block;background:rgba(0,59,79,.05);padding:2px 7px;border-radius:4px;font-family:"SF Mono","Cascadia Code","Consolas",monospace;font-size:11px;color:var(--brand);font-weight:600;margin:1px 0}
+.reg-card .ird-link{display:inline-flex;align-items:center;gap:4px;margin-top:3px;font-size:11.5px;font-weight:600;color:var(--brand);text-decoration:none;transition:color .15s}
+.reg-card .ird-link:hover{color:var(--brand-light);text-decoration:underline}
+.reg-card .ird-link svg{width:11px;height:11px}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .calc-layout{padding:14px 20px 20px}
+  .calc-panel{max-width:none}
+  .regs-panel{width:100%;min-width:0}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .calc-layout{padding:10px 14px 16px;gap:12px}
+  .input-wrap{height:40px}
+  .input-wrap input{font-size:14px}
+  .regs-panel{gap:6px}
+  .bd-hero{padding:14px 16px}
+  .bd-hero .hero-value{font-size:24px}
+  .amort-scroll{font-size:11px}
+}
+@media(max-width:420px){
+  .freq-btn{height:40px;font-size:11px;padding:0 10px}
+  .bd-hero .hero-value{font-size:20px}
+  .input-row{flex-direction:column;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<!-- Decorative background blobs -->
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">18</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">14</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">21</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">11</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">Mortgage Calculator</span>
+  </div>
+
+  <div class="calc-layout">
+
+    <!-- ===== LEFT: Calculator ===== -->
+    <div class="calc-panel">
+
+      <!-- Loan Amount Input -->
+      <div class="input-group">
+        <span class="input-label">Loan Amount</span>
+        <div class="input-wrap">
+          <span class="input-currency">NZD</span>
+          <span class="input-prefix">$</span>
+          <input type="text" id="loanAmount" placeholder="e.g. 500,000" inputmode="decimal" autocomplete="off" aria-label="Loan Amount">
+        </div>
+      </div>
+
+      <!-- Interest Rate + Term Row -->
+      <div class="input-row">
+        <div class="input-group">
+          <span class="input-label">Interest Rate</span>
+          <div class="input-wrap">
+            <span class="input-prefix">%</span>
+            <input type="text" id="interestRate" placeholder="e.g. 6.5" inputmode="decimal" autocomplete="off" aria-label="Interest Rate">
+            <span style="font-size:11px;color:var(--muted);flex-shrink:0;margin-left:6px">p.a.</span>
+          </div>
+        </div>
+        <div class="input-group">
+          <span class="input-label">Loan Term</span>
+          <div class="input-wrap">
+            <span class="input-prefix">Yr</span>
+            <input type="text" id="loanTerm" placeholder="e.g. 30" inputmode="numeric" autocomplete="off" aria-label="Loan Term (years)">
+          </div>
+        </div>
+      </div>
+
+      <!-- Frequency Toggle -->
+      <div class="freq-wrap">
+        <button class="freq-btn" id="freqWeekly" onclick="setFreq('weekly')">Weekly</button>
+        <button class="freq-btn active" id="freqFortnightly" onclick="setFreq('fortnightly')">Fortnightly</button>
+        <button class="freq-btn" id="freqMonthly" onclick="setFreq('monthly')">Monthly</button>
+      </div>
+
+      <!-- Breakdown (always visible, including $0 state) -->
+      <div class="breakdown">
+        <div class="breakdown-card" id="breakdownCard"></div>
+      </div>
+
+      <!-- Amortization Table -->
+      <div class="amort-table">
+        <div class="amort-title">First 12 Payments — Principal vs Interest</div>
+        <div class="amort-card">
+          <div class="amort-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Payment</th>
+                  <th>Principal</th>
+                  <th>Interest</th>
+                  <th>Balance</th>
+                </tr>
+              </thead>
+              <tbody id="amortBody">
+                <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:14px">Enter loan details to see amortization</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ===== RIGHT: Regulations ===== -->
+    <div class="regs-panel">
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">📘</span>How Mortgages Work in NZ</h3>
+        <p>In New Zealand, most home loans use a table mortgage structure — equal repayments with decreasing interest and increasing principal components over time.</p>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">📐</span>Amortization Formula</h3>
+        <p><span class="formula">M = P × r(1+r)^n / ((1+r)^n − 1)</span></p>
+        <p style="font-size:10.5px;color:var(--muted);margin-top:3px">P = principal, r = periodic rate, n = number of payments</p>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🏦</span>Mortgage Types in NZ</h3>
+        <ul>
+          <li><strong>Table mortgage:</strong> Equal payments, decreasing interest</li>
+          <li><strong>Reducing mortgage:</strong> Equal principal, decreasing payments</li>
+          <li><strong>Interest-only:</strong> Pay only interest for a set period</li>
+          <li>Fixed vs floating rate options available</li>
+        </ul>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🔗</span>Official Reference</h3>
+        <p>Compare mortgage rates and features across NZ lenders.</p>
+        <a class="ird-link" href="https://www.sorted.org.nz" target="_blank" rel="noopener noreferrer">
+          sorted.org.nz
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  /* ---- formatting helpers ---- */
+  function fmt(n) {
+    return "$" + n.toLocaleString("en-NZ", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+  function fmtRaw(n) {
+    return n.toLocaleString("en-NZ", {minimumFractionDigits: 0, maximumFractionDigits: 2});
+  }
+
+  /* ---- get numeric value from input ---- */
+  function getVal(id) {
+    return parseFloat(document.getElementById(id).value.replace(/,/g, "")) || 0;
+  }
+
+  /* ---- format input with wasAtEnd cursor logic ---- */
+  function formatInput(input) {
+    var raw = input.value.replace(/,/g, "");
+    if (raw === "" || raw === ".") return;
+    var num = parseFloat(raw);
+    if (isNaN(num)) return;
+    var pos = input.selectionStart;
+    var wasAtEnd = pos >= input.value.length;
+    input.value = fmtRaw(num);
+    if (wasAtEnd) {
+      input.setSelectionRange(input.value.length, input.value.length);
+    } else {
+      var newPos = Math.min(pos, input.value.length);
+      input.setSelectionRange(newPos, newPos);
+    }
+  }
+
+  /* ---- frequency state ---- */
+  var frequency = "fortnightly";
+
+  window.setFreq = function(freq) {
+    frequency = freq;
+    document.getElementById("freqWeekly").className = "freq-btn" + (freq === "weekly" ? " active" : "");
+    document.getElementById("freqFortnightly").className = "freq-btn" + (freq === "fortnightly" ? " active" : "");
+    document.getElementById("freqMonthly").className = "freq-btn" + (freq === "monthly" ? " active" : "");
+    calc();
+  };
+
+  function getPeriodsPerYear() {
+    if (frequency === "weekly") return 52;
+    if (frequency === "fortnightly") return 26;
+    return 12;
+  }
+
+  function getFreqLabel() {
+    if (frequency === "weekly") return "Weekly Payment";
+    if (frequency === "fortnightly") return "Fortnightly Payment";
+    return "Monthly Payment";
+  }
+
+  /* ---- build breakdown HTML (always shown, incl $0) ---- */
+  function buildBreakdown(payment, totalRepaid, totalInterest, P, numPayments) {
+    var html = "";
+
+    // Hero header
+    html += '<div class="bd-hero">';
+    html += '<div><div class="hero-label">' + getFreqLabel() + '</div>';
+    html += '<div class="hero-sub">Total: ' + fmt(totalRepaid) + ' · Interest: ' + fmt(totalInterest) + '</div></div>';
+    html += '<div class="hero-value">' + fmt(payment) + '</div>';
+    html += '</div>';
+
+    // Detail rows
+    html += '<div class="breakdown-row"><span class="br-label">Loan Amount</span><span class="br-value">' + fmt(P) + '</span></div>';
+    html += '<div class="breakdown-row"><span class="br-label">Total Interest</span><span class="br-value">' + fmt(totalInterest) + '</span></div>';
+    html += '<div class="breakdown-row"><span class="br-label">Total Repaid</span><span class="br-value">' + fmt(totalRepaid) + '</span></div>';
+    html += '<div class="breakdown-row"><span class="br-label">Number of Payments</span><span class="br-value">' + numPayments.toLocaleString() + '</span></div>';
+
+    document.getElementById("breakdownCard").innerHTML = html;
+  }
+
+  /* ---- core calc engine ---- */
+  function calc() {
+    var P = getVal("loanAmount");
+    var annualRate = getVal("interestRate") / 100;
+    var years = getVal("loanTerm");
+
+    var payment = 0, totalRepaid = 0, totalInterest = 0, numPayments = 0;
+
+    if (P > 0 && annualRate > 0 && years > 0) {
+      var periodsPerYear = getPeriodsPerYear();
+      numPayments = Math.round(years * periodsPerYear);
+      var r = annualRate / periodsPerYear;
+      var factor = Math.pow(1 + r, numPayments);
+      payment = P * r * factor / (factor - 1);
+      totalRepaid = payment * numPayments;
+      totalInterest = totalRepaid - P;
+
+      // Amortization table (first 12 periods)
+      var balance = P;
+      var html = "";
+      var showN = Math.min(12, numPayments);
+      for (var i = 1; i <= showN; i++) {
+        var interest = balance * r;
+        var principal = payment - interest;
+        balance -= principal;
+        if (balance < 0) balance = 0;
+        html += "<tr>";
+        html += "<td>" + i + "</td>";
+        html += "<td>" + fmt(payment) + "</td>";
+        html += "<td>" + fmt(principal) + "</td>";
+        html += "<td>" + fmt(interest) + "</td>";
+        html += "<td>" + fmt(balance) + "</td>";
+        html += "</tr>";
+      }
+      document.getElementById("amortBody").innerHTML = html;
+    } else {
+      document.getElementById("amortBody").innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:14px">Enter loan details to see amortization</td></tr>';
+    }
+
+    // Always render breakdown (including $0 zero-state)
+    buildBreakdown(payment, totalRepaid, totalInterest, P, numPayments);
+  }
+
+  /* ---- input event listeners ---- */
+  ["loanAmount", "interestRate", "loanTerm"].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) {
+      el.addEventListener("input", function() {
+        formatInput(this);
+        calc();
+      });
+      el.addEventListener("paste", function() {
+        setTimeout(function() { calc(); }, 50);
+      });
+    }
+  });
+
+  /* ---- sidebar nav ---- */
+  var sideButtons = document.querySelectorAll(".side-nav .side-item");
+  sideButtons.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var cat = this.getAttribute("data-cat");
+      window.location.href = cat ? "index.html#" + cat : "index.html";
+    });
+  });
+
+  var fromCat = new URLSearchParams(window.location.search).get("from") || "local";
+  document.getElementById("backLink").href = "index.html#" + fromCat;
+  var activeBtn = document.querySelector('.side-nav [data-cat="' + fromCat + '"]');
+  if (activeBtn) activeBtn.classList.add("active");
+
+  /* ---- init: set defaults, auto-focus, show $0 state ---- */
+  document.getElementById("loanAmount").value = fmtRaw(500000);
+  document.getElementById("interestRate").value = "6.5";
+  document.getElementById("loanTerm").value = "30";
+
+  // Auto-focus with blinking cursor
+  document.getElementById("loanAmount").focus();
+
+  calc();
+})();
+</script>
+
+</body>
+</html>

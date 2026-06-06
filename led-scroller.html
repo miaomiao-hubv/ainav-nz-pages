@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LED Scroller — Scrolling LED Text Sign | ainav.nz</title>
+<meta name="description" content="Create scrolling LED text signs right in your browser. Pick colors, speed, and direction for a retro LED display.">
+<meta name="keywords" content="LED scroller, LED sign, scrolling text, LED display, text banner, digital sign">
+<link rel="canonical" href="https://ainav.nz/led-scroller.html">
+<meta property="og:title" content="LED Scroller — Scrolling LED Text Sign | ainav.nz">
+<meta property="og:description" content="Create scrolling LED text signs right in your browser.">
+<meta property="og:url" content="https://ainav.nz/led-scroller.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="LED Scroller — Scrolling LED Text Sign | ainav.nz">
+<meta name="twitter:description" content="Create scrolling LED text signs right in your browser.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --danger:#D92D20;--danger-light:#FEE2E2;
+  --led-color:#FF0000;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== TOOL LAYOUT ===== */
+.tool-layout{display:flex;flex-direction:column;gap:20px;padding:24px 32px;flex:1;align-items:center}
+.tool-main{width:100%;max-width:960px;display:flex;flex-direction:column;gap:18px}
+
+/* ===== HEADER CARDS ===== */
+.tool-header{display:flex;gap:16px;flex-wrap:wrap}
+.header-card{flex:1;min-width:260px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.header-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.header-card p,.header-card li{font-size:12px;color:var(--sub);line-height:1.6}
+.header-card ul{padding-left:0;margin-top:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.header-card ul li{display:flex;align-items:flex-start;gap:6px}
+.header-card ul li::before{content:"•";color:var(--brand-light);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* ===== BUTTONS ===== */
+.btn-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:44px;padding:0 22px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s}
+.btn-action:hover{background:#fff;border-color:#C0C8CE}
+.btn-action:active{transform:scale(.98)}
+.btn-action:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.btn-action.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 10px rgba(0,59,79,.2)}
+.btn-action.btn-primary:hover{background:var(--brand-light);border-color:var(--brand-light)}
+.btn-action .btn-emoji{font-size:16px}
+
+/* ===== LED SCROLLER SPECIFIC ===== */
+.toggle-row{display:flex;gap:8px;flex-wrap:wrap}
+.toggle-btn{padding:8px 18px;border-radius:8px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;font-family:inherit;transition:all .15s;backdrop-filter:blur(6px)}
+.toggle-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.toggle-btn:hover:not(.active){background:rgba(255,255,255,.9)}
+
+.color-btn{padding:8px 18px;border-radius:8px;border:2px solid var(--border);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;position:relative}
+.color-btn.active{border-color:var(--text);box-shadow:0 0 0 2px rgba(0,0,0,.1)}
+.color-btn:hover:not(.active){transform:scale(1.05)}
+
+.led-input{width:100%;height:48px;border:1.5px solid var(--border);border-radius:10px;padding:0 16px;font-size:16px;font-weight:600;color:var(--text);background:rgba(255,255,255,.6);backdrop-filter:blur(8px);outline:none;transition:border-color .15s;box-shadow:var(--shadow-sm)}
+.led-input:focus{border-color:var(--brand);background:#fff}
+
+.led-display{width:100%;height:160px;border-radius:16px;background:#111;border:3px solid #333;box-shadow:inset 0 0 40px rgba(0,0,0,.5),0 4px 20px rgba(0,0,0,.15);overflow:hidden;position:relative;display:flex;align-items:center}
+.led-text-track{position:absolute;white-space:nowrap;font-family:'Courier New',monospace;font-weight:900;font-size:64px;letter-spacing:4px;text-shadow:0 0 8px currentColor,0 0 20px currentColor;will-change:transform}
+
+.led-dots{position:absolute;top:0;left:0;width:100%;height:100%;background-image:radial-gradient(circle,rgba(255,255,255,.02) 1px,transparent 1px);background-size:8px 8px;pointer-events:none}
+
+.control-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.reg-cards{display:flex;gap:14px;flex-wrap:wrap}
+.reg-card{flex:1;min-width:240px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.reg-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.reg-card p{font-size:12px;color:var(--sub);line-height:1.6}
+
+/* Fullscreen mode */
+.led-fullscreen{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:#111;display:flex;align-items:center;justify-content:center}
+.led-fullscreen .led-text-track{font-size:120px}
+.led-fullscreen-close{position:fixed;top:20px;right:20px;z-index:10000;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 20px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;backdrop-filter:blur(8px)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .tool-layout{padding:18px 20px}
+  .header-card{min-width:220px}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .tool-layout{padding:12px 14px}
+  .led-display{height:120px}
+  .led-text-track{font-size:44px}
+}
+@media(max-width:420px){
+  .led-display{height:100px}
+  .led-text-track{font-size:36px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">21</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">18</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">19</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item active" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">9</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html#lifestyle">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">LED Scroller</span>
+  </div>
+
+  <div class="tool-layout">
+
+    <div class="tool-main">
+
+      <!-- Header Info Banner -->
+      <div class="tool-header">
+        <div class="header-card">
+          <h3>💡 LED Text Sign</h3>
+          <p>Type your message and watch it scroll across a retro LED display. Pick your color, speed, and direction!</p>
+        </div>
+        <div class="header-card">
+          <h3>🖥️ Tips</h3>
+          <ul>
+            <li>Use the fullscreen button for maximum impact</li>
+            <li>Try different colors for different moods</li>
+            <li>Works great on phones — hold it up like a real sign!</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Text Input -->
+      <div>
+        <label class="control-label">Your Message</label>
+        <input type="text" class="led-input" id="ledInput" value="HELLO WORLD!" placeholder="Type your message..." maxlength="100">
+      </div>
+
+      <!-- Color Buttons -->
+      <div>
+        <label class="control-label">LED Color</label>
+        <div class="toggle-row" id="colorRow">
+          <button class="color-btn active" data-color="#FF0000" style="background:#FF0000;color:#fff">Red</button>
+          <button class="color-btn" data-color="#00CC00" style="background:#00CC00;color:#fff">Green</button>
+          <button class="color-btn" data-color="#0066FF" style="background:#0066FF;color:#fff">Blue</button>
+          <button class="color-btn" data-color="#FFCC00" style="background:#FFCC00;color:#333">Yellow</button>
+          <button class="color-btn" data-color="#FFFFFF" style="background:#FFFFFF;color:#333">White</button>
+          <button class="color-btn" data-color="#FF69B4" style="background:#FF69B4;color:#fff">Pink</button>
+          <button class="color-btn" data-color="#FF8800" style="background:#FF8800;color:#fff">Orange</button>
+        </div>
+      </div>
+
+      <!-- Speed Buttons -->
+      <div>
+        <label class="control-label">Speed</label>
+        <div class="toggle-row" id="speedRow">
+          <button class="toggle-btn" data-speed="1">Slow</button>
+          <button class="toggle-btn active" data-speed="3">Medium</button>
+          <button class="toggle-btn" data-speed="6">Fast</button>
+        </div>
+      </div>
+
+      <!-- Direction Buttons -->
+      <div>
+        <label class="control-label">Direction</label>
+        <div class="toggle-row" id="dirRow">
+          <button class="toggle-btn active" data-dir="left">⬅ Left</button>
+          <button class="toggle-btn" data-dir="right">➡ Right</button>
+        </div>
+      </div>
+
+      <!-- LED Display -->
+      <div class="led-display" id="ledDisplay">
+        <div class="led-dots"></div>
+        <div class="led-text-track" id="ledTrack">HELLO WORLD!</div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="btn-row">
+        <button class="btn-action btn-primary" id="fullscreenBtn">🖥️ Fullscreen</button>
+        <button class="btn-action" id="pauseBtn">⏸️ Pause</button>
+      </div>
+
+      <!-- Region Cards -->
+      <div class="reg-cards">
+        <div class="reg-card">
+          <h3>💡 LED Sign Tips</h3>
+          <p>LED signs work best with short, bold messages. Use ALL CAPS for maximum visibility. Add spaces between letters for a classic marquee look. Try the fullscreen mode and hold your phone up!</p>
+        </div>
+        <div class="reg-card">
+          <h3>🖥️ Display Settings</h3>
+          <p>For best results, increase your screen brightness to max. Dark rooms make LED text pop. The dot-matrix overlay simulates a real LED panel with individual pixel dots.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var track = document.getElementById('ledTrack');
+  var input = document.getElementById('ledInput');
+  var display = document.getElementById('ledDisplay');
+  var fullscreenBtn = document.getElementById('fullscreenBtn');
+  var pauseBtn = document.getElementById('pauseBtn');
+
+  var currentColor = '#FF0000';
+  var currentSpeed = 3;
+  var currentDir = 'left';
+  var isPaused = false;
+  var pos = 0;
+  var animId = null;
+  var isFullscreen = false;
+  var fullscreenEl = null;
+
+  function updateTrack(){
+    track.textContent = input.value || 'HELLO WORLD!';
+    track.style.color = currentColor;
+  }
+
+  input.addEventListener('input', function(){
+    updateTrack();
+    pos = currentDir === 'left' ? display.offsetWidth : -getTextWidth();
+  });
+
+  function getTextWidth(){
+    return track.offsetWidth;
+  }
+
+  // Color buttons
+  document.querySelectorAll('#colorRow .color-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('#colorRow .color-btn').forEach(function(b){b.classList.remove('active')});
+      this.classList.add('active');
+      currentColor = this.getAttribute('data-color');
+      updateTrack();
+    });
+  });
+
+  // Speed buttons
+  document.querySelectorAll('#speedRow .toggle-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('#speedRow .toggle-btn').forEach(function(b){b.classList.remove('active')});
+      this.classList.add('active');
+      currentSpeed = parseInt(this.getAttribute('data-speed'));
+    });
+  });
+
+  // Direction buttons
+  document.querySelectorAll('#dirRow .toggle-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('#dirRow .toggle-btn').forEach(function(b){b.classList.remove('active')});
+      this.classList.add('active');
+      currentDir = this.getAttribute('data-dir');
+      pos = currentDir === 'left' ? display.offsetWidth : -getTextWidth();
+    });
+  });
+
+  // Pause
+  pauseBtn.addEventListener('click',function(){
+    isPaused = !isPaused;
+    this.textContent = isPaused ? '▶ Play' : '⏸️ Pause';
+  });
+
+  // Fullscreen
+  fullscreenBtn.addEventListener('click',function(){
+    if(!isFullscreen){
+      isFullscreen = true;
+      fullscreenEl = document.createElement('div');
+      fullscreenEl.className = 'led-fullscreen';
+      var fsTrack = document.createElement('div');
+      fsTrack.className = 'led-text-track';
+      fsTrack.id = 'fsTrack';
+      fsTrack.textContent = input.value || 'HELLO WORLD!';
+      fsTrack.style.color = currentColor;
+      var dots = document.createElement('div');
+      dots.className = 'led-dots';
+      var closeBtn = document.createElement('button');
+      closeBtn.className = 'led-fullscreen-close';
+      closeBtn.textContent = '✕ Close';
+      closeBtn.addEventListener('click',function(){
+        isFullscreen = false;
+        fullscreenEl.remove();
+        fullscreenEl = null;
+      });
+      fullscreenEl.appendChild(dots);
+      fullscreenEl.appendChild(fsTrack);
+      fullscreenEl.appendChild(closeBtn);
+      document.body.appendChild(fullscreenEl);
+    }
+  });
+
+  // Animation loop
+  function animate(){
+    var activeTrack = isFullscreen && fullscreenEl ? fullscreenEl.querySelector('#fsTrack') : track;
+    var containerWidth = isFullscreen && fullscreenEl ? window.innerWidth : display.offsetWidth;
+
+    if(!isPaused && activeTrack){
+      var tw = activeTrack.offsetWidth;
+      if(currentDir === 'left'){
+        pos -= currentSpeed;
+        if(pos < -tw) pos = containerWidth;
+      } else {
+        pos += currentSpeed;
+        if(pos > containerWidth) pos = -tw;
+      }
+      activeTrack.style.transform = 'translateX('+pos+'px)';
+    }
+
+    // Sync fullscreen track content
+    if(isFullscreen && fullscreenEl){
+      var fsTrack = fullscreenEl.querySelector('#fsTrack');
+      if(fsTrack){
+        fsTrack.textContent = input.value || 'HELLO WORLD!';
+        fsTrack.style.color = currentColor;
+      }
+    }
+
+    animId = requestAnimationFrame(animate);
+  }
+
+  updateTrack();
+  pos = display.offsetWidth;
+  animate();
+
+  // Sidebar
+  document.querySelectorAll('.side-nav .side-item').forEach(function(b){
+    b.addEventListener('click',function(){
+      var c = this.getAttribute('data-cat');
+      window.location.href = c ? 'index.html#'+c : 'index.html';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

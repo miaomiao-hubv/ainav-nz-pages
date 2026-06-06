@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ainav.nz — NZ Local Toolkit & AI Navigator</title>
+<meta name="description" content="Free calculators and tools for New Zealanders — tax, property, finance, PDF, image, dev tools, and a curated global AI directory. All tools run locally in your browser.">
+<meta name="keywords" content="NZ calculator, New Zealand tax, PAYE calculator, GST calculator, KiwiSaver, mortgage calculator, PDF tools, image tools, AI tools, NZ toolkit">
+<meta name="author" content="ainav.nz">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ainav.nz/">
+<meta property="og:title" content="ainav.nz — NZ Local Toolkit & AI Navigator">
+<meta property="og:description" content="Your AI-powered toolkit for life in New Zealand. Tax, property, finance, PDF, image & dev tools — all browser-based, no uploads required.">
+<meta property="og:url" content="https://ainav.nz/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta property="og:locale" content="en_NZ">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ainav.nz — NZ Local Toolkit & AI Navigator">
+<meta name="twitter:description" content="Your AI-powered toolkit for life in New Zealand. 87 free browser-based tools.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ainav.nz",
+  "url": "https://ainav.nz/",
+  "description": "Your AI-powered toolkit for life in New Zealand. Free browser-based calculators and tools for tax, property, finance, PDF, images, and more.",
+  "applicationCategory": "UtilityApplication",
+  "operatingSystem": "Web",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "NZD"},
+  "author": {"@type": "Organization", "name": "ainav.nz"}
+}
+</script>
+<style>
+/* ===== RESET & ROOT ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#FAFBFC;--card-bg:#fff;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;--gap:14px;
+  --gold:#D4A843;
+}
+html{height:100%;scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;height:100%;-webkit-font-smoothing:antialiased}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100%}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:var(--side-w);min-width:var(--side-w);
+  background:var(--side-bg);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;
+}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+
+/* Logo */
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+
+/* Nav */
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+
+/* Footer */
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* Hero */
+.hero{background:#fff;border-bottom:1px solid var(--border);padding:46px 40px;flex-shrink:0}
+.hero-inner{max-width:880px}
+.hero h1{font-size:27px;font-weight:800;letter-spacing:-.6px;margin-bottom:6px;color:var(--text)}
+.hero p.desc{font-size:13.5px;color:var(--sub);margin-bottom:20px;line-height:1.6}
+.hero .search-wrap{display:flex;align-items:center;max-width:460px;background:var(--side-bg);border:1px solid #D1D5DB;border-radius:8px;padding:0 14px;height:44px;transition:border-color .15s;position:sticky;top:16px;z-index:50}
+.hero .search-wrap:focus-within{border-color:var(--brand);background:#fff}
+.hero .search-wrap svg{width:17px;height:17px;color:var(--muted);flex-shrink:0}
+.hero .search-wrap input{flex:1;border:none;background:transparent;outline:none;font-size:14px;color:var(--text);padding:0 8px;font-family:inherit}
+.hero .search-wrap input::placeholder{color:#B0B7C3}
+
+/* Section header */
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px;padding:28px 40px 0}
+.sec-title{font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.sec-count{font-size:12px;color:var(--sub)}
+
+/* Grid */
+.grid-wrap{flex:1;padding:0 40px 40px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:var(--gap)}
+
+/* Card */
+.card{display:flex;flex-direction:column;gap:5px;background:var(--card-bg);border-radius:var(--radius);padding:14px 22px 12px 16px;border:1px solid #E5E7EB;text-decoration:none;color:inherit;transition:border-color .15s;cursor:pointer;position:relative}
+.card:hover{border-color:var(--brand-light)}
+.card-head{display:flex;align-items:center;gap:7px;padding-right:18px}
+.card-ico{font-size:14px;line-height:1;flex-shrink:0;width:16px;text-align:center}
+.card-name{font-size:12.5px;font-weight:650;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-desc{font-size:11.5px;color:var(--sub);line-height:1.5;flex:1}
+
+/* Card badge (right side — AI > HOT > NEW, only one shown) */
+.card-badge{position:absolute;right:0;top:50%;transform:translateY(-50%);writing-mode:vertical-rl;text-orientation:mixed;font-size:9px;font-weight:800;letter-spacing:1.5px;padding:10px 5px;border-radius:4px 0 0 4px;line-height:1.3;white-space:nowrap;pointer-events:none}
+.badge-ai{background:linear-gradient(180deg,#D4A843,#B8912E);color:#fff;animation:badgePulse 2s ease-in-out infinite}
+.badge-hot{background:linear-gradient(180deg,#FF6B35,#FF3D00);color:#fff}
+.badge-new{background:linear-gradient(180deg,#10B981,#059669);color:#fff;animation:badgePulse 2.5s ease-in-out infinite}
+@keyframes badgePulse{0%,100%{opacity:1}50%{opacity:.75}}
+
+/* Empty */
+.empty{display:none;flex-direction:column;align-items:center;justify-content:center;padding:70px 20px;text-align:center;color:var(--muted);grid-column:1/-1}
+.empty svg{width:48px;height:48px;color:#D1D5DB;margin-bottom:12px}
+.empty p{font-size:13.5px}
+
+/* Global AI Directory */
+.ai-dir-card{border-color:rgba(212,168,67,.3);background:linear-gradient(135deg,#fff 0%,#FFFDF5 100%)}
+.ai-dir-card:hover{border-color:var(--gold)}
+.ai-dir-card .card-external{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--gold);font-weight:600;margin-top:auto}
+.ai-dir-card .card-external svg{width:12px;height:12px}
+
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .hero,.sec-head,.grid-wrap{padding-left:16px;padding-right:16px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .card{padding:14px 12px}
+  .hero h1{font-size:22px}
+}
+@media(max-width:420px){
+  .grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar" id="sidebar">
+  <div class="side-head">
+    <a class="side-brand" onclick="resetView()" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav" id="sideNav"></nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<!-- ==================== MAIN ==================== -->
+<div class="main">
+
+  <section class="hero" id="heroView">
+    <div class="hero-inner">
+      <h1>NZ Local Toolkit</h1>
+      <p class="desc">Your AI-powered toolkit for life in New Zealand — taxes, property, PDFs, images &amp; more. All browser-based, no uploads needed.</p>
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search" placeholder="Search tools…" autocomplete="off" aria-label="Search tools">
+      </div>
+    </div>
+  </section>
+
+  <div class="sec-head" id="secHead">
+    <span class="sec-title" id="secTitle">Local Tools</span>
+    <span class="sec-count" id="secCount"> tools</span>
+  </div>
+  <div class="grid-wrap">
+    <div class="grid" id="gridView"></div>
+    <div class="empty" id="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <p>No tools match. Try a different keyword.</p>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+// ==================== TOOLS DATA ====================
+var tools = [
+  // ===== Finance & Tax (18) =====
+  {id:2,icon:"📦",name:"GST Calculator",desc:"Add or remove 15% GST from any amount.",cat:"finance",local:true,hot:true,url:"gst-calculator.html"},
+  {id:1,icon:"💰",name:"PAYE Tax Calc",desc:"Income tax & take-home pay using current IRD rates.",cat:"finance",local:true,hot:true,url:"paye-calculator.html"},
+  {id:7,icon:"🎰",name:"KiwiSaver Calc",desc:"Project your KiwiSaver balance at retirement.",cat:"finance",local:true,url:"kiwisaver-calc.html"},
+  {id:12,icon:"💳",name:"Loan Calculator",desc:"Loan repayments with NZ rates & fees.",cat:"finance",local:true,url:"loan-calculator.html"},
+  {id:8,icon:"💸",name:"Take-Home Pay",desc:"Net pay after PAYE, KiwiSaver & student loan.",cat:"finance",local:true,url:"take-home-pay.html"},
+  {id:3,icon:"💵",name:"Tax Refund Est.",desc:"Estimate your end-of-year IRD tax refund.",cat:"finance",local:true,url:"tax-refund-est.html"},
+  {id:4,icon:"🎓",name:"Student Loan Repay",desc:"12% repayment above annual income threshold.",cat:"finance",local:true,url:"student-loan-repay.html"},
+  {id:10,icon:"👨‍👧",name:"Child Support",desc:"IRD child support formula estimate.",cat:"finance",local:true,url:"child-support.html"},
+  {id:9,icon:"✈️",name:"Holiday Pay Calc",desc:"8% holiday pay entitlement for casual workers.",cat:"finance",local:true,url:"holiday-pay-calc.html"},
+  {id:80,icon:"📝",name:"Budget Planner",desc:"50/30/20 rule monthly budget breakdown.",cat:"finance",local:true,newDate:"2026-06-06",url:"budget-planner.html"},
+  {id:5,icon:"👨‍👩‍👧",name:"Working for Families",desc:"Family tax credits & entitlements for parents.",cat:"finance",local:true,url:"working-for-families.html"},
+  {id:6,icon:"💪",name:"ACC Levy Calc",desc:"ACC levies for self-employed contractors.",cat:"finance",local:true,url:"acc-levy-calc.html"},
+  {id:79,icon:"⚡",name:"Debt Payoff",desc:"Snowball vs avalanche debt payoff plan.",cat:"finance",local:true,newDate:"2026-06-06",url:"debt-payoff.html"},
+  {id:13,icon:"📧",name:"FBT Calculator",desc:"Fringe benefit tax for company vehicles & perks.",cat:"finance",local:true,url:"fbt-calculator.html"},
+  {id:41,icon:"💱",name:"Currency Converter",desc:"NZD to USD, AUD, EUR, CNY & more.",cat:"finance",local:false,url:"currency-converter.html"},
+  {id:11,icon:"📈",name:"Compound Interest",desc:"See your money grow with compound returns.",cat:"finance",local:false,newDate:"2026-06-06",url:"compound-interest.html"},
+  {id:14,icon:"⏱️",name:"Salary Converter",desc:"Switch between annual salary and hourly rate.",cat:"finance",local:false,url:"salary-converter.html"},
+
+  // ===== Property (6) =====
+  {id:15,icon:"🏠",name:"Mortgage Calc",desc:"Weekly or fortnightly mortgage repayment breakdown.",cat:"property",local:true,hot:true,url:"mortgage-calc.html"},
+  {id:19,icon:"🔓",name:"First Home Calc",desc:"Kāinga Ora First Home 5% deposit eligibility.",cat:"property",local:true,url:"first-home-calc.html"},
+  {id:17,icon:"📊",name:"Rental Yield",desc:"Gross & net property yield percentages.",cat:"property",local:true,url:"rental-yield.html"},
+  {id:20,icon:"🔧",name:"LVR Calculator",desc:"Loan-to-value ratio for mortgage applicants.",cat:"property",local:true,url:"lvr-calculator.html"},
+  {id:18,icon:"⏰",name:"Bright-Line Test",desc:"Property bright-line tax window checker.",cat:"property",local:true,url:"bright-line-test.html"},
+
+  // ===== Office (17) =====
+  {id:23,icon:"🖼️",name:"PDF to Image",desc:"Convert PDF pages to JPG/PNG images.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-to-images.html"},
+  {id:24,icon:"💧",name:"PDF Watermark",desc:"Add custom text or image watermarks to PDF.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-watermark.html"},
+  {id:25,icon:"📦",name:"PDF Compress",desc:"Reduce PDF file size for sharing & storage.",cat:"office",local:false,hot:true,url:"pdf-compress.html"},
+  {id:26,icon:"✍️",name:"PDF Sign",desc:"Add your signature directly to PDF documents.",cat:"office",local:false,url:"pdf-sign.html"},
+  {id:27,icon:"📷",name:"Images to PDF",desc:"Combine multiple images into a single PDF.",cat:"office",local:false,newDate:"2026-06-06",url:"images-to-pdf.html"},
+  {id:28,icon:"✂️",name:"PDF Split",desc:"Extract specific pages from a PDF file.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-split.html"},
+  {id:29,icon:"📎",name:"PDF Merge",desc:"Combine multiple PDFs into one document.",cat:"office",local:false,hot:true,newDate:"2026-06-06",url:"pdf-merge.html"},
+  {id:30,icon:"🔒",name:"PDF to Flat Image",desc:"Convert PDF to non-editable image-based PDF.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-to-image-only.html"},
+  {id:31,icon:"📄",name:"PDF Page Manager",desc:"Add, delete, rotate & reorder PDF pages.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-page-manager.html"},
+  {id:32,icon:"🖼️",name:"PDF Extract Images",desc:"Extract embedded images from PDF files.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-image-extract.html"},
+  {id:33,icon:"🔐",name:"PDF Encrypt/Decrypt",desc:"Password-protect or unlock PDF documents.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-encrypt.html"},
+  {id:34,icon:"✂️",name:"PDF Crop Pages",desc:"Uniformly crop all pages in a PDF.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-crop.html"},
+  {id:35,icon:"🏷️",name:"PDF Edit Metadata",desc:"Modify PDF author, title & keywords.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-metadata.html"},
+  {id:36,icon:"🔢",name:"PDF Page Numbers",desc:"Add page numbers to PDF documents.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-page-numbers.html"},
+  {id:37,icon:"📐",name:"PDF Resize Pages",desc:"Change PDF page dimensions (A3, A4, etc).",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-page-resize.html"},
+  {id:88,icon:"📝",name:"PDF Text Extract",desc:"Extract text content from PDF files.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-text-extract.html"},
+  {id:89,icon:"👁️",name:"PDF Viewer",desc:"View and read PDF files in your browser.",cat:"office",local:false,newDate:"2026-06-06",url:"pdf-viewer.html"},
+  {id:38,icon:"🗜️",name:"Document Compress",desc:"Compress images inside DOCX & PDF files.",cat:"office",local:false,url:"document-compress.html"},
+  {id:39,icon:"📊",name:"Excel Converter",desc:"Convert XLSX to CSV, HTML & JSON formats.",cat:"office",local:false,url:"excel-converter.html"},
+
+  // ===== Academic (5) =====
+  {id:42,icon:"📚",name:"APA 7th Generator",desc:"University-compliant APA reference citations.",cat:"academic",local:false,url:"apa-7th-generator.html"},
+  {id:43,icon:"🌍",name:"World Capitals",desc:"Quick-reference world capitals lookup.",cat:"academic",local:false,url:"world-capitals.html"},
+  {id:44,icon:"⚗️",name:"Periodic Table",desc:"Interactive chemical element reference.",cat:"academic",local:false,url:"periodic-table.html"},
+  {id:45,icon:"🔤",name:"Word Counter",desc:"Count characters, words & sentences.",cat:"academic",local:false,url:"word-counter.html"},
+  {id:46,icon:"🧠",name:"Mind Map",desc:"Create & organise visual mind maps.",cat:"academic",local:false,url:"mind-map.html"},
+
+  // ===== Image (11) =====
+  {id:47,icon:"🖼️",name:"AI Background Remover",desc:"Remove image backgrounds in one click.",cat:"image",local:false,ai:true,hot:true,url:"ai-background-remover.html"},
+  {id:48,icon:"📷",name:"Passport Photo Pad",desc:"Crop & align biometric ID photos.",cat:"image",local:false,url:"passport-photo-pad.html"},
+  {id:49,icon:"🛍️",name:"Ecom Image Resizer",desc:"Lossless square ratios for e-commerce.",cat:"image",local:false,url:"ecom-image-resizer.html"},
+  {id:50,icon:"🗜️",name:"Image Compressor",desc:"Compress JPEG & PNG without quality loss.",cat:"image",local:false,hot:true,url:"image-compressor.html"},
+  {id:51,icon:"✂️",name:"Image Editor",desc:"Crop, rotate, flip & add text to images.",cat:"image",local:false,url:"image-editor.html"},
+  {id:52,icon:"🔤",name:"Image to ASCII",desc:"Convert any image to ASCII character art.",cat:"image",local:false,url:"image-to-ascii.html"},
+  {id:53,icon:"📐",name:"Image Resizer",desc:"Enlarge images while preserving clarity.",cat:"image",local:false,url:"image-resizer.html"},
+  {id:54,icon:"📄",name:"Document Deskew",desc:"Fix perspective & straighten document photos.",cat:"image",local:false,url:"document-deskew.html"},
+  {id:55,icon:"🎞️",name:"GIF Splitter",desc:"Decompose GIF animations into frames.",cat:"image",local:false,url:"gif-splitter.html"},
+  {id:56,icon:"🔲",name:"QR Generator",desc:"Generate QR codes from text or URLs.",cat:"image",local:false,url:"qr-generator.html"},
+  {id:57,icon:"🧩",name:"Grid Slicer",desc:"Slice images into 3×3 grid for social media.",cat:"image",local:false,url:"grid-slicer.html"},
+
+  // ===== Video (2) =====
+  {id:58,icon:"🎥",name:"Screen Recorder",desc:"Record browser tab, window or full screen.",cat:"video",local:false,url:"screen-recorder.html"},
+  {id:59,icon:"🎞️",name:"Video to GIF",desc:"Convert video clips to animated GIFs.",cat:"video",local:false,url:"video-to-gif.html"},
+
+  // ===== Dev Tools (17) =====
+  {id:60,icon:"🎨",name:"Color Converter",desc:"Convert between Hex, RGB, HSL formats.",cat:"dev",local:false,url:"color-converter.html"},
+  {id:61,icon:"🔍",name:"JSON Diff",desc:"Compare two JSON objects side by side.",cat:"dev",local:false,url:"json-diff.html"},
+  {id:62,icon:"✅",name:"JSON Validator",desc:"Validate & diagnose JSON syntax errors.",cat:"dev",local:false,url:"json-validator.html"},
+  {id:63,icon:"🔐",name:"MD5 Hash",desc:"Generate MD5 hashes for text or files.",cat:"dev",local:false,url:"md5-hash.html"},
+  {id:64,icon:"🔤",name:"Unicode Decode",desc:"Encode & decode Unicode text.",cat:"dev",local:false,url:"unicode-decode.html"},
+  {id:65,icon:"🔗",name:"URL Encode/Decode",desc:"URL-encode or decode query strings.",cat:"dev",local:false,url:"url-encodedecode.html"},
+  {id:66,icon:"📋",name:"JSON Formatter",desc:"Pretty-print & beautify JSON data.",cat:"dev",local:false,url:"json-formatter.html"},
+  {id:67,icon:"🔒",name:"Crypto Tool",desc:"AES, DES & SHA encryption/decryption.",cat:"dev",local:false,url:"crypto-tool.html"},
+  {id:68,icon:"🔍",name:"URL Parser",desc:"Break down URLs into components.",cat:"dev",local:false,url:"url-parser.html"},
+  {id:69,icon:"🔑",name:"Password Generator",desc:"Generate strong random passwords.",cat:"dev",local:false,url:"password-generator.html"},
+  {id:70,icon:"📦",name:"Base64 Codec",desc:"Encode & decode Base64 strings.",cat:"dev",local:false,url:"base64-codec.html"},
+  {id:71,icon:"📝",name:"Markdown Editor",desc:"Write & preview Markdown in real time.",cat:"dev",local:false,url:"markdown-editor.html"},
+  {id:72,icon:"🧩",name:"Regex Tester",desc:"Test & debug regular expressions.",cat:"dev",local:false,url:"regex-tester.html"},
+  {id:73,icon:"🔄",name:"YAML ⇄ JSON",desc:"Convert between YAML and JSON formats.",cat:"dev",local:false,url:"yaml-json.html"},
+  {id:74,icon:"🖥️",name:"UserAgent Parser",desc:"Inspect browser User-Agent string.",cat:"dev",local:false,url:"useragent-parser.html"},
+  {id:75,icon:"🆔",name:"UUID Generator",desc:"Generate UUID v4 unique identifiers.",cat:"dev",local:false,url:"uuid-generator.html"},
+  {id:76,icon:"👋",name:"Hello World",desc:"Hello World snippets in 20+ languages.",cat:"dev",local:false,url:"hello-world.html"},
+
+  // ===== Lifestyle (9) =====
+  {id:78,icon:"⛽",name:"Fuel Cost Calc",desc:"Trip fuel cost by distance & economy.",cat:"lifestyle",local:true,url:"fuel-cost-calc.html"},
+  {id:77,icon:"⚖️",name:"BMI Calculator",desc:"Body mass index & healthy weight range.",cat:"lifestyle",local:false,url:"bmi-calculator.html"},
+  {id:81,icon:"🍽️",name:"What to Eat",desc:"Can't decide? Let the wheel pick for you.",cat:"lifestyle",local:false,url:"what-to-eat.html"},
+  {id:82,icon:"📱",name:"LED Scroller",desc:"Turn your screen into a scrolling LED sign.",cat:"lifestyle",local:false,url:"led-scroller.html"},
+  {id:83,icon:"◕‿◕",name:"Kaomoji Board",desc:"Copy-paste cute Japanese emoticons.",cat:"lifestyle",local:false,url:"kaomoji-board.html"},
+  {id:84,icon:"🩸",name:"Blood Type Genetics",desc:"Predict child blood type from parents.",cat:"lifestyle",local:false,url:"blood-type-genetics.html"},
+  {id:85,icon:"🎲",name:"Random Number",desc:"Generate random numbers in any range.",cat:"lifestyle",local:false,url:"random-number.html"},
+  {id:86,icon:"🕐",name:"World Time",desc:"Check time across UTC+12/+13 & global zones.",cat:"lifestyle",local:false,url:"world-time.html"},
+  {id:87,icon:"📅",name:"Expiry Date Calc",desc:"Calculate use-by dates for food & products.",cat:"lifestyle",local:false,url:"expiry-date-calc.html"}
+];
+
+// ==================== CATEGORIES ====================
+var categories = [
+  {key:"all",       label:"All Tools",           icon:"📋", group:null},
+  {key:"local",     label:"Local Tools",         icon:"📍", group:"filters"},
+  {key:"finance",   label:"Finance & Tax",       icon:"💰", group:"tools"},
+  {key:"property",  label:"Property",            icon:"🏠", group:"tools"},
+  {key:"office",    label:"Office",              icon:"💼", group:"tools"},
+  {key:"academic",  label:"Academic",            icon:"🎓", group:"tools"},
+  {key:"image",     label:"Image",               icon:"🖼️", group:"tools"},
+  {key:"video",     label:"Video",               icon:"🎬", group:"tools"},
+  {key:"dev",       label:"Dev Tools",           icon:"💻", group:"tools"},
+  {key:"lifestyle", label:"Lifestyle",           icon:"🎮", group:"tools"},
+  {key:"ai",        label:"Global AI Directory", icon:"🌐", group:"ai"}
+];
+
+function catLabel(k){var c=categories.find(function(x){return x.key===k});return c?c.label:k;}
+function catIcon(k){var c=categories.find(function(x){return x.key===k});return c?c.icon:"";}
+
+// ==================== STATE ====================
+var currentCat = "local", currentSearch = "", aiMode = false;
+var gridView = document.getElementById("gridView");
+var empty = document.getElementById("empty");
+var searchEl = document.getElementById("search");
+var secTitle = document.getElementById("secTitle");
+var secCount = document.getElementById("secCount");
+
+// ==================== BUILD SIDEBAR ====================
+var sideNav = document.getElementById("sideNav");
+var groupLabels = {filters:"", tools:"Categories", ai:""};
+var lastGroup = null;
+
+categories.forEach(function(c){
+  if(c.group && c.group!==lastGroup){
+    if(lastGroup) sideNav.appendChild(document.createElement("div")).className="side-section";
+    var lbl = document.createElement("div");
+    lbl.className="side-label";
+    lbl.textContent = groupLabels[c.group]||"";
+    if(groupLabels[c.group]) sideNav.appendChild(lbl);
+    lastGroup = c.group;
+  }
+
+  var b = document.createElement("button");
+  b.className = "side-item" + (c.key==="local"?" active":"");
+  b.setAttribute("data-cat", c.key);
+
+  var count = c.key==="local" ? tools.filter(function(t){return t.local;}).length :
+              c.key==="ai" ? "—" :
+              c.key==="all" ? tools.length :
+              tools.filter(function(t){return t.cat===c.key;}).length;
+
+  var iconHtml = '<span class="si-icon">'+c.icon+'</span>';
+
+  if(c.key==="local"){ b.classList.add("local-filter"); iconHtml='<span class="si-icon">📍</span>'; }
+  if(c.key==="ai"){ b.classList.add("ai-directory"); iconHtml='<span class="si-icon">🌐</span><span class="si-dot"></span>'; }
+
+  var countHtml = c.key==="ai" ? '' : '<span class="si-count">'+count+'</span>';
+  b.innerHTML = iconHtml + c.label + countHtml;
+
+  b.addEventListener("click", function(){
+    document.querySelectorAll(".side-item").forEach(function(el){el.classList.remove("active");});
+    this.classList.add("active");
+    currentCat = this.getAttribute("data-cat");
+    currentSearch = "";
+    searchEl.value = "";
+    history.replaceState(null, "", "#" + currentCat);
+
+    if(currentCat==="ai"){
+      aiMode = true;
+      secTitle.textContent = "Global AI Directory";
+      secCount.textContent = "Curated picks";
+      pauseTW();
+    }else{
+      aiMode = false;
+      secTitle.textContent = catLabel(currentCat);
+      pauseTW();
+      if(currentCat==="all") resumeTW();
+    }
+
+    render();
+  });
+
+  sideNav.appendChild(b);
+});
+
+// ==================== GLOBAL AI DIRECTORY ====================
+var aiDirectory = [
+  {icon:"🤖",name:"ChatGPT",desc:"OpenAI's flagship conversational AI. Writing, coding, analysis & creative work.",url:"https://chatgpt.com"},
+  {icon:"✨",name:"Claude",desc:"Anthropic's thoughtful AI assistant. Deep reasoning, long-form writing & nuanced analysis.",url:"https://claude.ai"},
+  {icon:"🔍",name:"Perplexity",desc:"AI-powered search engine with real-time citations & deep research mode.",url:"https://perplexity.ai"},
+  {icon:"🎨",name:"Midjourney",desc:"State-of-the-art AI image generation from text prompts.",url:"https://midjourney.com"},
+  {icon:"🎬",name:"Runway",desc:"AI video generation & editing. Text-to-video, motion tracking & VFX.",url:"https://runwayml.com"},
+  {icon:"🎵",name:"Suno",desc:"AI music generation — create full songs from text prompts.",url:"https://suno.com"},
+  {icon:"💻",name:"GitHub Copilot",desc:"AI pair programmer. Code completion, generation & chat in your IDE.",url:"https://github.com/features/copilot"},
+  {icon:"📊",name:"Gamma",desc:"AI-powered presentations, documents & webpages in seconds.",url:"https://gamma.app"},
+  {icon:"🖼️",name:"Canva AI",desc:"AI design tools built into Canva — Magic Write, BG remover & more.",url:"https://canva.com"},
+  {icon:"🎤",name:"ElevenLabs",desc:"Ultra-realistic AI text-to-speech & voice cloning.",url:"https://elevenlabs.io"},
+  {icon:"📝",name:"Notion AI",desc:"AI writing & Q&A inside your Notion workspace.",url:"https://notion.so"},
+  {icon:"🔗",name:"Zapier AI",desc:"AI automation — connect apps & build workflows with natural language.",url:"https://zapier.com"}
+];
+
+// ==================== RENDER ====================
+function render(){
+  gridView.innerHTML = "";
+  empty.style.display = "none";
+
+  var f;
+
+  if(aiMode){
+    // Global AI Directory
+    f = aiDirectory;
+    secCount.textContent = f.length + " tools";
+    if(currentSearch){
+      var q = currentSearch.toLowerCase();
+      f = f.filter(function(t){return t.name.toLowerCase().indexOf(q)!==-1 || t.desc.toLowerCase().indexOf(q)!==-1;});
+      secTitle.textContent = 'AI Directory: "'+currentSearch+'"';
+      secCount.textContent = f.length + " tools";
+    }
+    if(!f.length){empty.style.display="flex";return}
+
+    f.forEach(function(t){
+      var a = document.createElement("a");
+      a.className = "card ai-dir-card";
+      a.href = t.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      a.innerHTML = '<span class="card-icon">'+t.icon+'</span>'+
+        '<div class="card-name">'+t.name+'</div>'+
+        '<div class="card-desc">'+t.desc+'</div>'+
+        '<span class="card-external"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg> Visit</span>';
+      gridView.appendChild(a);
+    });
+    return;
+  }
+
+  // Local tools
+  f = tools.filter(function(t){
+    if(currentCat==="local") return t.local === true;
+    if(currentCat!=="all" && t.cat!==currentCat) return false;
+    return true;
+  });
+
+  if(currentSearch){
+    var q = currentSearch.toLowerCase();
+    f = f.filter(function(t){
+      return t.name.toLowerCase().indexOf(q)!==-1 || t.desc.toLowerCase().indexOf(q)!==-1;
+    });
+    secTitle.textContent = 'Search: "'+currentSearch+'"';
+  }else{
+    secTitle.textContent = catLabel(currentCat);
+  }
+
+  secCount.textContent = f.length + " tool" + (f.length!==1?"s":"");
+
+  if(!f.length){empty.style.display="flex";return}
+
+  f.forEach(function(t){
+    var a = document.createElement("a");
+    a.className = "card";
+    var href = t.url || "#";
+    if (href !== "#" && href.indexOf("http") !== 0) {
+      href = href + "?from=" + currentCat;
+    }
+    a.href = href;
+    var badge = '';
+    var now = new Date();
+    var isNew = t.newDate && (now - new Date(t.newDate)) / 864e5 <= 14;
+    if(t.ai) badge = '<span class="card-badge badge-ai">AI</span>';
+    else if(t.hot) badge = '<span class="card-badge badge-hot">HOT</span>';
+    else if(isNew) badge = '<span class="card-badge badge-new">NEW</span>';
+    a.innerHTML =
+      '<div class="card-head"><span class="card-ico">'+t.icon+'</span><span class="card-name">'+t.name+'</span></div>'+
+      '<div class="card-desc">'+t.desc+'</div>'+badge;
+    gridView.appendChild(a);
+  });
+}
+
+// ==================== TYPEWRITER ====================
+var twNames = tools.map(function(t){return t.name;});
+var twIdx = 0, twChar = 0, twFwd = true, twTimer = null, twPaused = false;
+
+function twTick(){
+  if(twPaused) return;
+  var n = twNames[twIdx];
+  if(twFwd){
+    twChar++;
+    searchEl.setAttribute("placeholder", n.substring(0,twChar));
+    if(twChar>=n.length){twFwd=false;twTimer=setTimeout(twTick,1400);return}
+  }else{
+    twChar--;
+    searchEl.setAttribute("placeholder", n.substring(0,twChar));
+    if(twChar<=0){twFwd=true;twIdx=(twIdx+1)%twNames.length;twChar=0;twTimer=setTimeout(twTick,500);return}
+  }
+  twTimer = setTimeout(twTick, twFwd ? 65+Math.random()*45 : 30+Math.random()*25);
+}
+
+twTimer = setTimeout(twTick, 1800);
+
+function pauseTW(){clearTimeout(twTimer);twPaused=true;searchEl.setAttribute("placeholder","Search tools…");}
+function resumeTW(){if(!currentSearch){twPaused=false;twIdx=0;twChar=0;twFwd=true;twTimer=setTimeout(twTick,800);}}
+
+searchEl.addEventListener("focus",function(){pauseTW();});
+searchEl.addEventListener("blur",function(){if(!currentSearch)resumeTW();});
+
+// ==================== SEARCH ====================
+searchEl.addEventListener("input", function(){
+  currentSearch = this.value;
+  if(currentSearch){
+    pauseTW();
+  }else{
+    secTitle.textContent = aiMode ? "Global AI Directory" : catLabel(currentCat);
+    resumeTW();
+  }
+  render();
+});
+
+// ==================== RESET / CLICK LOGO ====================
+window.resetView = function(){
+  currentCat = "local";
+  currentSearch = "";
+  aiMode = false;
+  searchEl.value = "";
+  secTitle.textContent = "Local Tools";
+  document.querySelectorAll(".side-item").forEach(function(el){el.classList.remove("active");});
+  var allBtn = document.querySelector('[data-cat="local"]');
+  if(allBtn) allBtn.classList.add("active");
+  if(window.location.hash) history.replaceState(null, "", window.location.pathname);
+  resumeTW();
+  render();
+};
+
+// ==================== HANDLE HASH NAVIGATION ====================
+(function(){
+  var hash = window.location.hash.replace("#", "");
+  if (hash) {
+    var cat = categories.find(function(c) { return c.key === hash; });
+    if (cat) {
+      currentCat = hash;
+      document.querySelectorAll(".side-item").forEach(function(el) { el.classList.remove("active"); });
+      var btn = document.querySelector('[data-cat="' + hash + '"]');
+      if (btn) btn.classList.add("active");
+      if (hash === "ai") {
+        aiMode = true;
+        secTitle.textContent = "Global AI Directory";
+        secCount.textContent = "Curated picks";
+        pauseTW();
+      } else {
+        aiMode = false;
+        secTitle.textContent = catLabel(currentCat);
+        if (hash !== "all") pauseTW();
+      }
+    }
+  }
+})();
+
+// ==================== INIT ====================
+render();
+
+})();
+</script>
+
+</body>
+</html>

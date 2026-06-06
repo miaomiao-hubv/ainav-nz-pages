@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What to Eat? — Food Decision Spinner | ainav.nz</title>
+<meta name="description" content="Can't decide what to eat? Spin the food wheel and let fate choose! Fun browser-based food decision maker.">
+<meta name="keywords" content="what to eat, food spinner, random food, food decision, restaurant picker">
+<link rel="canonical" href="https://ainav.nz/what-to-eat.html">
+<meta property="og:title" content="What to Eat? — Food Decision Spinner | ainav.nz">
+<meta property="og:description" content="Can't decide what to eat? Spin the food wheel and let fate choose!">
+<meta property="og:url" content="https://ainav.nz/what-to-eat.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="What to Eat? — Food Decision Spinner | ainav.nz">
+<meta name="twitter:description" content="Can't decide what to eat? Spin the food wheel and let fate choose!">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+  --danger:#D92D20;--danger-light:#FEE2E2;
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== TOOL LAYOUT ===== */
+.tool-layout{display:flex;flex-direction:column;gap:20px;padding:24px 32px;flex:1;align-items:center}
+.tool-main{width:100%;max-width:960px;display:flex;flex-direction:column;gap:18px}
+
+/* ===== HEADER CARDS ===== */
+.tool-header{display:flex;gap:16px;flex-wrap:wrap}
+.header-card{flex:1;min-width:260px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.header-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.header-card p,.header-card li{font-size:12px;color:var(--sub);line-height:1.6}
+.header-card ul{padding-left:0;margin-top:4px;list-style:none;display:flex;flex-direction:column;gap:3px}
+.header-card ul li{display:flex;align-items:flex-start;gap:6px}
+.header-card ul li::before{content:"•";color:var(--brand-light);font-weight:700;flex-shrink:0;margin-top:1px}
+
+/* ===== BUTTONS ===== */
+.btn-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:44px;padding:0 22px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s}
+.btn-action:hover{background:#fff;border-color:#C0C8CE}
+.btn-action:active{transform:scale(.98)}
+.btn-action:disabled{opacity:.35;cursor:not-allowed;transform:none}
+.btn-action.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 10px rgba(0,59,79,.2)}
+.btn-action.btn-primary:hover{background:var(--brand-light);border-color:var(--brand-light)}
+.btn-action .btn-emoji{font-size:16px}
+
+/* ===== FOOD SPINNER SPECIFIC ===== */
+.toggle-row{display:flex;gap:8px;flex-wrap:wrap}
+.toggle-btn{padding:8px 18px;border-radius:8px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;font-family:inherit;transition:all .15s;backdrop-filter:blur(6px)}
+.toggle-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.toggle-btn:hover:not(.active){background:rgba(255,255,255,.9)}
+
+.wheel-container{display:flex;flex-direction:column;align-items:center;gap:20px}
+.wheel-wrap{position:relative;width:320px;height:320px}
+.wheel-canvas{width:320px;height:320px;border-radius:50%;box-shadow:0 4px 24px rgba(0,59,79,.12);transition:transform 3s cubic-bezier(.17,.67,.12,.99)}
+.wheel-pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:30px;z-index:5;filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))}
+
+.spin-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:56px;padding:0 40px;border-radius:28px;border:none;background:linear-gradient(135deg,var(--brand),var(--brand-light));color:#fff;font-size:20px;font-weight:800;cursor:pointer;font-family:inherit;box-shadow:0 4px 20px rgba(0,59,79,.25);transition:all .2s;letter-spacing:.5px}
+.spin-btn:hover{transform:scale(1.05);box-shadow:0 6px 28px rgba(0,59,79,.3)}
+.spin-btn:active{transform:scale(.97)}
+.spin-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+.result-display{width:100%;padding:28px;border-radius:16px;background:rgba(255,255,255,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1.5px solid rgba(0,59,79,.08);box-shadow:0 4px 20px rgba(0,0,0,.05);text-align:center;display:none}
+.result-display.show{display:block;animation:resultPop .4s ease}
+@keyframes resultPop{0%{transform:scale(.9);opacity:0}100%{transform:scale(1);opacity:1}}
+.result-emoji{font-size:56px;line-height:1.2;margin-bottom:8px}
+.result-name{font-size:28px;font-weight:800;color:var(--text);margin-bottom:4px}
+.result-tagline{font-size:14px;color:var(--sub);font-style:italic}
+.result-category{font-size:11px;font-weight:700;color:var(--brand-light);background:var(--brand-ghost);padding:3px 10px;border-radius:6px;display:inline-block;margin-top:8px}
+
+.reg-cards{display:flex;gap:14px;flex-wrap:wrap}
+.reg-card{flex:1;min-width:240px;background:rgba(255,255,255,.5);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(0,59,79,.06);border-radius:14px;padding:16px 20px;box-shadow:0 2px 12px rgba(0,0,0,.03)}
+.reg-card h3{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.reg-card p{font-size:12px;color:var(--sub);line-height:1.6}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .tool-layout{padding:18px 20px}
+  .header-card{min-width:220px}
+}
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{padding:12px 14px}
+  .tool-layout{padding:12px 14px}
+  .wheel-wrap,.wheel-canvas{width:260px;height:260px}
+}
+@media(max-width:420px){
+  .spin-btn{height:50px;padding:0 30px;font-size:18px}
+  .wheel-wrap,.wheel-canvas{width:220px;height:220px}
+  .result-name{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">21</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">18</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">19</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item active" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">9</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html#lifestyle">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">What to Eat?</span>
+  </div>
+
+  <div class="tool-layout">
+
+    <div class="tool-main">
+
+      <!-- Header Info Banner -->
+      <div class="tool-header">
+        <div class="header-card">
+          <h3>🍽️ Can't Decide?</h3>
+          <p>Spin the food wheel and let fate decide what to eat! Pick a category or spin from all options.</p>
+        </div>
+        <div class="header-card">
+          <h3>🎯 How It Works</h3>
+          <ul>
+            <li>Pick a food category (or leave all selected)</li>
+            <li>Hit SPIN and watch the wheel go!</li>
+            <li>Get your food destiny revealed</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Category Buttons -->
+      <div>
+        <label style="font-size:12px;font-weight:600;color:var(--sub);margin-bottom:8px;display:block;letter-spacing:.2px">Food Category</label>
+        <div class="toggle-row" id="catRow">
+          <button class="toggle-btn active" data-cat="fastfood">🍕 Fast Food</button>
+          <button class="toggle-btn active" data-cat="asian">🍜 Asian</button>
+          <button class="toggle-btn active" data-cat="burgers">🍔 Burgers</button>
+          <button class="toggle-btn active" data-cat="italian">🍝 Italian</button>
+          <button class="toggle-btn active" data-cat="healthy">🥗 Healthy</button>
+          <button class="toggle-btn active" data-cat="mexican">🌮 Mexican</button>
+          <button class="toggle-btn active" data-cat="japanese">🍣 Japanese</button>
+          <button class="toggle-btn active" data-cat="indian">🥘 Indian</button>
+        </div>
+      </div>
+
+      <!-- Spinner -->
+      <div class="wheel-container">
+        <div class="wheel-wrap">
+          <div class="wheel-pointer">▼</div>
+          <canvas id="wheelCanvas" class="wheel-canvas" width="320" height="320"></canvas>
+        </div>
+        <button class="spin-btn" id="spinBtn">🎡 SPIN!</button>
+      </div>
+
+      <!-- Result -->
+      <div class="result-display" id="resultDisplay">
+        <div class="result-emoji" id="resultEmoji"></div>
+        <div class="result-name" id="resultName"></div>
+        <div class="result-tagline" id="resultTagline"></div>
+        <div class="result-category" id="resultCat"></div>
+      </div>
+
+      <!-- Region Cards -->
+      <div class="reg-cards">
+        <div class="reg-card">
+          <h3>🇳🇿 NZ Popular Cuisines</h3>
+          <p>NZ's food scene blends Pacific, Asian, and European influences. Favourites include fish &amp; chips, meat pies, hangi, and a growing Asian food culture in Auckland and Wellington.</p>
+        </div>
+        <div class="reg-card">
+          <h3>🥦 Healthy Eating NZ</h3>
+          <p>The NZ Ministry of Health recommends 5+ servings of vegetables and 2+ of fruit daily. Look for the Health Star Rating on packaged foods — more stars = healthier choice.</p>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var foods = {
+    fastfood: {emoji:'🍕',name:'Fast Food',items:[
+      {name:'Fish & Chips',emoji:'🐟',tagline:'A Kiwi classic!'},
+      {name:'Pizza',emoji:'🍕',tagline:'Always a safe bet'},
+      {name:'Fried Chicken',emoji:'🍗',tagline:'Crispy goodness'},
+      {name:'Hot Dog',emoji:'🌭',tagline:'Grab and go'},
+      {name:'Kebab',emoji:'🥙',tagline:'Late night legend'},
+      {name:'Meat Pie',emoji:'🥧',tagline:'The OG NZ takeaway'},
+      {name:'Sausage Roll',emoji:'🥐',tagline:'Flaky and hearty'}
+    ]},
+    asian: {emoji:'🍜',name:'Asian',items:[
+      {name:'Pad Thai',emoji:'🍜',tagline:'Sweet, sour, spicy perfection'},
+      {name:'Dim Sum',emoji:'🥟',tagline:'Small plates, big joy'},
+      {name:'Fried Rice',emoji:'🍚',tagline:'The reliable favourite'},
+      {name:'Pho',emoji:'🍲',tagline:'Soul-warming broth'},
+      {name:'Spring Rolls',emoji:'🥟',tagline:'Crunchy and golden'},
+      {name:'Sweet & Sour Pork',emoji:'🥩',tagline:'A timeless classic'},
+      {name:'Butter Chicken Rice',emoji:'🍛',tagline:'NZ fusion favourite'}
+    ]},
+    burgers: {emoji:'🍔',name:'Burgers',items:[
+      {name:'Classic Cheeseburger',emoji:'🍔',tagline:'The OG'},
+      {name:'Chicken Burger',emoji:'🍗',tagline:'Crispy chicken bliss'},
+      {name:'Veggie Burger',emoji:'🥬',tagline:'Plant-powered'},
+      {name:'Bacon Burger',emoji:'🥓',tagline:'Everything is better with bacon'},
+      {name:'Double Smash Burger',emoji:'🍔',tagline:'Double the fun'},
+      {name:'Fish Burger',emoji:'🐟',tagline:'Ocean in a bun'}
+    ]},
+    italian: {emoji:'🍝',name:'Italian',items:[
+      {name:'Margherita Pizza',emoji:'🍕',tagline:'Simplicity perfected'},
+      {name:'Spaghetti Bolognese',emoji:'🍝',tagline:'Mamma mia!'},
+      {name:'Carbonara',emoji:'🍝',tagline:'Creamy dreamy'},
+      {name:'Lasagna',emoji:'🧀',tagline:'Layered deliciousness'},
+      {name:'Risotto',emoji:'🍚',tagline:'Comfort in a bowl'},
+      {name:'Bruschetta',emoji:'🍅',tagline:'Fresh and zesty'},
+      {name:'Gnocchi',emoji:'🥔',tagline:'Pillowy potato perfection'}
+    ]},
+    healthy: {emoji:'🥗',name:'Healthy',items:[
+      {name:'Poke Bowl',emoji:'🥗',tagline:'Fresh and vibrant'},
+      {name:'Avocado Toast',emoji:'🥑',tagline:'Millennial must-have'},
+      {name:'Grilled Salmon',emoji:'🐟',tagline:'Omega-3 boost'},
+      {name:'Quinoa Salad',emoji:'🥗',tagline:'Protein packed'},
+      {name:'Smoothie Bowl',emoji:'🫐',tagline:'Sip and smile'},
+      {name:'Sushi Roll',emoji:'🍣',tagline:'Light and satisfying'},
+      {name:'Grilled Chicken Salad',emoji:'🥗',tagline:'Lean and mean'}
+    ]},
+    mexican: {emoji:'🌮',name:'Mexican',items:[
+      {name:'Tacos',emoji:'🌮',tagline:'Viva la taco!'},
+      {name:'Burrito',emoji:'🌯',tagline:'Wrapped in happiness'},
+      {name:'Nachos',emoji:'🧀',tagline:'Cheesy mountain'},
+      {name:'Quesadilla',emoji:'🫓',tagline:'Gooey and golden'},
+      {name:'Enchiladas',emoji:'🌮',tagline:'Sauced and baked'},
+      {name:'Guacamole & Chips',emoji:'🥑',tagline:'Dip into joy'}
+    ]},
+    japanese: {emoji:'🍣',name:'Japanese',items:[
+      {name:'Sushi Platter',emoji:'🍣',tagline:'Art on a plate'},
+      {name:'Ramen',emoji:'🍜',tagline:'Slurp-worthy'},
+      {name:'Tempura',emoji:'🍤',tagline:'Light and crispy'},
+      {name:'Gyoza',emoji:'🥟',tagline:'Pan-fried perfection'},
+      {name:'Teriyaki Chicken',emoji:'🍗',tagline:'Sweet and savoury glaze'},
+      {name:'Donburi',emoji:'🍚',tagline:'Bowl of comfort'},
+      {name:'Miso Soup',emoji:'🍲',tagline:'Umami warmth'}
+    ]},
+    indian: {emoji:'🥘',name:'Indian',items:[
+      {name:'Butter Chicken',emoji:'🍗',tagline:'The crowd favourite'},
+      {name:'Lamb Rogan Josh',emoji:'🥩',tagline:'Rich and aromatic'},
+      {name:'Palak Paneer',emoji:'🥬',tagline:'Green and glorious'},
+      {name:'Chicken Tikka Masala',emoji:'🍗',tagline:'Spiced to perfection'},
+      {name:'Naan Bread',emoji:'🫓',tagline:'Tear and share'},
+      {name:'Samosas',emoji:'🥟',tagline:'Crunchy parcels of joy'},
+      {name:'Dal',emoji:'🍲',tagline:'Humble and hearty'},
+      {name:'Biryani',emoji:'🍚',tagline:'Fragrant rice feast'}
+    ]}
+  };
+
+  var catColors = {
+    fastfood:'#F59E0B',asian:'#EF4444',burgers:'#F97316',italian:'#10B981',
+    healthy:'#06B6D4',mexican:'#8B5CF6',japanese:'#EC4899',indian:'#F43F5E'
+  };
+
+  var canvas = document.getElementById('wheelCanvas');
+  var ctx = canvas.getContext('2d');
+  var spinBtn = document.getElementById('spinBtn');
+  var resultDisplay = document.getElementById('resultDisplay');
+  var spinning = false;
+  var currentRotation = 0;
+
+  function getActiveItems(){
+    var items = [];
+    document.querySelectorAll('#catRow .toggle-btn.active').forEach(function(btn){
+      var cat = btn.getAttribute('data-cat');
+      if(foods[cat]){
+        foods[cat].items.forEach(function(item){
+          items.push({name:item.name,emoji:item.emoji,tagline:item.tagline,cat:cat,catName:foods[cat].name});
+        });
+      }
+    });
+    return items;
+  }
+
+  function drawWheel(items){
+    var w = canvas.width, h = canvas.height;
+    var cx = w/2, cy = h/2, r = Math.max(1, w/2 - 8);
+    ctx.clearRect(0,0,w,h);
+    if(!items.length){
+      ctx.fillStyle='#E2E6EA';
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#94A3B8';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText('Select a category!',cx,cy);
+      return;
+    }
+    var sliceAngle = (Math.PI*2)/items.length;
+    items.forEach(function(item,i){
+      var startAngle = i*sliceAngle - Math.PI/2;
+      var endAngle = startAngle + sliceAngle;
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,startAngle,endAngle);
+      ctx.closePath();
+      ctx.fillStyle = catColors[item.cat] || '#003B4F';
+      ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=2;ctx.stroke();
+      // text
+      ctx.save();
+      ctx.translate(cx,cy);
+      ctx.rotate(startAngle + sliceAngle/2);
+      ctx.fillStyle='#fff';
+      ctx.font='bold 10px sans-serif';
+      ctx.textAlign='right';
+      ctx.textBaseline='middle';
+      var label = item.emoji + ' ' + item.name;
+      if(label.length > 16) label = label.substring(0,15)+'…';
+      ctx.fillText(label, r - 10, 0);
+      ctx.restore();
+    });
+    // center circle
+    ctx.beginPath();ctx.arc(cx,cy,22,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
+    ctx.strokeStyle='rgba(0,59,79,.1)';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='var(--brand)';ctx.font='bold 14px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('🍽️',cx,cy);
+  }
+
+  function spin(){
+    if(spinning) return;
+    var items = getActiveItems();
+    if(!items.length) return;
+    spinning = true;
+    spinBtn.disabled = true;
+    resultDisplay.classList.remove('show');
+
+    var targetIndex = Math.floor(Math.random()*items.length);
+    var sliceAngle = 360/items.length;
+    // The pointer is at the top (270 deg in standard coords, but we draw from -PI/2)
+    // To land on targetIndex, the center of that slice needs to be at the top
+    var targetAngle = targetIndex * sliceAngle + sliceAngle/2;
+    var extraSpins = (5 + Math.floor(Math.random()*3)) * 360;
+    var finalAngle = extraSpins + (360 - targetAngle);
+
+    canvas.style.transition = 'transform 3.5s cubic-bezier(.17,.67,.12,.99)';
+    canvas.style.transform = 'rotate('+finalAngle+'deg)';
+    currentRotation = finalAngle;
+
+    setTimeout(function(){
+      spinning = false;
+      spinBtn.disabled = false;
+      canvas.style.transition = '';
+      var chosen = items[targetIndex];
+      document.getElementById('resultEmoji').textContent = chosen.emoji;
+      document.getElementById('resultName').textContent = chosen.name;
+      document.getElementById('resultTagline').textContent = chosen.tagline;
+      document.getElementById('resultCat').textContent = chosen.catName;
+      resultDisplay.classList.add('show');
+    }, 3600);
+  }
+
+  spinBtn.addEventListener('click', spin);
+
+  // Category toggle
+  document.querySelectorAll('#catRow .toggle-btn').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      this.classList.toggle('active');
+      drawWheel(getActiveItems());
+    });
+  });
+
+  drawWheel(getActiveItems());
+
+  // Sidebar
+  document.querySelectorAll('.side-nav .side-item').forEach(function(b){
+    b.addEventListener('click',function(){
+      var c = this.getAttribute('data-cat');
+      window.location.href = c ? 'index.html#'+c : 'index.html';
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

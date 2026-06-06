@@ -1,0 +1,602 @@
+<!-- AiNav WordPress Embed — paste into Custom HTML block / Elementor HTML widget -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<div class="ainav-wp" id="ainav-root">
+<style>
+  .ainav-wp, .ainav-wp *, .ainav-wp *::before, .ainav-wp *::after {
+    box-sizing: border-box; margin: 0; padding: 0;
+  }
+  .ainav-wp {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #F8FAFC;
+    color: #0F172A;
+    display: flex;
+    align-items: flex-start;
+    min-height: 100vh;
+    position: relative;
+    max-width: 100%;
+    margin: 0 !important; padding: 0 !important;
+  }
+
+  /* ===== SIDEBAR (fixed) ===== */
+  .ainav-sidebar-placeholder {
+    width: 260px; flex-shrink: 0;
+    min-height: 100vh;
+  }
+  .ainav-sidebar {
+    width: 260px;
+    height: 100vh;
+    background: #F4F6F8;
+    border-right: 1px solid #E8ECF1;
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    left: 0; top: 0;
+    z-index: 100;
+    overflow: hidden;
+  }
+
+  .ainav-logo-link {
+    display: flex; align-items: center; gap: 10px;
+    padding: 16px 20px;
+    text-decoration: none; cursor: pointer;
+    border-bottom: 1px solid #E8ECF1;
+    flex-shrink: 0;
+  }
+  .ainav-logo-icon {
+    width: 38px; height: 38px;
+    background: #E2E6EB; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ainav-logo-icon svg { width: 60px; height: 30px; }
+  .ainav-logo-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 26px; font-weight: 800;
+    color: #0F172A; letter-spacing: -.5px; line-height: 1;
+    white-space: nowrap;
+  }
+  .ainav-logo-ext {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px; font-weight: 600;
+    color: #94A3B8;
+  }
+
+  .ainav-nav-label {
+    padding: 16px 20px 6px;
+    font-size: 10px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .8px;
+    color: #94A3B8; white-space: nowrap;
+  }
+
+  .ainav-nav {
+    flex: 1; overflow-y: auto; overflow-x: hidden;
+    padding: 0 10px 16px;
+  }
+  .ainav-nav::-webkit-scrollbar { width: 3px; }
+  .ainav-nav::-webkit-scrollbar-track { background: transparent; }
+  .ainav-nav::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+
+  .ainav-nav-item {
+    display: flex; align-items: center; gap: 11px;
+    padding: 10px 12px; border-radius: 10px;
+    cursor: pointer; transition: all .15s;
+    text-decoration: none; color: #475569;
+    font-size: 14px; font-weight: 500;
+    white-space: nowrap; margin-bottom: 2px;
+  }
+  .ainav-nav-item:hover { background: #EAEDF2; color: #0F172A; }
+  .ainav-nav-item.active { background: #1E293B; color: #fff; }
+  .ainav-nav-emoji { font-size: 17px; width: 24px; text-align: center; flex-shrink: 0; line-height: 1; }
+  .ainav-nav-label-txt { flex: 1; }
+  .ainav-nav-count {
+    font-size: 11px; font-weight: 600;
+    padding: 2px 7px; border-radius: 999px;
+    background: #E2E6EB; color: #64748B;
+    flex-shrink: 0;
+  }
+  .ainav-nav-item.active .ainav-nav-count {
+    background: rgba(255,255,255,.18); color: #CBD5E1;
+  }
+
+  .ainav-sidebar-foot {
+    padding: 0;
+    border-top: 1px solid #E8ECF1;
+    flex-shrink: 0;
+  }
+  .ainav-sidebar-disclaimer {
+    padding: 12px 16px;
+    font-size: 10.5px; color: #94A3B8;
+    line-height: 1.65;
+    border-bottom: 1px solid #E8ECF1;
+  }
+  .ainav-sidebar-disclaimer strong { color: #64748B; font-weight: 600; }
+  .ainav-foot-links {
+    display: flex; align-items: center; gap: 14px;
+    padding: 12px 16px;
+  }
+  .ainav-foot-link { font-size: 12px; color: #64748B; text-decoration: none; white-space: nowrap; }
+  .ainav-foot-link:hover { color: #0F172A; }
+  .ainav-x-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%;
+    border: 1.5px solid #D1D5DB; background: transparent;
+    transition: all .2s; text-decoration: none;
+    margin-left: auto; flex-shrink: 0;
+  }
+  .ainav-x-btn:hover { border-color: #0F172A; background: #0F172A; }
+  .ainav-x-btn svg { width: 13px; height: 13px; fill: #94A3B8; transition: fill .2s; }
+  .ainav-x-btn:hover svg { fill: #fff; }
+
+  /* ===== MAIN AREA ===== */
+  .ainav-main {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column;
+  }
+
+  /* ===== TOP BAR ===== */
+  .ainav-topbar {
+    background: #fff; border-bottom: 1.5px solid #E2E8F0;
+    padding: 14px 32px;
+    display: flex; align-items: center; gap: 16px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .ainav-hero { flex: 1; }
+  .ainav-hero h1 {
+    font-size: 15px; font-weight: 700;
+    color: #0F172A; letter-spacing: -.2px; line-height: 1.2;
+    margin: 0;
+  }
+  .ainav-hero p { font-size: 12px; color: #64748B; margin: 2px 0 0 0; }
+
+  .ainav-search-wrap { position: relative; width: 340px; flex-shrink: 0; }
+  .ainav-search-icon {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%); width: 16px; height: 16px;
+    color: #64748B; pointer-events: none; z-index: 2;
+  }
+  .ainav-search-input {
+    width: 100%; height: 40px;
+    padding: 0 14px 0 40px;
+    font: 14px 'Inter', sans-serif;
+    border-radius: 999px; border: 1.5px solid #E2E8F0;
+    background: #F1F5F9; color: #0F172A;
+    outline: none; transition: all .25s;
+  }
+  .ainav-search-input:focus {
+    background: #fff; border-color: #0284CF;
+    box-shadow: 0 0 0 3px rgba(2,132,203,.12);
+  }
+  .ainav-search-input::placeholder { color: #94A3B8; }
+  /* ===== CONTENT / GRID ===== */
+  .ainav-content { flex: 1; padding: 28px 32px; }
+  .ainav-content.hidden { display: none; }
+
+  /* ===== IFRAME ===== */
+  .ainav-iframe-wrap { display: none; flex: 1; position: relative; }
+  .ainav-iframe-wrap.visible { display: flex; }
+  .ainav-iframe-wrap iframe {
+    width: 100%; height: 100%; border: none;
+    flex: 1;
+  }
+  .ainav-iframe-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 24px;
+    background: #fff; border-bottom: 1.5px solid #E2E8F0;
+    flex-shrink: 0;
+  }
+  .ainav-iframe-back {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: #64748B; cursor: pointer;
+    background: none; border: none; padding: 6px 12px;
+    border-radius: 8px; transition: all .15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .ainav-iframe-back:hover { background: #F1F5F9; color: #0F172A; }
+  .ainav-iframe-back svg { width: 14px; height: 14px; }
+  .ainav-iframe-url {
+    font-size: 12px; color: #94A3B8;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  .ainav-section-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .ainav-section-title { font-size: 18px; font-weight: 700; color: #0F172A; letter-spacing: -.3px; }
+  .ainav-section-sub { font-size: 13px; color: #64748B; margin-top: 3px; }
+  .ainav-result-count {
+    font-size: 12px; color: #94A3B8;
+    background: #F1F5F9; padding: 5px 12px;
+    border-radius: 999px; font-weight: 500;
+  }
+
+  .ainav-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+  }
+
+  /* — Nordic minimalist card — */
+  .ainav-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 22px 18px 18px;
+    border: 1px solid #E8ECF1;
+    box-shadow: none;
+    transition: all .25s cubic-bezier(.4,0,.2,1);
+    cursor: pointer;
+    text-decoration: none; color: inherit;
+    display: flex; flex-direction: column;
+    align-items: flex-start; gap: 10px;
+    position: relative;
+  }
+  .ainav-card:hover {
+    border-color: #D1D5DB;
+    box-shadow: 0 2px 12px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.03);
+    transform: translateY(-1px);
+  }
+
+  .ainav-card-icon { font-size: 26px; line-height: 1; display: block; margin-bottom: 2px; }
+  .ainav-card-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px; font-weight: 700;
+    color: #0F172A; line-height: 1.35; letter-spacing: -.02em;
+  }
+  .ainav-card-desc {
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px; font-weight: 400;
+    color: #64748b; line-height: 1.55;
+  }
+  .ainav-card-badge {
+    display: inline-flex; align-items: center;
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .4px;
+    padding: 3px 8px; border-radius: 4px;
+    background: #F4F6F8; color: #94A3B8;
+    margin-top: 2px;
+  }
+  .ainav-card:hover .ainav-card-badge { background: #E8ECF1; color: #64748B; }
+
+  /* ===== EMPTY ===== */
+  .ainav-empty {
+    display: none;
+    flex-direction: column; align-items: center; justify-content: center;
+    padding: 80px 20px; text-align: center; grid-column: 1/-1;
+  }
+  .ainav-empty svg { margin-bottom: 16px; }
+  .ainav-empty p { font-size: 15px; color: #94A3B8; }
+
+  /* ===== MOBILE ===== */
+  .ainav-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 90; }
+  .ainav-mobile-btn {
+    display: none; align-items: center; justify-content: center;
+    width: 36px; height: 36px; background: #F1F5F9;
+    border-radius: 8px; border: 1.5px solid #E2E8F0;
+    cursor: pointer; flex-shrink: 0;
+  }
+  .ainav-mobile-btn svg { width: 18px; height: 18px; color: #0F172A; }
+
+  @media (max-width: 900px) {
+    .ainav-search-wrap { width: 240px; }
+    .ainav-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  }
+
+  @media (max-width: 768px) {
+    .ainav-sidebar-placeholder { display: none; }
+    .ainav-sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0;
+      transform: translateX(-100%);
+      transition: transform .3s cubic-bezier(.4,0,.2,1);
+      z-index: 101;
+      border-right: 1px solid #E8ECF1;
+    }
+    .ainav-sidebar.open { transform: translateX(0); }
+    .ainav-overlay.visible { display: block; }
+    .ainav-mobile-btn { display: flex; }
+    .ainav-topbar { padding: 12px 16px; }
+    .ainav-hero p { display: none; }
+    .ainav-search-wrap { width: 180px; }
+    .ainav-content, .ainav-detail { padding: 20px 16px; }
+  }
+
+  @media (max-width: 480px) {
+    .ainav-hero h1 { font-size: 13px; }
+    .ainav-search-wrap { width: 140px; }
+    .ainav-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .ainav-card { padding: 18px 14px 14px; }
+    .ainav-card-icon { font-size: 22px; }
+    .ainav-card-name { font-size: 14px !important; }
+    .ainav-card-desc { font-size: 12px !important; }
+  }
+</style>
+
+<!-- ===== SIDEBAR ===== -->
+<div class="ainav-overlay" id="ainavOverlay"></div>
+
+<aside class="ainav-sidebar" id="ainavSidebar">
+  <a class="ainav-logo-link" id="ainavLogoHome">
+    <div class="ainav-logo-icon">
+      <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="60" cy="55" rx="48" ry="38" fill="#1E293B" opacity=".92"/>
+        <path d="M100 48 Q124 34 142 40" stroke="#1E293B" stroke-width="4" fill="none" stroke-linecap="round" opacity=".7"/>
+        <circle cx="78" cy="48" r="6" fill="#F4F6F8"/>
+        <circle cx="79.8" cy="46.5" r="3.5" fill="#1E293B"/>
+        <circle cx="81" cy="45.5" r="1.3" fill="#F4F6F8"/>
+      </svg>
+    </div>
+    <span class="ainav-logo-text">ainav<span class="ainav-logo-ext">.nz</span></span>
+  </a>
+
+  <nav class="ainav-nav">
+    <div class="ainav-nav-label">Categories</div>
+
+    <div class="ainav-nav-item active" data-cat="all">
+      <span class="ainav-nav-emoji">🧭</span><span class="ainav-nav-label-txt">All Tools</span>
+      <span class="ainav-nav-count" data-count="all">31</span>
+    </div>
+    <div class="ainav-nav-item" data-cat="tax">
+      <span class="ainav-nav-emoji">💰</span><span class="ainav-nav-label-txt">Tax</span>
+      <span class="ainav-nav-count" data-count="tax">6</span>
+    </div>
+    <div class="ainav-nav-item" data-cat="property">
+      <span class="ainav-nav-emoji">🏠</span><span class="ainav-nav-label-txt">Property</span>
+      <span class="ainav-nav-count" data-count="property">5</span>
+    </div>
+    <div class="ainav-nav-item" data-cat="finance">
+      <span class="ainav-nav-emoji">📈</span><span class="ainav-nav-label-txt">Finance</span>
+      <span class="ainav-nav-count" data-count="finance">5</span>
+    </div>
+    <div class="ainav-nav-item" data-cat="pay">
+      <span class="ainav-nav-emoji">💸</span><span class="ainav-nav-label-txt">Pay</span>
+      <span class="ainav-nav-count" data-count="pay">4</span>
+    </div>
+    <div class="ainav-nav-item" data-cat="everyday">
+      <span class="ainav-nav-emoji">⚡</span><span class="ainav-nav-label-txt">Everyday</span>
+      <span class="ainav-nav-count" data-count="everyday">5</span>
+    </div>
+    <div class="ainav-nav-item" data-cat="productivity">
+      <span class="ainav-nav-emoji">🛠️</span><span class="ainav-nav-label-txt">Productivity</span>
+      <span class="ainav-nav-count" data-count="productivity">6</span>
+    </div>
+  </nav>
+
+  <div class="ainav-sidebar-foot">
+    <div class="ainav-sidebar-disclaimer">
+      <strong>Disclaimer.</strong> All calculators and tools on ainav.nz are provided for informational and educational purposes only. They do not constitute official tax, legal, payroll, or financial advice under New Zealand law. Results are mathematical estimates based on publicly available rates and thresholds and are <strong>not certified by the Inland Revenue Department (IRD)</strong>, Ministry of Business, Innovation &amp; Employment (MBIE), or any other government agency. Before making decisions affecting your tax obligations, payroll processing, property transactions, or personal finances, independently verify all figures with a <strong>qualified Chartered Accountant (CA)</strong>, tax agent, or the relevant NZ government body. ainav.nz accepts no liability for any loss or damage arising from reliance on these tools.
+    </div>
+    <div class="ainav-foot-links">
+      <a class="ainav-foot-link" href="javascript:void(0)">Feedback</a>
+      <a class="ainav-x-btn" href="https://x.com/YOUR_X_HANDLE" target="_blank" rel="noopener" aria-label="X">
+        <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      </a>
+    </div>
+  </div>
+</aside>
+
+<div class="ainav-sidebar-placeholder"></div>
+
+<!-- ===== MAIN AREA ===== -->
+<div class="ainav-main" id="ainavMain">
+
+  <header class="ainav-topbar">
+    <button class="ainav-mobile-btn" id="ainavMobileToggle" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+      </svg>
+    </button>
+    <div class="ainav-hero">
+      <h1 id="ainavSectionTitle">All Tools</h1>
+      <p>Smart calculators &amp; tools designed for New Zealanders</p>
+    </div>
+    <div class="ainav-search-wrap">
+      <svg class="ainav-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input class="ainav-search-input" id="ainavSearch" type="text" placeholder="Search tools…">
+    </div>
+  </header>
+
+  <!-- Grid -->
+  <main class="ainav-content" id="ainavGrid">
+    <section>
+      <div class="ainav-section-hdr">
+        <div>
+          <div class="ainav-section-title" id="ainavGridTitle">All Tools</div>
+          <div class="ainav-section-sub" id="ainavGridSub">Tax, property, finance &amp; productivity tools</div>
+        </div>
+        <div class="ainav-result-count" id="ainavResultCount">31 tools</div>
+      </div>
+      <div class="ainav-grid" id="ainavToolGrid"></div>
+      <div class="ainav-empty" id="ainavEmpty">
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" stroke-width="1.5">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <p>No tools found.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Iframe panel -->
+  <div class="ainav-iframe-wrap" id="ainavIframeWrap">
+    <div class="ainav-iframe-bar">
+      <button class="ainav-iframe-back" id="ainavIframeBack">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Back to tools
+      </button>
+      <span class="ainav-iframe-url" id="ainavIframeUrl"></span>
+    </div>
+    <iframe id="ainavIframe" src="" allowfullscreen></iframe>
+  </div>
+
+</div><!-- end .ainav-main -->
+
+<script>
+(function() {
+  var tools = [
+    {icon:"💰",name:"PAYE Tax Calc",       desc:"Income tax & take-home pay.",          cat:"tax",      slug:"paye-tax-calc"},
+    {icon:"📦",name:"GST Calculator",      desc:"Add or remove 15% GST.",               cat:"tax",      slug:"gst-calculator"},
+    {icon:"💵",name:"Tax Refund Est.",     desc:"Estimate your IRD refund.",            cat:"tax",      slug:"tax-refund-est"},
+    {icon:"🎓",name:"Student Loan Repay",  desc:"12% repayment above threshold.",       cat:"tax",      slug:"student-loan-repay"},
+    {icon:"👨‍👩‍👧",name:"Working for Families",desc:"Family tax credits & entitlements.", cat:"tax",      slug:"working-for-families"},
+    {icon:"💪",name:"ACC Levy Calc",       desc:"ACC levies for self-employed.",        cat:"tax",      slug:"acc-levy-calc"},
+    {icon:"🏠",name:"Mortgage Calc",       desc:"Weekly or fortnightly repayments.",    cat:"property", slug:"mortgage-calc"},
+    {icon:"🏡",name:"Rent vs Buy",         desc:"Compare renting vs buying costs.",     cat:"property", slug:"rent-vs-buy"},
+    {icon:"📊",name:"Rental Yield",        desc:"Gross & net property yields.",         cat:"property", slug:"rental-yield"},
+    {icon:"⏰",name:"Bright-Line Test",    desc:"Property bright-line tax window.",     cat:"property", slug:"bright-line-test"},
+    {icon:"🔓",name:"First Home Calc",     desc:"Kainga Ora 5% deposit check.",         cat:"property", slug:"first-home-calc"},
+    {icon:"🎰",name:"KiwiSaver Calc",      desc:"Project balance at retirement.",       cat:"finance",  slug:"kiwisaver-calc"},
+    {icon:"📉",name:"Compound Interest",   desc:"Growth over time with compounding.",   cat:"finance",  slug:"compound-interest"},
+    {icon:"💳",name:"Loan Calculator",     desc:"Personal loan monthly repayments.",    cat:"finance",  slug:"loan-calculator"},
+    {icon:"⚡",name:"Debt Payoff",         desc:"Snowball vs avalanche strategy.",      cat:"finance",  slug:"debt-payoff"},
+    {icon:"📝",name:"Budget Planner",      desc:"50/30/20 rule budget tool.",           cat:"finance",  slug:"budget-planner"},
+    {icon:"💸",name:"Take-Home Pay",       desc:"Net pay after all deductions.",        cat:"pay",      slug:"take-home-pay"},
+    {icon:"⏱️",name:"Salary Converter",    desc:"Annual to hourly wage switch.",        cat:"pay",      slug:"salary-converter"},
+    {icon:"✈️",name:"Holiday Pay Calc",    desc:"8% holiday pay entitlement.",          cat:"pay",      slug:"holiday-pay-calc"},
+    {icon:"👨‍👧",name:"Child Support",       desc:"IRD child support formula.",          cat:"pay",      slug:"child-support"},
+    {icon:"💱",name:"Currency Converter",  desc:"NZD to USD, AUD, CNY rates.",          cat:"everyday", slug:"currency-converter"},
+    {icon:"⛽",name:"Fuel Cost Calc",      desc:"Road trip fuel cost by distance.",     cat:"everyday", slug:"fuel-cost-calc"},
+    {icon:"⚖️",name:"BMI Calculator",      desc:"Body mass index check.",               cat:"everyday", slug:"bmi-calculator"},
+    {icon:"🔧",name:"LVR Calculator",      desc:"Loan-to-value ratio check.",           cat:"everyday", slug:"lvr-calculator"},
+    {icon:"📧",name:"FBT Calculator",      desc:"Fringe benefit tax for employers.",    cat:"everyday", slug:"fbt-calculator"},
+    {icon:"🖼️",name:"AI Background Remover",desc:"Isolate product images in milliseconds.",cat:"productivity",slug:"background-remover"},
+    {icon:"📷",name:"Passport Photo Pad",  desc:"Crop & align biometric ID photos.",    cat:"productivity",slug:"passport-photo"},
+    {icon:"🛍️",name:"Ecom Image Resizer",  desc:"Lossless square ratios for e-commerce.",cat:"productivity",slug:"ecom-crop"},
+    {icon:"📚",name:"APA 7th Generator",   desc:"University-compliant references.",     cat:"productivity",slug:"apa-citation"},
+    {icon:"⏱️",name:"Hourly to Salary",    desc:"Gross hourly to annual salary.",       cat:"productivity",slug:"hourly-salary"},
+    {icon:"✅",name:"Visa Median Checker",  desc:"Compare pay vs immigration threshold.",cat:"productivity",slug:"visa-median"}
+  ];
+
+  var catLabels = {
+    all: "All Tools", tax: "Tax", property: "Property",
+    finance: "Finance", pay: "Pay", everyday: "Everyday", productivity: "Productivity"
+  };
+  var catSubtitles = {
+    all: "Tax, property, finance & productivity tools",
+    tax: "IRD rates, GST, PAYE & student loans",
+    property: "Mortgage, rental yield & LVR tools",
+    finance: "KiwiSaver, loans & budgeting",
+    pay: "Take-home pay, salary & holiday pay",
+    everyday: "Currency, BMI, fuel & FBT",
+    productivity: "AI-powered visual & formatting tools"
+  };
+
+  var currentCat = "all", currentSearch = "";
+
+  var grid       = document.getElementById("ainavToolGrid");
+  var empty      = document.getElementById("ainavEmpty");
+  var srchInput  = document.getElementById("ainavSearch");
+  var secTitle   = document.getElementById("ainavSectionTitle");
+  var gridTitle  = document.getElementById("ainavGridTitle");
+  var gridSub    = document.getElementById("ainavGridSub");
+  var resCount   = document.getElementById("ainavResultCount");
+  var gridView   = document.getElementById("ainavGrid");
+  var navItems   = document.querySelectorAll(".ainav-nav-item[data-cat]");
+  var sidebar    = document.getElementById("ainavSidebar");
+  var overlay    = document.getElementById("ainavOverlay");
+  var toggle     = document.getElementById("ainavMobileToggle");
+  var logoHome   = document.getElementById("ainavLogoHome");
+  var iframeWrap = document.getElementById("ainavIframeWrap");
+  var iframeEl   = document.getElementById("ainavIframe");
+  var iframeUrl  = document.getElementById("ainavIframeUrl");
+  var iframeBack = document.getElementById("ainavIframeBack");
+
+  // ===== IFRAME =====
+  function openIframe(slug){
+    var url="/"+slug+"/";
+    iframeEl.src=url; iframeUrl.textContent=url;
+    gridView.classList.add("hidden"); iframeWrap.classList.add("visible");
+    history.pushState(null,"","#"+slug);
+  }
+  function closeIframe(){
+    iframeEl.src=""; iframeUrl.textContent="";
+    gridView.classList.remove("hidden"); iframeWrap.classList.remove("visible");
+    history.pushState(null,"",window.location.pathname);
+  }
+  iframeBack.addEventListener("click",closeIframe);
+
+  // ===== TYPEWRITER =====
+  var twNames = tools.map(function(t){return t.name;});
+  var twIdx=0,twChar=0,twFwd=true,twTimer=null;
+  function twTick(){
+    var n=twNames[twIdx];
+    if(twFwd){
+      twChar++; srchInput.setAttribute("placeholder",n.substring(0,twChar));
+      if(twChar>=n.length){twFwd=false;twTimer=setTimeout(twTick,1200);return;}
+    }else{
+      twChar--; srchInput.setAttribute("placeholder",n.substring(0,twChar));
+      if(twChar<=0){twFwd=true;twIdx=(twIdx+1)%twNames.length;twChar=0;twTimer=setTimeout(twTick,400);return;}
+    }
+    twTimer=setTimeout(twTick,twFwd?60+Math.random()*40:30+Math.random()*20);
+  }
+  twTimer=setTimeout(twTick,1500);
+
+  var twPaused=false;
+  function pauseTW(){twPaused=true;clearTimeout(twTimer);srchInput.setAttribute("placeholder","Search tools…");}
+  function resumeTW(){if(!currentSearch){twPaused=false;twIdx=0;twChar=0;twFwd=true;twTimer=setTimeout(twTick,800);}}
+
+  srchInput.addEventListener("focus",function(){pauseTW();if(!currentSearch)srchInput.setAttribute("placeholder","Search tools…");});
+  srchInput.addEventListener("blur",function(){if(!currentSearch)resumeTW();});
+
+  // ===== RENDER =====
+  function render(){
+    var q=currentSearch.toLowerCase(); grid.innerHTML=""; empty.style.display="none";
+    var filtered=tools.filter(function(t){
+      if(currentCat!=="all"&&t.cat!==currentCat)return false;
+      if(q&&t.name.toLowerCase().indexOf(q)===-1&&t.desc.toLowerCase().indexOf(q)===-1)return false;
+      return true;
+    });
+    resCount.textContent=filtered.length+" tool"+(filtered.length!==1?"s":"");
+    if(!filtered.length){empty.style.display="flex";return;}
+    filtered.forEach(function(t){
+      var a=document.createElement("a"); a.className="ainav-card"; a.href="/"+t.slug+"/";
+      a.addEventListener("click",function(e){e.preventDefault();openIframe(t.slug);});
+      a.innerHTML='<span class="ainav-card-icon">'+t.icon+'</span><div class="ainav-card-name">'+t.name+'</div><div class="ainav-card-desc">'+t.desc+'</div><span class="ainav-card-badge">'+catLabels[t.cat]+'</span>';
+      grid.appendChild(a);
+    });
+  }
+
+  // ===== NAV =====
+  navItems.forEach(function(item){item.addEventListener("click",function(){
+    closeIframe();
+    navItems.forEach(function(n){n.classList.remove("active");}); this.classList.add("active");
+    currentCat=this.getAttribute("data-cat");
+    secTitle.textContent=catLabels[currentCat];
+    gridTitle.textContent=catLabels[currentCat]==="All Tools"?"All Tools":catLabels[currentCat]+" Tools";
+    gridSub.textContent=catSubtitles[currentCat];
+    srchInput.value=""; currentSearch="";
+    pauseTW(); if(this.getAttribute("data-cat")==="all")resumeTW();
+    render(); closeMobile();
+  });});
+
+  // ===== SEARCH =====
+  srchInput.addEventListener("input",function(){
+    currentSearch=this.value;
+    if(currentSearch){pauseTW();secTitle.textContent='Search: "'+currentSearch+'"';gridTitle.textContent="Search Results";gridSub.textContent="Matching tools";}
+    else{secTitle.textContent=catLabels[currentCat];gridTitle.textContent=catLabels[currentCat]==="All Tools"?"All Tools":catLabels[currentCat]+" Tools";gridSub.textContent=catSubtitles[currentCat];resumeTW();}
+    render();
+  });
+
+  // ===== MOBILE =====
+  function closeMobile(){sidebar.classList.remove("open");overlay.classList.remove("visible");}
+  toggle.addEventListener("click",function(){sidebar.classList.toggle("open");overlay.classList.toggle("visible");});
+  overlay.addEventListener("click",closeMobile);
+
+  // ===== LOGO =====
+  logoHome.addEventListener("click",function(e){e.preventDefault();
+    closeIframe();
+    navItems.forEach(function(n){n.classList.remove("active");});
+    var allN=document.querySelector('.ainav-nav-item[data-cat="all"]'); if(allN)allN.classList.add("active");
+    currentCat="all"; secTitle.textContent="All Tools"; gridTitle.textContent="All Tools"; gridSub.textContent=catSubtitles.all;
+    srchInput.value=""; currentSearch=""; resumeTW(); render(); closeMobile();
+  });
+
+  render();
+
+  // Browser back button closes iframe
+  window.addEventListener("popstate",function(){if(iframeWrap.classList.contains("visible"))closeIframe();});
+})();
+</script>
+</div>
