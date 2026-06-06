@@ -218,68 +218,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 .mobile-title{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mobile-spacer{flex:1}
 
-/* ===== OPTION BUTTONS BASE ===== */
-.opt-btn-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
-.opt-btn{height:44px;padding:0 12px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;width:100%}
-.opt-btn:hover{background:#fff;border-color:#C0C8CE}
-.opt-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
-
-/* ===== CHILDREN CARD ===== */
-.children-card{
-  background:rgba(255,255,255,.65);
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  border:1px solid var(--border);
-  border-radius:9px;
-  padding:4px 0;
-  box-shadow:var(--shadow-sm);
-}
-.cc-row{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:5px 12px;
-  gap:8px;
-}
-.cc-row+.cc-row{border-top:1px solid #F0F2F4}
-.cc-label{font-size:12px;color:var(--sub);font-weight:500;flex:1;min-width:0}
-.cc-input-wrap{
-  display:flex;align-items:center;
-  background:rgba(255,255,255,.85);
-  border:1px solid var(--border);
-  border-radius:9px;
-  height:40px;
-  flex-shrink:0;
-  transition:border-color .15s;
-  overflow:hidden;
-  padding:0 2px;
-}
-.cc-input-wrap:focus-within{border-color:var(--brand);background:#fff}
-.cc-btn{
-  width:38px;height:36px;
-  display:flex;align-items:center;justify-content:center;
-  border:none;background:transparent;
-  font-size:18px;font-weight:700;color:var(--brand);
-  cursor:pointer;flex-shrink:0;
-  transition:background .12s, color .12s;
-  user-select:none;
-  border-radius:7px;
-}
-.cc-btn:hover{background:var(--brand-ghost);color:var(--brand-light)}
-.cc-btn:active{background:#D0E8F0}
-.cc-btn:first-child{margin-left:1px}
-.cc-btn:last-child{margin-right:1px}
-.cc-input-wrap input{
-  width:42px;border:none;background:transparent;
-  font-size:15px;font-weight:600;color:var(--text);
-  font-family:inherit;text-align:center;outline:none;
-  -moz-appearance:textfield;
-  margin:0 2px;
-}
-.cc-input-wrap input::-webkit-outer-spin-button,
-.cc-input-wrap input::-webkit-inner-spin-button{
-  -webkit-appearance:none;margin:0;
-}
-
 /* ===== RESPONSIVE: TABLET ===== */
 @media(max-width:1024px){
   .calc-layout{padding:14px 20px 20px}
@@ -300,12 +238,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
   .input-wrap input{font-size:16px}
   .mode-btn{height:42px;font-size:13px}
   .opt-btn-wrap{grid-template-columns:repeat(2,1fr)}
+  .cc-input-wrap{height:44px}
+  .cc-input-wrap input{font-size:16px}
   .bd-hero .hero-value{font-size:24px}
 }
 /* Touch devices */
 @media(hover:none)and(pointer:coarse){
   .mode-btn:hover,.opt-btn:hover,.side-item:hover{background:initial;color:initial}
   .mode-btn:active,.opt-btn:active{background:var(--brand-ghost)}
+  .cc-btn:hover{background:initial;color:initial}
+  .cc-btn:active{background:var(--brand-ghost)}
   .input-wrap:hover{border-color:var(--border)}
 }
 
@@ -317,6 +259,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
   .opt-btn-wrap{grid-template-columns:repeat(2,1fr)}
   .opt-btn{height:40px;font-size:11.5px;padding:0 10px}
   .bd-hero .hero-value{font-size:20px}
+  .input-row{flex-direction:column;gap:0}
+  .input-row .input-group{margin-top:12px}
+  .input-row .input-group:first-child{margin-top:0}
   .regs-panel .reg-card{min-width:100%}
 }
 
@@ -709,6 +654,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
   if (backLink) backLink.href = "index.html#" + fromCat;
   var activeBtn = document.querySelector('.side-nav [data-cat="' + fromCat + '"]');
   if (activeBtn) activeBtn.classList.add("active");
+
+  // ===== MOBILE HEADER: show on narrow screen =====
+  function checkMobile() {
+    var hdr = document.getElementById("mobileHeader");
+    if (!hdr) return;
+    if (window.innerWidth <= 768) {
+      hdr.classList.add("show");
+    } else {
+      hdr.classList.remove("show");
+    }
+  }
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+
+  // ===== MOBILE BACK BUTTON =====
+  var mobileBackBtn = document.getElementById("mobileBackBtn");
+  if (mobileBackBtn) {
+    mobileBackBtn.addEventListener("click", function() {
+      var fromCat = new URLSearchParams(window.location.search).get("from") || "local";
+      window.location.href = "index.html#" + fromCat;
+    });
+  }
 
   // ===== Kick off =====
   if (document.readyState === "loading") {
