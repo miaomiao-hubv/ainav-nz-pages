@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
+<title>NZ Secondary Tax Calculator 2026 | Second Job Tax Refund Tool</title>
+<meta name="description" content="Free NZ secondary tax calculator. Find your IRD tax code (SB/SH/ST/SA) & estimate your true second job net take-home pay or end-of-year tax refund!">
+<meta name="keywords" content="secondary tax NZ, secondary tax code, SB SH ST SA tax code, second job tax NZ, side hustle tax, NZ tax refund, IRD secondary tax">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ainav.nz/secondary-tax.html">
+<meta property="og:title" content="NZ Secondary Tax Calculator 2026 | Second Job Tax Refund Tool">
+<meta property="og:description" content="Free NZ secondary tax calculator. Find your IRD tax code (SB/SH/ST/SA) and see if you'll get a tax refund at year-end.">
+<meta property="og:url" content="https://ainav.nz/secondary-tax.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Secondary Tax Calculator NZ | ainav.nz">
+<meta name="twitter:description" content="Find your correct NZ secondary tax code. See if your side hustle overpaid tax and will get a refund.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== CALCULATOR LAYOUT ===== */
+.calc-layout{display:flex;gap:16px;padding:16px 28px 24px;flex:1}
+.calc-panel{flex:1;min-width:0;max-width:520px}
+.regs-panel{width:260px;min-width:240px;flex-shrink:0;display:flex;flex-direction:column;gap:8px}
+
+/* ===== INPUT AREA ===== */
+.input-wrap{display:flex;align-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:9px;padding:0 14px;height:44px;transition:all .15s;box-shadow:var(--shadow-sm);cursor:text}
+.input-wrap:focus-within{border-color:var(--brand);background:#fff;box-shadow:var(--shadow-md)}
+.input-wrap .input-prefix{font-size:16px;font-weight:700;color:var(--brand);margin-right:4px;flex-shrink:0}
+.input-wrap input{flex:1;border:none;background:transparent;outline:none;font-size:16px;font-weight:600;color:var(--text);font-family:inherit;min-width:0;text-align:right}
+.input-wrap input::placeholder{color:#CDD3DA;font-weight:400}
+.input-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+.input-row{display:flex;gap:12px;margin-bottom:14px}
+.input-row .input-group{flex:1;min-width:0}
+
+/* ===== CALC BUTTON ===== */
+.calc-btn{width:100%;height:44px;padding:0 14px;border-radius:9px;border:none;background:var(--brand);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,59,79,.25);letter-spacing:-.2px}
+.calc-btn:hover{background:var(--brand-light)}
+.calc-btn:active{transform:scale(.985)}
+
+/* ===== RESULT CARD ===== */
+.result-card{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm);margin-top:16px}
+.result-hero{padding:16px 18px;background:linear-gradient(135deg,rgba(0,59,79,.92),rgba(0,100,122,.92));color:#fff;display:flex;justify-content:space-between;align-items:center}
+.result-hero .hero-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.3px}
+.result-hero .hero-value{font-size:28px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace;color:#5EEAD4}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid #F0F2F4;font-size:12.5px}
+.result-row:last-child{border-bottom:none}
+.result-row .rr-label{color:var(--sub)}
+.result-row .rr-value{font-weight:650;color:var(--text);font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace}
+.result-row.highlight{background:rgba(0,59,79,.03)}
+.result-row.highlight .rr-value{font-weight:700;font-size:13.5px}
+
+/* ===== REFUND HIGHLIGHT ===== */
+.refund-box{margin-top:12px;padding:14px 18px;background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(16,185,129,.03));border:1.5px solid rgba(16,185,129,.25);border-radius:10px;display:flex;justify-content:space-between;align-items:center}
+.refund-box.owe{background:linear-gradient(135deg,rgba(239,68,68,.08),rgba(239,68,68,.03));border-color:rgba(239,68,68,.25)}
+.refund-box .rf-label{font-size:13px;font-weight:700;color:var(--text)}
+.refund-box .rf-amount{font-size:20px;font-weight:800;letter-spacing:-.3px;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace}
+.refund-box .rf-amount.refund{color:#10B981}
+.refund-box .rf-amount.owe{color:#EF4444}
+
+/* ===== MYTH BOX ===== */
+.myth-box{margin-top:14px;padding:12px 16px;background:rgba(212,168,67,.08);border:1px solid rgba(212,168,67,.2);border-radius:9px}
+.myth-box .myth-title{font-size:12px;font-weight:700;color:var(--gold);margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.myth-box p{font-size:11.5px;color:var(--sub);line-height:1.55}
+
+/* ===== REGULATIONS PANEL ===== */
+.reg-card{background:rgba(255,255,255,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--glass-border);border-radius:10px;padding:10px 14px;box-shadow:var(--shadow-sm)}
+.reg-card:hover{background:rgba(255,255,255,.75);box-shadow:var(--shadow-md)}
+.reg-card h3{font-size:12px;font-weight:700;color:var(--text);margin-bottom:5px;letter-spacing:-.2px;display:flex;align-items:center;gap:5px}
+.reg-card h3 .rc-icon{font-size:13px}
+.reg-card p,.reg-card li{font-size:11.5px;color:var(--sub);line-height:1.55}
+.reg-card ul{padding-left:12px;margin-top:2px;list-style:none}
+.reg-card ul li::before{content:"—";margin-right:4px;color:var(--muted)}
+.reg-card .ird-link{display:inline-flex;align-items:center;gap:4px;margin-top:3px;font-size:11.5px;font-weight:600;color:var(--brand);text-decoration:none;transition:color .15s}
+.reg-card .ird-link:hover{color:var(--brand-light);text-decoration:underline}
+.reg-card .ird-link svg{width:11px;height:11px}
+
+/* ===== TAX CODE TABLE ===== */
+.code-table{width:100%;font-size:11px;margin-top:6px;border-collapse:collapse}
+.code-table th{text-align:left;padding:4px 6px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px;border-bottom:1px solid var(--border)}
+.code-table td{padding:4px 6px;color:var(--text);font-weight:500}
+.code-table tr.active-row{background:var(--brand-ghost);border-radius:4px}
+.code-table tr.active-row td{color:var(--brand);font-weight:700}
+
+/* ===== iOS 100vh FIX ===== */
+@supports(-webkit-touch-callout:none){
+  .app{min-height:-webkit-fill-available}
+  .sidebar{height:-webkit-fill-available}
+}
+
+/* ===== MOBILE HEADER ===== */
+.mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:54px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);z-index:200;align-items:center;padding:0 14px;gap:10px}
+.mobile-header.show{display:flex}
+.mobile-back{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:9px;border:none;background:var(--brand-ghost);color:var(--brand);font-size:18px;cursor:pointer;flex-shrink:0;transition:background .15s}
+.mobile-back:active{background:var(--brand);color:#fff}
+.mobile-title{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mobile-spacer{flex:1}
+
+/* ===== RESPONSIVE: TABLET ===== */
+@media(max-width:1024px){
+  .calc-layout{padding:14px 20px 20px}
+  .calc-panel{max-width:none}
+  .regs-panel{width:100%;min-width:0}
+}
+
+/* ===== RESPONSIVE: MOBILE ===== */
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{display:none}
+  .main{padding-top:54px}
+  .calc-layout{padding:12px 14px 24px;flex-direction:column;gap:14px}
+  .calc-panel{max-width:none;width:100%}
+  .regs-panel{width:100%;flex-direction:row;flex-wrap:wrap;gap:8px}
+  .regs-panel .reg-card{flex:1;min-width:200px}
+  .input-wrap{height:44px}
+  .input-wrap input{font-size:16px}
+}
+/* Touch devices */
+@media(hover:none)and(pointer:coarse){
+  .side-item:hover{background:initial;color:initial}
+  .input-wrap:hover{border-color:var(--border)}
+}
+
+/* ===== RESPONSIVE: SMALL MOBILE ===== */
+@media(max-width:420px){
+  .calc-layout{padding:10px 12px 20px}
+  .input-row{flex-direction:column;gap:0}
+  .input-row .input-group{margin-top:12px}
+  .input-row .input-group:first-child{margin-top:0}
+  .regs-panel .reg-card{min-width:100%}
+}
+
+/* ===== RESPONSIVE: TINY ===== */
+@media(max-width:380px){
+  .calc-layout{padding:8px 10px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== MOBILE HEADER ===== -->
+<div class="mobile-header" id="mobileHeader">
+  <button class="mobile-back" id="mobileBackBtn" aria-label="Back">←</button>
+  <span class="mobile-title">Secondary Tax Calculator</span>
+  <span class="mobile-spacer"></span>
+</div>
+
+<!-- Decorative background blobs -->
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<!-- =================== SIDEBAR =================== -->
+<aside class="sidebar">
+  <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">18</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">14</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">21</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">11</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<!-- =================== MAIN CONTENT =================== -->
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">Secondary Tax Calculator</span>
+  </div>
+
+  <div class="calc-layout">
+
+    <!-- ===== LEFT: Calculator ===== -->
+    <div class="calc-panel">
+
+      <div class="input-row">
+        <div class="input-group">
+          <label class="input-label">Primary Job Annual Income</label>
+          <div class="input-wrap">
+            <span class="input-prefix">$</span>
+            <input type="text" id="primaryIncome" placeholder="e.g. 75000" inputmode="decimal" autocomplete="off" aria-label="Primary job annual income">
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Secondary Job / Side Hustle Annual Income</label>
+          <div class="input-wrap">
+            <span class="input-prefix">$</span>
+            <input type="text" id="secondaryIncome" placeholder="e.g. 15000" inputmode="decimal" autocomplete="off" aria-label="Secondary job annual income">
+          </div>
+        </div>
+      </div>
+
+      <button class="calc-btn" id="btnCalc">Calculate Secondary Tax</button>
+
+      <!-- Myth box -->
+      <div class="myth-box">
+        <div class="myth-title">💡 Myth Buster</div>
+        <p>Many believe secondary income is "punished" with 30% or 33% tax. <strong>This is false.</strong> NZ uses combined annual progressive tax brackets. The higher rate is just <strong>overwithholding</strong> by your employer to avoid a big bill at year-end — and IRD automatically refunds the difference!</p>
+      </div>
+
+      <!-- Result card -->
+      <div class="result-card" id="resultCard">
+        <div class="result-hero">
+          <div>
+            <div class="hero-label">Estimated Year-End Refund</div>
+            <div class="hero-sub" style="font-size:10.5px;color:rgba(255,255,255,.55);margin-top:2px">Based on 2025/2026 tax brackets</div>
+          </div>
+          <div class="hero-value" id="heroRefund">$0.00</div>
+        </div>
+        <div class="result-row">
+          <span class="rr-label">Recommended IRD Tax Code</span>
+          <span class="rr-value" id="resCode">—</span>
+        </div>
+        <div class="result-row">
+          <span class="rr-label">Secondary Tax Rate (withheld)</span>
+          <span class="rr-value" id="resRate">—</span>
+        </div>
+        <div class="result-row">
+          <span class="rr-label">Tax Withheld from Second Job</span>
+          <span class="rr-value" id="resWithheld">$0.00</span>
+        </div>
+        <div class="result-row">
+          <span class="rr-label">Actual Fair Tax on Secondary Income</span>
+          <span class="rr-value" id="resActual">$0.00</span>
+        </div>
+        <div class="result-row highlight">
+          <span class="rr-label">Difference (Overwithheld)</span>
+          <span class="rr-value" id="resDiff">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Refund highlight box -->
+      <div class="refund-box" id="refundBox">
+        <span class="rf-label" id="rfLabel">Estimated Tax Refund:</span>
+        <span class="rf-amount refund" id="rfAmount">$0.00</span>
+      </div>
+
+    </div>
+
+    <!-- ===== RIGHT: Regulations ===== -->
+    <div class="regs-panel">
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">📘</span>How Secondary Tax Works</h3>
+        <p>Secondary tax applies when you have <strong>two or more</strong> sources of income. Your main job uses your full tax brackets, while your second job is taxed at a higher rate to prevent underpaying.</p>
+        <p style="margin-top:6px">At year-end, IRD reconciles your <strong>combined</strong> income using the standard progressive brackets. Any overpaid tax is <strong>automatically refunded</strong>.</p>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🏷️</span>Secondary Tax Codes (2025/2026)</h3>
+        <table class="code-table">
+          <thead><tr><th>Code</th><th>Main Job Income</th><th>Rate</th></tr></thead>
+          <tbody>
+            <tr id="codeRowSB"><td><strong>SB</strong></td><td>≤ $15,600</td><td>10.5%</td></tr>
+            <tr id="codeRowSH"><td><strong>SH</strong></td><td>$15,601–$53,500</td><td>17.5%</td></tr>
+            <tr id="codeRowST"><td><strong>ST</strong></td><td>$53,501–$78,100</td><td>30%</td></tr>
+            <tr id="codeRowSA"><td><strong>SA</strong></td><td>$78,101–$180,000</td><td>33%</td></tr>
+            <tr id="codeRowED"><td><strong>ED</strong></td><td>&gt; $180,000</td><td>39%</td></tr>
+          </tbody>
+        </table>
+        <p style="margin-top:6px;font-size:10.5px;color:var(--muted)">Your main job's annual income determines which code your second job should use.</p>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">📐</span>2025/2026 Tax Brackets</h3>
+        <ul>
+          <li>≤ $15,600: <strong>10.5%</strong></li>
+          <li>$15,601–$53,500: <strong>17.5%</strong></li>
+          <li>$53,501–$78,100: <strong>30%</strong></li>
+          <li>$78,101–$180,000: <strong>33%</strong></li>
+          <li>&gt; $180,000: <strong>39%</strong></li>
+        </ul>
+      </div>
+
+      <div class="reg-card">
+        <h3><span class="rc-icon">🔗</span>Official Reference</h3>
+        <p>Secondary tax codes are set by Inland Revenue (IRD).</p>
+        <a class="ird-link" href="https://www.ird.govt.nz/income-tax/income-tax-for-individuals/secondary-tax" target="_blank" rel="noopener noreferrer">
+          ird.govt.nz — Secondary tax
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+</div>
+
+<script>
+(function(){
+  // ===== Tax Brackets 2025/2026 =====
+  function calcTotalTax(income) {
+    let tax = 0;
+    if (income <= 15600) {
+      tax = income * 0.105;
+    } else if (income <= 53500) {
+      tax = (15600 * 0.105) + ((income - 15600) * 0.175);
+    } else if (income <= 78100) {
+      tax = (15600 * 0.105) + ((53500 - 15600) * 0.175) + ((income - 53500) * 0.30);
+    } else if (income <= 180000) {
+      tax = (15600 * 0.105) + ((53500 - 15600) * 0.175) + ((78100 - 53500) * 0.30) + ((income - 78100) * 0.33);
+    } else {
+      tax = (15600 * 0.105) + ((53500 - 15600) * 0.175) + ((78100 - 53500) * 0.30) + ((180000 - 78100) * 0.33) + ((income - 180000) * 0.39);
+    }
+    return tax;
+  }
+
+  function getSecondaryInfo(primaryIncome) {
+    if (primaryIncome <= 15600) {
+      return { code: "SB", rate: 0.105 };
+    } else if (primaryIncome <= 53500) {
+      return { code: "SH", rate: 0.175 };
+    } else if (primaryIncome <= 78100) {
+      return { code: "ST", rate: 0.30 };
+    } else if (primaryIncome <= 180000) {
+      return { code: "SA", rate: 0.33 };
+    } else {
+      return { code: "ED", rate: 0.39 };
+    }
+  }
+
+  function fmt(n) {
+    return "$" + n.toLocaleString("en-NZ", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+
+  function getRawVal(el) {
+    return (el.value || "").replace(/[$,]/g, "");
+  }
+
+  function formatInput(el) {
+    var raw = getRawVal(el);
+    if (raw === "" || raw === "." || raw === "-") return;
+    var num = parseFloat(raw);
+    if (isNaN(num)) return;
+    var pos = el.selectionStart;
+    var wasAtEnd = pos >= el.value.length;
+    el.value = num.toLocaleString("en-NZ", {minimumFractionDigits: 0, maximumFractionDigits: 2});
+    if (wasAtEnd) {
+      el.setSelectionRange(el.value.length, el.value.length);
+    } else {
+      el.setSelectionRange(Math.min(pos, el.value.length), Math.min(pos, el.value.length));
+    }
+  }
+
+  var primaryInput = document.getElementById("primaryIncome");
+  var secondaryInput = document.getElementById("secondaryIncome");
+  var btnCalc = document.getElementById("btnCalc");
+  var resultCard = document.getElementById("resultCard");
+  var refundBox = document.getElementById("refundBox");
+
+  // ===== INIT =====
+  clearCodeHighlight();
+
+  // Auto-calc on input (no button needed)
+  var calcTimer = null;
+  function scheduleCalc() {
+    clearTimeout(calcTimer);
+    calcTimer = setTimeout(function() {
+      var p = parseFloat(getRawVal(primaryInput)) || 0;
+      var s = parseFloat(getRawVal(secondaryInput)) || 0;
+      if (p > 0 && s > 0) doCalc();
+    }, 300);
+  }
+
+  [primaryInput, secondaryInput].forEach(function(input) {
+    input.addEventListener("input", function() {
+      formatInput(this);
+      scheduleCalc();
+    });
+    input.addEventListener("paste", function() {
+      var self = this;
+      setTimeout(function() {
+        formatInput(self);
+        var p = parseFloat(getRawVal(primaryInput)) || 0;
+        var s = parseFloat(getRawVal(secondaryInput)) || 0;
+        if (p > 0 && s > 0) doCalc();
+      }, 50);
+    });
+  });
+
+  function clearCodeHighlight() {
+    ["codeRowSB","codeRowSH","codeRowST","codeRowSA","codeRowED"].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove("active-row");
+    });
+  }
+
+  function highlightCode(code) {
+    clearCodeHighlight();
+    var map = { SB: "codeRowSB", SH: "codeRowSH", ST: "codeRowST", SA: "codeRowSA", ED: "codeRowED" };
+    var el = document.getElementById(map[code]);
+    if (el) el.classList.add("active-row");
+  }
+
+  function doCalc() {
+    var primary = parseFloat(getRawVal(primaryInput)) || 0;
+    var secondary = parseFloat(getRawVal(secondaryInput)) || 0;
+
+    if (primary <= 0 || secondary <= 0) {
+      // Show zeros, don't hide panel
+      document.getElementById("resCode").textContent = "—";
+      document.getElementById("resRate").textContent = "—";
+      document.getElementById("resWithheld").textContent = "$0.00";
+      document.getElementById("resActual").textContent = "$0.00";
+      document.getElementById("resDiff").textContent = "$0.00";
+      document.getElementById("heroRefund").textContent = "$0.00";
+      // Don't hide refundBox, just show zero
+      document.getElementById("rfLabel").textContent = "No refund or tax to pay:";
+      document.getElementById("rfAmount").textContent = "$0.00";
+      document.getElementById("rfAmount").className = "rf-amount";
+      clearCodeHighlight();
+      return;
+    }
+
+    var primaryTax = calcTotalTax(primary);
+    var combinedTax = calcTotalTax(primary + secondary);
+    var actualSecondaryTax = combinedTax - primaryTax;
+
+    var info = getSecondaryInfo(primary);
+    var taxWithheld = secondary * info.rate;
+    var difference = taxWithheld - actualSecondaryTax;
+
+    // Update result rows
+    document.getElementById("resCode").textContent = info.code + " (" + (info.rate * 100) + "%)";
+    document.getElementById("resRate").textContent = (info.rate * 100) + "%";
+    document.getElementById("resWithheld").textContent = fmt(taxWithheld);
+    document.getElementById("resActual").textContent = fmt(actualSecondaryTax);
+    document.getElementById("resDiff").textContent = fmt(Math.abs(difference));
+
+    // Highlight active code row
+    highlightCode(info.code);
+
+    // Refund / owe
+    var heroVal = document.getElementById("heroRefund");
+    if (difference >= 0) {
+      heroVal.textContent = fmt(difference);
+      heroVal.style.color = "#5EEAD4";
+      refundBox.className = "refund-box";
+      document.getElementById("rfLabel").textContent = "Estimated Tax Refund:";
+      document.getElementById("rfAmount").textContent = fmt(difference);
+      document.getElementById("rfAmount").className = "rf-amount refund";
+    } else {
+      heroVal.textContent = fmt(0);
+      heroVal.style.color = "#5EEAD4";
+      refundBox.className = "refund-box owe";
+      document.getElementById("rfLabel").textContent = "Estimated Tax to Pay:";
+      document.getElementById("rfAmount").textContent = fmt(Math.abs(difference));
+      document.getElementById("rfAmount").className = "rf-amount owe";
+    }
+  }
+
+  btnCalc.addEventListener("click", doCalc);
+
+  // ===== Sidebar Nav =====
+  var sideButtons = document.querySelectorAll(".side-nav .side-item");
+  sideButtons.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var cat = this.getAttribute("data-cat");
+      if (cat) {
+        window.location.href = "index.html#" + cat;
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+  });
+
+  // Back link + sidebar active
+  var fromCat = new URLSearchParams(window.location.search).get("from") || "local";
+  var backLink = document.getElementById("backLink");
+  if (backLink) backLink.href = "index.html#" + fromCat;
+  var activeBtn = document.querySelector('.side-nav [data-cat="' + fromCat + '"]');
+  if (activeBtn) activeBtn.classList.add("active");
+
+  // ===== MOBILE HEADER: show on narrow screen =====
+  function checkMobile() {
+    var hdr = document.getElementById("mobileHeader");
+    if (!hdr) return;
+    if (window.innerWidth <= 768) {
+      hdr.classList.add("show");
+    } else {
+      hdr.classList.remove("show");
+    }
+  }
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+
+  // ===== MOBILE BACK BUTTON =====
+  var mobileBackBtn = document.getElementById("mobileBackBtn");
+  if (mobileBackBtn) {
+    mobileBackBtn.addEventListener("click", function() {
+      var fromCat = new URLSearchParams(window.location.search).get("from") || "local";
+      window.location.href = "index.html#" + fromCat;
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

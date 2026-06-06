@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en-NZ">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
+<title>NZ Net to Gross Calculator 2026 | Reverse Salary Tool | ainav.nz</title>
+<meta name="description" content="Free NZ net to gross salary calculator. Reverse engineer your required weekly, monthly, or annual gross wage based on your target take-home pay.">
+<meta name="keywords" content="net to gross calculator, NZ salary reverse, gross from net, New Zealand wage calculator, IRD tax reverse">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://ainav.nz/net-to-gross.html">
+<meta property="og:title" content="NZ Net to Gross Calculator 2026 | Reverse Salary Tool | ainav.nz">
+<meta property="og:description" content="Reverse engineer your gross wage from your target take-home pay. Free, instant, IRD-compliant.">
+<meta property="og:url" content="https://ainav.nz/net-to-gross.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ainav.nz">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NZ Net to Gross Calculator | ainav.nz">
+<meta name="twitter:description" content="Reverse engineer your gross wage from target take-home pay. Free, instant.">
+<style>
+/* ===== RESET & VARIABLES ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --brand:#003B4F;--brand-light:#00647A;--brand-ghost:#E6F0F3;
+  --side-bg:#F1F3F4;--side-w:252px;
+  --content-bg:#F2F4F5;
+  --text:#1A1A2E;--sub:#5F6B7A;--muted:#94A3B8;
+  --border:#E2E6EA;--radius:7px;
+  --gold:#D4A843;
+  --glass-bg:rgba(255,255,255,.55);
+  --glass-border:rgba(0,59,79,.07);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 12px rgba(0,0,0,.06);
+}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;background:var(--content-bg);color:var(--text);line-height:1.5;-webkit-font-smoothing:antialiased}
+
+/* ===== DECORATIVE BACKGROUND BLOBS ===== */
+.bg-decor{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-decor .blob{position:absolute;border-radius:50%;opacity:.035}
+.bg-decor .blob-1{width:600px;height:600px;background:var(--brand);top:-200px;right:-100px}
+.bg-decor .blob-2{width:450px;height:450px;background:var(--brand-light);bottom:-150px;left:-50px;opacity:.025}
+.bg-decor .blob-3{width:300px;height:300px;background:var(--gold);top:40%;left:55%;opacity:.02}
+
+/* ===== LAYOUT ===== */
+.app{display:flex;min-height:100vh;position:relative;z-index:1}
+
+/* ===== SIDEBAR ===== */
+.sidebar{width:var(--side-w);min-width:var(--side-w);background:var(--side-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sidebar-placeholder{width:var(--side-w);min-width:var(--side-w);flex-shrink:0}
+.side-head{padding:22px 18px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.side-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text);cursor:pointer}
+.side-logo{width:36px;height:36px;flex-shrink:0}
+.side-name{font-size:17px;font-weight:800;letter-spacing:-.4px;line-height:1.1}
+.side-tag{font-size:10.5px;color:var(--muted);display:block;font-weight:400;letter-spacing:.3px}
+.side-nav{flex:1;padding:8px 10px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:#C8CDD3;border-radius:2px}
+.side-section{margin-top:10px;padding:0 12px 4px}
+.side-section:first-child{margin-top:4px}
+.side-label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:4px 0 2px;margin-bottom:2px}
+.side-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--sub);cursor:pointer;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none;transition:all .15s}
+.side-item:hover{background:#E2E7EA;color:var(--text)}
+.side-item.active{background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(0,59,79,.18)}
+.side-item .si-icon{font-size:15px;line-height:1;width:20px;text-align:center;flex-shrink:0}
+.side-item .si-count{font-size:10.5px;background:#DDE1E5;color:var(--sub);padding:1px 7px;border-radius:10px;font-weight:600;margin-left:auto;min-width:20px;text-align:center}
+.side-item.active .si-count{background:rgba(255,255,255,.2);color:#fff}
+.side-item.local-filter{border:1.5px dashed #B0BDC4;margin-bottom:6px}
+.side-item.local-filter:hover{background:#E2E7EA;border-color:var(--brand-light)}
+.side-item.local-filter.active{border-style:solid;border-color:var(--brand);background:var(--brand)}
+.side-item.ai-directory{border:1.5px solid transparent;margin-top:6px;position:relative}
+.side-item.ai-directory .si-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:aiPulse 2s ease-in-out infinite}
+@keyframes aiPulse{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+.side-foot{padding:14px 18px;border-top:1px solid var(--border);flex-shrink:0}
+.side-foot p{font-size:10.5px;color:var(--muted);line-height:1.7}
+.side-foot a{color:var(--brand);text-decoration:none;font-weight:500}
+.side-foot a:hover{text-decoration:underline}
+.side-foot .foot-links{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.side-foot .x-logo{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;background:#1A1A2E;color:#fff;font-size:12px;font-weight:700;text-decoration:none}
+.side-foot .x-logo:hover{background:#333;text-decoration:none}
+
+/* ===== MAIN CONTENT ===== */
+.main{flex:1;display:flex;flex-direction:column;overflow-y:auto;position:relative;min-height:0}
+.toolbar{display:flex;align-items:center;gap:10px;padding:18px 40px;background:rgba(255,255,255,.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.toolbar a{font-size:13px;font-weight:600;color:var(--brand);text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:color .15s}
+.toolbar a:hover{color:var(--brand-light)}
+.toolbar .tb-sep{width:1px;height:16px;background:var(--border)}
+.toolbar .tb-title{font-size:13px;color:var(--sub);font-weight:500}
+
+/* ===== CALC LAYOUT ===== */
+.calc-layout{max-width:640px;width:100%;margin:0 auto;padding:20px 28px 32px;flex:1}
+.calc-head{margin-bottom:18px}
+.calc-head h1{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.calc-head p{font-size:12.5px;color:var(--sub);margin-top:4px;line-height:1.5}
+
+/* ===== INPUTS ===== */
+.input-label{font-size:12px;font-weight:600;color:var(--sub);margin-bottom:6px;display:block;letter-spacing:.2px}
+.input-group{margin-top:14px}
+.input-wrap{display:flex;align-items:center;background:rgba(255,255,255,.72);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:9px;padding:0 14px;height:44px;transition:all .15s;box-shadow:var(--shadow-sm);cursor:text}
+.input-wrap:focus-within{border-color:var(--brand);background:#fff;box-shadow:var(--shadow-md)}
+.input-prefix{font-size:16px;font-weight:700;color:var(--brand);margin-right:4px;flex-shrink:0}
+.input-wrap input{flex:1;border:none;background:transparent;outline:none;font-size:16px;font-weight:600;color:var(--text);font-family:inherit;min-width:0;text-align:right}
+.input-wrap input::placeholder{color:#CDD3DA;font-weight:400}
+
+/* ===== FREQUENCY BUTTONS ===== */
+.freq-wrap{display:flex;gap:8px;margin-top:14px}
+.freq-btn{flex:1;height:44px;padding:0 14px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
+.freq-btn:hover{background:#fff;border-color:#C0C8CE}
+.freq-btn.active{background:var(--brand);color:#fff;border-color:var(--brand);box-shadow:0 2px 8px rgba(0,59,79,.25)}
+
+/* ===== OPTIONS CARD ===== */
+.opts-card{background:var(--side-bg);border-radius:9px;padding:12px 14px;margin-top:14px}
+.opts-card .oc-title{font-size:11.5px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px}
+.opt-row{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--text);cursor:pointer;margin-bottom:5px}
+.opt-row:last-child{margin-bottom:0}
+.opt-row input[type="checkbox"]{width:16px;height:16px;accent-color:var(--brand);cursor:pointer;flex-shrink:0}
+
+/* ===== BREAKDOWN CARD ===== */
+.breakdown{margin-top:18px}
+.breakdown-card{background:rgba(255,255,255,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.bd-hero{padding:16px 18px;background:linear-gradient(135deg,rgba(0,59,79,.92),rgba(0,100,122,.92));color:#fff;display:flex;justify-content:space-between;align-items:center}
+.bd-hero .hero-label{font-size:12px;font-weight:600;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.3px}
+.bd-hero .hero-sub{font-size:10.5px;color:rgba(255,255,255,.55);margin-top:2px}
+.bd-hero .hero-value{font-size:28px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace;color:#5EEAD4}
+.breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid #F0F2F4;font-size:12.5px}
+.breakdown-row:last-child{border-bottom:none}
+.breakdown-row .br-label{color:var(--sub)}
+.breakdown-row .br-value{font-weight:650;color:var(--text);font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace}
+.breakdown-row.net-row{background:rgba(0,59,79,.03)}
+.breakdown-row.net-row .br-value{font-weight:700;color:#0D7A3E;font-size:13.5px}
+.breakdown-row.tax-row .br-value{color:#EF4444}
+
+/* ===== RESPONSIVE: iOS 100vh fix ===== */
+@supports(-webkit-touch-callout:none){
+  .sidebar{height:100%}
+  .main{min-height:-webkit-fill-available}
+  body{min-height:-webkit-fill-available}
+}
+
+/* ===== MOBILE HEADER ===== */
+.mobile-header{
+  display:none;
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:10px 16px;
+  align-items:center;
+  gap:12px;
+}
+.mobile-header.show{display:flex}
+.mobile-back-btn{
+  width:40px;height:40px;
+  border:none;background:var(--side-bg);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text);
+  flex-shrink:0;font-size:18px;
+}
+.mobile-back-btn:active{background:var(--border)}
+.mobile-page-title{font-size:16px;font-weight:700;color:var(--text);flex:1}
+
+/* ===== RESPONSIVE: MOBILE ===== */
+@media(max-width:768px){
+  .mobile-header.show{display:flex}
+  .sidebar,.sidebar-placeholder{display:none!important}
+  .main{padding-top:62px}
+  .toolbar{display:none!important}
+  .calc-layout{padding:14px 14px 24px}
+  .bd-hero .hero-value{font-size:22px}
+  .freq-btn{height:44px;font-size:12px;padding:0 10px}
+}
+@media(hover:none)and(pointer:coarse){
+  .freq-btn:hover{background:rgba(255,255,255,.65);border-color:var(--border)}
+  .freq-btn:active{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .input-wrap input{font-size:16px!important}
+}
+
+/* ===== RESPONSIVE: SMALL MOBILE ===== */
+@media(max-width:420px){
+  .calc-layout{padding:10px 12px 20px}
+  .bd-hero{padding:14px 16px}
+  .bd-hero .hero-value{font-size:20px}
+  .freq-wrap{gap:4px}
+  .freq-btn{font-size:11px;padding:0 8px}
+}
+
+/* ===== RESPONSIVE: TINY ===== */
+@media(max-width:380px){
+  .calc-layout{padding:8px 10px 16px}
+}
+</style>
+</head>
+<body>
+
+<!-- Decorative background blobs -->
+<div class="bg-decor">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="app">
+
+<!-- ==================== MOBILE HEADER ==================== -->
+<div class="mobile-header" id="mobileHeader">
+  <button class="mobile-back-btn" id="mobileBackBtn" aria-label="Back">←</button>
+  <span class="mobile-page-title">Net to Gross Calculator</span>
+</div>
+
+<!-- ==================== SIDEBAR ==================== -->
+<aside class="sidebar">
+    <div class="side-head">
+    <a class="side-brand" href="index.html" title="ainav.nz Home">
+      <svg class="side-logo" viewBox="0 0 46 40" fill="none">
+        <ellipse cx="18" cy="25" rx="12" ry="11" fill="#003B4F"/>
+        <ellipse cx="15" cy="16" rx="9" ry="8" fill="#003B4F"/>
+        <path d="M11 22 C10 18 12 12 16 10 C17 10 17 12 16 14 C14 17 12 20 12 23Z" fill="#003B4F"/>
+        <path d="M20 12 C25 8 31 5.5 35 5 C36.5 4.8 37 6 35.5 6.5 C33 7.5 27 9.5 23 13Z" fill="#D4A843"/>
+        <circle cx="17" cy="12" r="2" fill="white"/>
+        <circle cx="17.5" cy="12" r="1" fill="#003B4F"/>
+        <line x1="21" y1="14" x2="26" y2="14.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="15.5" x2="27" y2="16" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <line x1="21" y1="17" x2="26" y2="17.5" stroke="#003B4F" stroke-width="0.7" opacity="0.6"/>
+        <path d="M12 36 L11 40 M17 36 L17 40 M22 36 L23 40" stroke="#003B4F" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <div><span class="side-name">ainav.nz</span><span class="side-tag">NZ AI Navigator</span></div>
+    </a>
+  </div>
+  <nav class="side-nav">
+    <button class="side-item" data-cat="all"><span class="si-icon">📋</span>All Tools<span class="si-count">87</span></button>
+    <button class="side-item local-filter" data-cat="local"><span class="si-icon">📍</span>Local Tools<span class="si-count">18</span></button>
+    <div class="side-section"></div><div class="side-label">Categories</div>
+    <button class="side-item" data-cat="finance"><span class="si-icon">💰</span>Finance &amp; Tax<span class="si-count">14</span></button>
+    <button class="side-item" data-cat="property"><span class="si-icon">🏠</span>Property<span class="si-count">6</span></button>
+    <button class="side-item" data-cat="office"><span class="si-icon">💼</span>Office<span class="si-count">21</span></button>
+    <button class="side-item" data-cat="academic"><span class="si-icon">🎓</span>Academic<span class="si-count">5</span></button>
+    <button class="side-item" data-cat="image"><span class="si-icon">🖼️</span>Image<span class="si-count">11</span></button>
+    <button class="side-item" data-cat="video"><span class="si-icon">🎬</span>Video<span class="si-count">2</span></button>
+    <button class="side-item" data-cat="dev"><span class="si-icon">💻</span>Dev Tools<span class="si-count">17</span></button>
+    <button class="side-item" data-cat="lifestyle"><span class="si-icon">🎮</span>Lifestyle<span class="si-count">11</span></button>
+    <div class="side-section"></div><button class="side-item ai-directory" data-cat="ai"><span class="si-icon">🌐</span><span class="si-dot"></span>Global AI Directory</button>
+  </nav>
+  <div class="side-foot">
+    <div class="foot-links">
+      <a href="mailto:feedback@ainav.nz">Feedback</a>
+      <a href="#" class="x-logo" title="X / Twitter" aria-label="X">𝕏</a>
+    </div>
+    <p>Tools sourced from public references &amp; official data. Not financial, legal or tax advice.</p>
+    <p class="zh-signoff">希望兰局早日登录纽西兰</p>
+  </div>
+</aside>
+
+<div class="sidebar-placeholder"></div>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<div class="main">
+
+  <div class="toolbar">
+    <a id="backLink" href="index.html">← Back</a>
+    <span class="tb-sep"></span>
+    <span class="tb-title">Net to Gross Calculator</span>
+  </div>
+
+  <div class="calc-layout">
+
+    <div class="calc-head">
+      <h1>Net to Gross Calculator</h1>
+      <p>Reverse engineer your required gross wage from your target take-home pay. Supports weekly, fortnightly, monthly and annual frequencies.</p>
+    </div>
+
+    <!-- Target Net Pay -->
+    <div class="input-group">
+      <span class="input-label">Target Take-Home Pay (Net)</span>
+      <div class="input-wrap">
+        <span class="input-prefix">$</span>
+        <input type="text" id="targetInput" placeholder="e.g. 1000" inputmode="decimal" autocomplete="off" aria-label="Target take-home pay">
+      </div>
+    </div>
+
+    <!-- Frequency -->
+    <div class="input-group">
+      <span class="input-label">Pay Frequency</span>
+      <div class="freq-wrap">
+        <button class="freq-btn" id="freqWeekly" onclick="setFreq('weekly')">Weekly</button>
+        <button class="freq-btn active" id="freqFortnightly" onclick="setFreq('fortnightly')">Fortnightly</button>
+        <button class="freq-btn" id="freqMonthly" onclick="setFreq('monthly')">Monthly</button>
+        <button class="freq-btn" id="freqAnnual" onclick="setFreq('annual')">Annual</button>
+      </div>
+    </div>
+
+    <!-- Deduction Options -->
+    <div class="opts-card">
+      <div class="oc-title">Deductions</div>
+      <label class="opt-row">
+        <input type="checkbox" id="includeACC" checked>
+        Include ACC Earner's Levy (1.75%)
+      </label>
+      <label class="opt-row">
+        <input type="checkbox" id="includeSL">
+        Include Student Loan Repayment (12%)
+      </label>
+    </div>
+
+    <!-- Result Breakdown -->
+    <div class="breakdown">
+      <div class="breakdown-card">
+        <div class="bd-hero">
+          <div>
+            <div class="hero-label">Required Gross Pay (Per Period)</div>
+            <div class="hero-sub" id="heroSub">Fortnightly gross required</div>
+          </div>
+          <div class="hero-value" id="heroGross">$0.00</div>
+        </div>
+        <div class="breakdown-row">
+          <span class="br-label">Gross Pay (Per Period)</span>
+          <span class="br-value" id="resPeriodGross">$0.00</span>
+        </div>
+        <div class="breakdown-row tax-row">
+          <span class="br-label">PAYE Tax (Per Period)</span>
+          <span class="br-value" id="resTax">$0.00</span>
+        </div>
+        <div class="breakdown-row" id="rowACC">
+          <span class="br-label">ACC Earner's Levy (1.75%)</span>
+          <span class="br-value" id="resACC">$0.00</span>
+        </div>
+        <div class="breakdown-row" id="rowSL">
+          <span class="br-label">Student Loan Repayment (12%)</span>
+          <span class="br-value" id="resSL">$0.00</span>
+        </div>
+        <div class="breakdown-row net-row">
+          <span class="br-label">Target Net Take-Home</span>
+          <span class="br-value" id="resNet">$0.00</span>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /calc-layout -->
+
+</div><!-- /main -->
+
+</div><!-- /app -->
+
+<script>
+(function(){
+  "use strict";
+
+  // ===== TAX BRACKETS 2025/2026 =====
+  function getNetFromGross(annual) {
+    var tax = 0;
+    if (annual <= 15600) {
+      tax = annual * 0.105;
+    } else if (annual <= 53500) {
+      tax = (15600 * 0.105) + ((annual - 15600) * 0.175);
+    } else if (annual <= 78100) {
+      tax = (15600 * 0.105) + ((53500 - 15600) * 0.175) + ((annual - 53500) * 0.30);
+    } else if (annual <= 180000) {
+      tax = (15600 * 0.105) + ((53500 - 15600) * 0.175) + ((78100 - 53500) * 0.30) + ((annual - 78100) * 0.33);
+    } else {
+      tax = (15600 * 0.105) + ((53500 - 15600) * 0.175) + ((78100 - 53500) * 0.30) + ((180000 - 78100) * 0.33) + ((annual - 180000) * 0.39);
+    }
+    var acc = annual * 0.0175;
+    var slThreshold = 24128;
+    var sl = 0;
+    if (annual > slThreshold) {
+      sl = (annual - slThreshold) * 0.12;
+    }
+    var net = annual - tax - acc - sl;
+    return { tax: tax, acc: acc, sl: sl, net: net };
+  }
+
+  // ===== FORMATTERS =====
+  function fmt(n) {
+    if (isNaN(n)) return "$0.00";
+    return "$" + n.toLocaleString("en-NZ", {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+
+  function formatInput(el) {
+    var raw = el.value.replace(/[^0-9.]/g, "");
+    var parts = raw.split(".");
+    if (parts.length > 2) parts.pop();
+    el.value = parts.join(".");
+  }
+
+  // ===== FREQUENCY =====
+  var currentFreq = "fortnightly";
+
+  window.setFreq = function(f) {
+    currentFreq = f;
+    document.getElementById("freqWeekly").className = "freq-btn" + (f === "weekly" ? " active" : "");
+    document.getElementById("freqFortnightly").className = "freq-btn" + (f === "fortnightly" ? " active" : "");
+    document.getElementById("freqMonthly").className = "freq-btn" + (f === "monthly" ? " active" : "");
+    document.getElementById("freqAnnual").className = "freq-btn" + (f === "annual" ? " active" : "");
+    var labels = { weekly:"Weekly", fortnightly:"Fortnightly", monthly:"Monthly", annual:"Annual" };
+    document.getElementById("heroSub").textContent = labels[f] + " gross required";
+    doCalc();
+  };
+
+  function getWeeks() {
+    if (currentFreq === "weekly") return 52;
+    if (currentFreq === "monthly") return 12;
+    if (currentFreq === "annual") return 1;
+    return 26; // fortnightly
+  }
+
+  // ===== DO CALC (Binary Search) =====
+  function doCalc() {
+    var raw = document.getElementById("targetInput").value.replace(/[^0-9.]/g, "");
+    var targetNetInput = parseFloat(raw) || 0;
+
+    if (targetNetInput <= 0) {
+      document.getElementById("heroGross").textContent = "$0.00";
+      document.getElementById("resPeriodGross").textContent = "$0.00";
+      document.getElementById("resTax").textContent = "$0.00";
+      document.getElementById("resACC").textContent = "$0.00";
+      document.getElementById("resSL").textContent = "$0.00";
+      document.getElementById("resNet").textContent = "$0.00";
+      document.getElementById("rowACC").style.display =
+        document.getElementById("includeACC").checked ? "flex" : "none";
+      document.getElementById("rowSL").style.display =
+        document.getElementById("includeSL").checked ? "flex" : "none";
+      return;
+    }
+
+    var weeks = getWeeks();
+    var targetAnnualNet = targetNetInput * weeks;
+
+    // Binary search for gross where net >= target
+    var lo = 0;
+    var hi = Math.max(targetAnnualNet * 3, 500000);
+    var eps = 0.01;
+
+    while (hi - lo > eps) {
+      var mid = (lo + hi) / 2;
+      if (getNetFromGross(mid).net >= targetAnnualNet) {
+        hi = mid;
+      } else {
+        lo = mid;
+      }
+    }
+
+    var guessedGross = (lo + hi) / 2;
+    var breakdown = getNetFromGross(guessedGross);
+    var periodGross = guessedGross / weeks;
+
+    document.getElementById("heroGross").textContent = fmt(periodGross);
+    document.getElementById("resPeriodGross").textContent = fmt(periodGross);
+    document.getElementById("resTax").textContent = "-" + fmt(breakdown.tax / weeks);
+    document.getElementById("resACC").textContent = "-" + fmt(breakdown.acc / weeks);
+    document.getElementById("resSL").textContent  = "-" + fmt(breakdown.sl / weeks);
+    document.getElementById("resNet").textContent  = fmt(targetNetInput);
+
+    // Show/hide optional rows
+    document.getElementById("rowACC").style.display =
+      document.getElementById("includeACC").checked ? "flex" : "none";
+    document.getElementById("rowSL").style.display =
+      document.getElementById("includeSL").checked ? "flex" : "none";
+  }
+
+  // ===== EVENT LISTENERS =====
+  var targetInput = document.getElementById("targetInput");
+
+  targetInput.addEventListener("input", function() { formatInput(this); doCalc(); });
+  targetInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") { e.preventDefault(); doCalc(); }
+  });
+
+  document.getElementById("includeACC").addEventListener("change", doCalc);
+  document.getElementById("includeSL").addEventListener("change", doCalc);
+
+  // ===== SIDEBAR NAV =====
+  var sideButtons = document.querySelectorAll(".side-nav .side-item");
+  sideButtons.forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var cat = this.getAttribute("data-cat");
+      if (cat) {
+        window.location.href = "index.html#" + cat;
+      } else {
+        window.location.href = "index.html";
+      }
+    });
+  });
+
+  // Back link + sidebar active
+  var fromCat = new URLSearchParams(window.location.search).get("from") || "finance";
+  var backLink = document.getElementById("backLink");
+  if (backLink) backLink.href = "index.html#" + fromCat;
+  var activeBtn = document.querySelector('.side-nav [data-cat="' + fromCat + '"]');
+  if (activeBtn) activeBtn.classList.add("active");
+
+  // ===== MOBILE HEADER =====
+  function checkMobile() {
+    var hdr = document.getElementById("mobileHeader");
+    if (!hdr) return;
+    if (window.innerWidth <= 768) {
+      hdr.classList.add("show");
+    } else {
+      hdr.classList.remove("show");
+    }
+  }
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+
+  var mobileBackBtn = document.getElementById("mobileBackBtn");
+  if (mobileBackBtn) {
+    mobileBackBtn.addEventListener("click", function() {
+      var fc = new URLSearchParams(window.location.search).get("from") || "finance";
+      window.location.href = "index.html#" + fc;
+    });
+  }
+
+})();
+</script>
+
+</body>
+</html>
