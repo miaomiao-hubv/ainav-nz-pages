@@ -2,7 +2,7 @@
 <html lang="en-NZ">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
 <title>Student Loan Repayment Calculator — NZ 12% Repayment Rate | ainav.nz</title>
 <meta name="description" content="Calculate your NZ student loan repayments. 12% of income above the $24,128 annual threshold. See per-pay-period and annual amounts.">
 <meta name="keywords" content="student loan repayment NZ, student loan calculator, IRD student loan, NZ study loan, student loan threshold">
@@ -134,39 +134,80 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 .reg-card .ird-link:hover{color:var(--brand-light);text-decoration:underline}
 .reg-card .ird-link svg{width:11px;height:11px}
 
-/* ===== RESPONSIVE ===== */
-@media(max-width:1024px){
-  .calc-layout{padding:14px 20px 20px}
-  .calc-panel{max-width:none}
-  .regs-panel{width:100%;min-width:0}
+/* ===== iOS 100vh FIX ===== */
+@supports(-webkit-touch-callout:none){
+  .app{min-height:-webkit-fill-available}
+  .sidebar{height:-webkit-fill-available}
 }
-@media(max-width:768px){
-  .sidebar,.sidebar-placeholder{display:none}
-  .toolbar{padding:12px 14px}
-  .calc-layout{padding:10px 14px 16px;gap:12px}
-  .input-wrap{height:40px}
-  .input-wrap input{font-size:14px}
-  .regs-panel{gap:6px}
-  .bd-hero{padding:14px 16px}
-  .bd-hero .hero-value{font-size:24px}
-  .presets{grid-template-columns:repeat(2,1fr)}
-  .presets-label{grid-column:1/-1}
-}
+
+/* ===== MOBILE HEADER ===== */
+.mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:54px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);z-index:200;align-items:center;padding:0 14px;gap:10px}
+.mobile-header.show{display:flex}
+.mobile-back{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:9px;border:none;background:var(--brand-ghost);color:var(--brand);font-size:18px;cursor:pointer;flex-shrink:0;transition:background .15s}
+.mobile-back:active{background:var(--brand);color:#fff}
+.mobile-title{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mobile-spacer{flex:1}
+
+/* ===== PRESETS BASE ===== */
 .presets{margin-top:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .presets-label{grid-column:1/-1;font-size:10.5px;font-weight:700;color:var(--muted);margin-bottom:2px}
 .preset-btn{height:44px;padding:0 14px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;width:100%}
 .preset-btn:hover{background:#fff;border-color:var(--brand-light);color:var(--brand)}
 .preset-btn.active{background:var(--brand-ghost);border-color:var(--brand);color:var(--brand)}
 
+/* ===== RESPONSIVE: TABLET ===== */
+@media(max-width:1024px){
+  .calc-layout{padding:14px 20px 20px}
+  .calc-panel{max-width:none}
+  .regs-panel{width:100%;min-width:0}
+}
+
+/* ===== RESPONSIVE: MOBILE ===== */
+@media(max-width:768px){
+  .sidebar,.sidebar-placeholder{display:none}
+  .toolbar{display:none}
+  .main{padding-top:54px}
+  .calc-layout{padding:12px 14px 24px;flex-direction:column;gap:14px}
+  .calc-panel{max-width:none;width:100%}
+  .regs-panel{width:100%;flex-direction:row;flex-wrap:wrap;gap:8px}
+  .regs-panel .reg-card{flex:1;min-width:200px}
+  .input-wrap{height:44px}
+  .input-wrap input{font-size:16px}
+  .mode-btn{height:42px;font-size:13px}
+  .presets{grid-template-columns:repeat(2,1fr)}
+  .bd-hero .hero-value{font-size:24px}
+}
+/* Touch devices */
+@media(hover:none)and(pointer:coarse){
+  .mode-btn:hover,.preset-btn:hover,.side-item:hover{background:initial;color:initial}
+  .mode-btn:active,.preset-btn:active{background:var(--brand-ghost)}
+  .input-wrap:hover{border-color:var(--border)}
+}
+
+/* ===== RESPONSIVE: SMALL MOBILE ===== */
 @media(max-width:420px){
-  .mode-btn{height:40px;font-size:11px;padding:0 10px}
+  .calc-layout{padding:10px 12px 20px}
+  .mode-wrap{gap:6px}
+  .mode-btn{height:40px;font-size:12px;padding:0 8px}
+  .presets{grid-template-columns:1fr}
   .bd-hero .hero-value{font-size:20px}
-  .presets{grid-template-columns:1fr;gap:4px}
-  .presets-label{grid-column:1/-1}
+  .regs-panel .reg-card{min-width:100%}
+}
+
+/* ===== RESPONSIVE: TINY ===== */
+@media(max-width:380px){
+  .calc-layout{padding:8px 10px 16px}
 }
 </style>
 </head>
 <body>
+
+<!-- ===== MOBILE HEADER ===== -->
+<div class="mobile-header" id="mobileHeader">
+  <button class="mobile-back" id="mobileBackBtn" aria-label="Back">←</button>
+  <span class="mobile-title">Student Loan Repayment</span>
+  <span class="mobile-spacer"></span>
+</div>
 
 <!-- Decorative background blobs -->
 <div class="bg-decor">
@@ -474,6 +515,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
     document.addEventListener("DOMContentLoaded", function() { init(); });
   } else {
     init();
+  }
+
+  // ===== MOBILE HEADER: show on narrow screen =====
+  function checkMobile() {
+    var hdr = document.getElementById("mobileHeader");
+    if (!hdr) return;
+    if (window.innerWidth <= 768) {
+      hdr.classList.add("show");
+    } else {
+      hdr.classList.remove("show");
+    }
+  }
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+
+  // ===== MOBILE BACK BUTTON =====
+  var mobileBackBtn = document.getElementById("mobileBackBtn");
+  if (mobileBackBtn) {
+    mobileBackBtn.addEventListener("click", function() {
+      var fromCat = new URLSearchParams(window.location.search).get("from") || "local";
+      window.location.href = "index.html#" + fromCat;
+    });
   }
 })();
 </script>

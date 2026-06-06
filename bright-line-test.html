@@ -2,7 +2,7 @@
 <html lang="en-NZ">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
 <title>Bright-Line Test Calculator — NZ Property Tax Window | ainav.nz</title>
 <meta name="description" content="Check if your property sale falls within the bright-line period. Determine your tax obligations for residential property sales in New Zealand.">
 <meta name="keywords" content="bright-line test NZ, property tax NZ, bright-line period, IRD property rules, NZ property sale tax, capital gains tax NZ">
@@ -146,23 +146,78 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 .reg-card .ird-link:hover{color:var(--brand-light);text-decoration:underline}
 .reg-card .ird-link svg{width:11px;height:11px}
 
-/* ===== RESPONSIVE ===== */
-@media(max-width:1024px){
-  .calc-layout{padding:14px 20px 20px}
-  .calc-panel{max-width:none}
-  .regs-panel{width:100%;min-width:0}
+/* ===== RESPONSIVE: MOBILE FIRST ===== */
+/* iOS 100vh fix */
+@supports(-webkit-touch-callout:none){
+  .sidebar{height:100%}
+  .main{min-height:-webkit-fill-available}
+  body{min-height:-webkit-fill-available}
 }
+
+/* ===== MOBILE HEADER ===== */
+.mobile-header{
+  display:none;
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:10px 16px;
+  align-items:center;
+  gap:12px;
+}
+.mobile-header.show{display:flex}
+.mobile-back-btn{
+  width:40px;height:40px;
+  border:none;background:var(--side-bg);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;color:var(--text);
+  flex-shrink:0;font-size:18px;
+}
+.mobile-back-btn:active{background:var(--border)}
+.mobile-page-title{font-size:16px;font-weight:700;color:var(--text);flex:1}
+
+@media(hover:none)and(pointer:coarse){
+  .radio-btn:hover{background:rgba(255,255,255,.65);border-color:var(--border)}
+  .radio-btn:active{background:var(--brand-ghost);border-color:var(--brand);color:var(--brand)}
+  input[type="text"],input[type="date"]{font-size:16px!important;min-height:44px}
+}
+
 @media(max-width:768px){
-  .sidebar,.sidebar-placeholder{display:none}
-  .toolbar{padding:12px 14px}
-  .calc-layout{padding:10px 14px 16px;gap:12px}
-  .input-wrap{height:40px}
-  .radio-group{flex-wrap:wrap}
-  .date-row{grid-template-columns:1fr}
-  .regs-panel{gap:6px}
+  .mobile-header.show{display:flex}
+  .sidebar,.sidebar-placeholder{display:none!important}
+  .main{padding-top:62px}
+  .toolbar{display:none}
+  .calc-layout{
+    flex-direction:column;
+    padding:14px 14px 20px;
+    gap:14px;
+  }
+  .calc-panel{max-width:none}
+  .regs-panel{
+    width:100%;min-width:0;
+    flex-direction:row;
+    flex-wrap:wrap;
+  }
+  .regs-panel .reg-card{flex:1;min-width:200px}
+  .input-wrap{height:44px}
+  .input-wrap input{font-size:16px!important}
+  .radio-wrap{gap:6px}
+  .radio-btn{height:44px;font-size:12px;padding:0 10px}
+  .date-row{grid-template-columns:1fr 1fr}
+  .bd-hero{padding:14px 16px}
+  .bd-hero .hero-value{font-size:22px}
+  .result-card{padding:10px 14px;font-size:12px}
 }
 @media(max-width:420px){
-  .radio-btn{height:40px;font-size:11px}
+  .radio-wrap{gap:4px}
+  .radio-btn{font-size:11px;padding:0 8px}
+  .date-row{grid-template-columns:1fr}
+  .regs-panel{flex-direction:column}
+  .bd-hero .hero-value{font-size:20px}
+}
+@media(min-width:769px)and(max-width:1024px){
+  .calc-layout{padding:14px 20px 20px}
+  .calc-panel{max-width:520px}
+  .regs-panel{width:220px;min-width:200px}
 }
 </style>
 </head>
@@ -175,6 +230,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 </div>
 
 <div class="app">
+
+<!-- ==================== MOBILE HEADER ==================== -->
+<div class="mobile-header" id="mobileHeader">
+  <button class="mobile-back-btn" id="mobileBackBtn" aria-label="Back">←</button>
+  <span class="mobile-page-title">Bright-Line Test</span>
+</div>
 
 <!-- SIDEBAR -->
 <aside class="sidebar">
@@ -471,6 +532,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
   var today = new Date();
   document.getElementById("saleDate").value = today.toISOString().split("T")[0];
   calc();
+  // Mobile header: show on narrow screen
+  function checkMobile() {
+    var hdr = document.getElementById("mobileHeader");
+    if (!hdr) return;
+    if (window.innerWidth <= 768) {
+      hdr.classList.add("show");
+    } else {
+      hdr.classList.remove("show");
+    }
+  }
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+
+  // Mobile back button
+  var mobileBackBtn = document.getElementById("mobileBackBtn");
+  if (mobileBackBtn) {
+    mobileBackBtn.addEventListener("click", function() {
+      var fromCat = new URLSearchParams(window.location.search).get("from") || "local";
+      window.location.href = "index.html#" + fromCat;
+    });
+  }
+
 })();
 </script>
 

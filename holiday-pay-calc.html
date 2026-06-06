@@ -2,7 +2,7 @@
 <html lang="en-NZ">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
 <title>Holiday Pay Calculator — 8% Entitlement for Casual Workers | ainav.nz</title>
 <meta name="description" content="Calculate 8% holiday pay entitlement for casual and fixed-term workers in New Zealand. Based on gross earnings or hours worked.">
 <meta name="keywords" content="holiday pay calculator NZ, 8% holiday pay, casual worker leave, NZ annual leave entitlement, holiday pay casual">
@@ -164,32 +164,104 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 .reg-card .empl-link:hover{color:var(--brand-light);text-decoration:underline}
 .reg-card .empl-link svg{width:11px;height:11px}
 
-/* ===== RESPONSIVE ===== */
+/* ===== iOS 100vh FIX ===== */
+@supports(-webkit-touch-callout:none){
+  .app{min-height:-webkit-fill-available}
+  .sidebar{height:-webkit-fill-available}
+}
+
+/* ===== MOBILE HEADER ===== */
+.mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:54px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);z-index:200;align-items:center;padding:0 14px;gap:10px}
+.mobile-header.show{display:flex}
+.mobile-back{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:9px;border:none;background:var(--brand-ghost);color:var(--brand);font-size:18px;cursor:pointer;flex-shrink:0;transition:background .15s}
+.mobile-back:active{background:var(--brand);color:#fff}
+.mobile-title{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mobile-spacer{flex:1}
+
+/* ===== HOURLY FIELD BASE ===== */
+.hourly-field{display:flex;align-items:center;background:rgba(255,255,255,.72);border:1px solid var(--border);border-radius:9px;padding:0 10px;height:44px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.hourly-field input{flex:1;border:none;background:transparent;outline:none;font-size:16px;font-weight:600;color:var(--text);font-family:inherit;min-width:0;text-align:right}
+.hourly-field input::placeholder{color:#CDD3DA;font-weight:400}
+.hf-label{font-size:12px;font-weight:600;color:var(--sub);margin-left:6px;flex-shrink:0;white-space:nowrap}
+
+/* ===== QUICK CALC BASE ===== */
+.quick-calc-wrap{
+  margin-top:14px;
+  background:rgba(255,255,255,.65);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px 14px;
+  box-shadow:var(--shadow-sm);
+}
+.quick-calc-wrap p{font-size:11.5px;color:var(--sub);line-height:1.55;margin-bottom:6px}
+.qc-title{
+  font-size:12px;
+  font-weight:700;
+  color:var(--text);
+  margin-bottom:5px;
+  letter-spacing:-.2px;
+  display:flex;align-items:center;gap:5px;
+}
+.qc-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.qc-result{margin-top:8px;font-size:13px;font-weight:600;color:var(--brand);min-height:20px;font-variant-numeric:tabular-nums;font-family:"SF Mono","Cascadia Code","Consolas",monospace}
+.qc-btn{margin-top:8px;width:100%;padding:8px 14px;border-radius:9px;border:1.5px solid var(--brand);background:var(--brand);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s;display:none}
+.qc-btn:hover{background:var(--brand-light);border-color:var(--brand-light)}
+
+/* ===== RESPONSIVE: TABLET ===== */
 @media(max-width:1024px){
   .calc-layout{padding:14px 20px 20px}
   .calc-panel{max-width:none}
   .regs-panel{width:100%;min-width:0}
 }
+
+/* ===== RESPONSIVE: MOBILE ===== */
 @media(max-width:768px){
   .sidebar,.sidebar-placeholder{display:none}
-  .toolbar{padding:12px 14px}
-  .calc-layout{padding:10px 14px 16px;gap:12px}
-  .input-wrap{height:40px}
-  .input-wrap input{font-size:14px}
-  .hourly-field{height:40px}
-  .hourly-field input{font-size:13px}
-  .rate-hours-row{flex-direction:column;gap:6px}
-  .regs-panel{gap:6px}
-  .bd-hero{padding:14px 16px}
+  .toolbar{display:none}
+  .main{padding-top:54px}
+  .calc-layout{padding:12px 14px 24px;flex-direction:column;gap:14px}
+  .calc-panel{max-width:none;width:100%}
+  .regs-panel{width:100%;flex-direction:row;flex-wrap:wrap;gap:8px}
+  .regs-panel .reg-card{flex:1;min-width:200px}
+  .input-wrap{height:44px}
+  .input-wrap input{font-size:16px}
+  .mode-btn{height:42px;font-size:13px}
+  .hourly-field{height:44px}
+  .hourly-field input{font-size:16px}
   .bd-hero .hero-value{font-size:24px}
 }
+/* Touch devices */
+@media(hover:none)and(pointer:coarse){
+  .mode-btn:hover,.side-item:hover{background:initial;color:initial}
+  .mode-btn:active{background:var(--brand-ghost)}
+  .input-wrap:hover{border-color:var(--border)}
+}
+
+/* ===== RESPONSIVE: SMALL MOBILE ===== */
 @media(max-width:420px){
-  .mode-btn{height:40px;font-size:11px;padding:0 10px}
+  .calc-layout{padding:10px 12px 20px}
+  .mode-wrap{gap:6px}
+  .mode-btn{height:40px;font-size:12px;padding:0 8px}
+  .qc-row{grid-template-columns:1fr}
   .bd-hero .hero-value{font-size:20px}
+  .regs-panel .reg-card{min-width:100%}
+}
+
+/* ===== RESPONSIVE: TINY ===== */
+@media(max-width:380px){
+  .calc-layout{padding:8px 10px 16px}
 }
 </style>
 </head>
 <body>
+
+<!-- ===== MOBILE HEADER ===== -->
+<div class="mobile-header" id="mobileHeader">
+  <button class="mobile-back" id="mobileBackBtn" aria-label="Back">←</button>
+  <span class="mobile-title">Holiday Pay Calculator</span>
+  <span class="mobile-spacer"></span>
+</div>
 
 <!-- Decorative background blobs -->
 <div class="bg-decor">
@@ -503,6 +575,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
     document.addEventListener("DOMContentLoaded", function() { init(); });
   } else {
     init();
+  }
+
+  // ===== MOBILE HEADER: show on narrow screen =====
+  function checkMobile() {
+    var hdr = document.getElementById("mobileHeader");
+    if (!hdr) return;
+    if (window.innerWidth <= 768) {
+      hdr.classList.add("show");
+    } else {
+      hdr.classList.remove("show");
+    }
+  }
+  checkMobile();
+  window.addEventListener("resize", checkMobile);
+
+  // ===== MOBILE BACK BUTTON =====
+  var mobileBackBtn = document.getElementById("mobileBackBtn");
+  if (mobileBackBtn) {
+    mobileBackBtn.addEventListener("click", function() {
+      var fromCat = new URLSearchParams(window.location.search).get("from") || "local";
+      window.location.href = "index.html#" + fromCat;
+    });
   }
 })();
 </script>

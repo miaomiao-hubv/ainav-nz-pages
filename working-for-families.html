@@ -2,7 +2,7 @@
 <html lang="en-NZ">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover">
 <title>Working for Families Calculator — NZ Family Tax Credits | ainav.nz</title>
 <meta name="description" content="Estimate Working for Families tax credits for NZ families. Family Tax Credit, In-work Tax Credit, Minimum Family Tax Credit, and Best Start payments.">
 <meta name="keywords" content="working for families calculator, family tax credit NZ, in-work tax credit, best start payment, NZ family support">
@@ -204,35 +204,136 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 .reg-card .ird-link:hover{color:var(--brand-light);text-decoration:underline}
 .reg-card .ird-link svg{width:11px;height:11px}
 
-/* ===== RESPONSIVE ===== */
+/* ===== iOS 100vh FIX ===== */
+@supports(-webkit-touch-callout:none){
+  .app{min-height:-webkit-fill-available}
+  .sidebar{height:-webkit-fill-available}
+}
+
+/* ===== MOBILE HEADER ===== */
+.mobile-header{display:none;position:fixed;top:0;left:0;right:0;height:54px;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);z-index:200;align-items:center;padding:0 14px;gap:10px}
+.mobile-header.show{display:flex}
+.mobile-back{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:9px;border:none;background:var(--brand-ghost);color:var(--brand);font-size:18px;cursor:pointer;flex-shrink:0;transition:background .15s}
+.mobile-back:active{background:var(--brand);color:#fff}
+.mobile-title{font-size:15px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mobile-spacer{flex:1}
+
+/* ===== OPTION BUTTONS BASE ===== */
+.opt-btn-wrap{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.opt-btn{height:44px;padding:0 12px;border-radius:9px;border:1.5px solid var(--border);background:rgba(255,255,255,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;color:var(--sub);transition:all .15s;display:inline-flex;align-items:center;justify-content:center;width:100%}
+.opt-btn:hover{background:#fff;border-color:#C0C8CE}
+.opt-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+
+/* ===== CHILDREN CARD ===== */
+.children-card{
+  background:rgba(255,255,255,.65);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:4px 0;
+  box-shadow:var(--shadow-sm);
+}
+.cc-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:5px 12px;
+  gap:8px;
+}
+.cc-row+.cc-row{border-top:1px solid #F0F2F4}
+.cc-label{font-size:12px;color:var(--sub);font-weight:500;flex:1;min-width:0}
+.cc-input-wrap{
+  display:flex;align-items:center;
+  background:rgba(255,255,255,.85);
+  border:1px solid var(--border);
+  border-radius:9px;
+  height:40px;
+  flex-shrink:0;
+  transition:border-color .15s;
+  overflow:hidden;
+  padding:0 2px;
+}
+.cc-input-wrap:focus-within{border-color:var(--brand);background:#fff}
+.cc-btn{
+  width:38px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  border:none;background:transparent;
+  font-size:18px;font-weight:700;color:var(--brand);
+  cursor:pointer;flex-shrink:0;
+  transition:background .12s, color .12s;
+  user-select:none;
+  border-radius:7px;
+}
+.cc-btn:hover{background:var(--brand-ghost);color:var(--brand-light)}
+.cc-btn:active{background:#D0E8F0}
+.cc-btn:first-child{margin-left:1px}
+.cc-btn:last-child{margin-right:1px}
+.cc-input-wrap input{
+  width:42px;border:none;background:transparent;
+  font-size:15px;font-weight:600;color:var(--text);
+  font-family:inherit;text-align:center;outline:none;
+  -moz-appearance:textfield;
+  margin:0 2px;
+}
+.cc-input-wrap input::-webkit-outer-spin-button,
+.cc-input-wrap input::-webkit-inner-spin-button{
+  -webkit-appearance:none;margin:0;
+}
+
+/* ===== RESPONSIVE: TABLET ===== */
 @media(max-width:1024px){
   .calc-layout{padding:14px 20px 20px}
   .calc-panel{max-width:none}
   .regs-panel{width:100%;min-width:0}
 }
+
+/* ===== RESPONSIVE: MOBILE ===== */
 @media(max-width:768px){
   .sidebar,.sidebar-placeholder{display:none}
-  .toolbar{padding:12px 14px}
-  .calc-layout{padding:10px 14px 16px;gap:12px}
-  .input-wrap{height:40px}
-  .input-wrap input{font-size:14px}
-  .regs-panel{gap:6px}
+  .toolbar{display:none}
+  .main{padding-top:54px}
+  .calc-layout{padding:12px 14px 24px;flex-direction:column;gap:14px}
+  .calc-panel{max-width:none;width:100%}
+  .regs-panel{width:100%;flex-direction:row;flex-wrap:wrap;gap:8px}
+  .regs-panel .reg-card{flex:1;min-width:200px}
+  .input-wrap{height:44px}
+  .input-wrap input{font-size:16px}
+  .mode-btn{height:42px;font-size:13px}
   .opt-btn-wrap{grid-template-columns:repeat(2,1fr)}
-  .bd-hero{padding:14px 16px}
   .bd-hero .hero-value{font-size:24px}
 }
+/* Touch devices */
+@media(hover:none)and(pointer:coarse){
+  .mode-btn:hover,.opt-btn:hover,.side-item:hover{background:initial;color:initial}
+  .mode-btn:active,.opt-btn:active{background:var(--brand-ghost)}
+  .input-wrap:hover{border-color:var(--border)}
+}
+
+/* ===== RESPONSIVE: SMALL MOBILE ===== */
 @media(max-width:420px){
-  .mode-btn{height:40px;font-size:11px;padding:0 10px}
+  .calc-layout{padding:10px 12px 20px}
+  .mode-wrap{gap:6px}
+  .mode-btn{height:40px;font-size:12px;padding:0 8px}
   .opt-btn-wrap{grid-template-columns:repeat(2,1fr)}
   .opt-btn{height:40px;font-size:11.5px;padding:0 10px}
   .bd-hero .hero-value{font-size:20px}
-  .input-row{flex-direction:column;gap:0}
-  .input-row .input-group{margin-top:12px}
-  .input-row .input-group:first-child{margin-top:0}
+  .regs-panel .reg-card{min-width:100%}
+}
+
+/* ===== RESPONSIVE: TINY ===== */
+@media(max-width:380px){
+  .calc-layout{padding:8px 10px 16px}
 }
 </style>
 </head>
 <body>
+
+<!-- ===== MOBILE HEADER ===== -->
+<div class="mobile-header" id="mobileHeader">
+  <button class="mobile-back" id="mobileBackBtn" aria-label="Back">←</button>
+  <span class="mobile-title">Working for Families</span>
+  <span class="mobile-spacer"></span>
+</div>
 
 <!-- Decorative background blobs -->
 <div class="bg-decor">
